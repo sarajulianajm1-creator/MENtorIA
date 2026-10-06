@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juguemos a la Tienda</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',sans-serif;background:#f0ecff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px;}
+#wrap{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;overflow:hidden;max-width:700px;width:100%;padding-bottom:26px;box-shadow:0 8px 32px rgba(160,130,240,0.2);}
+
+.header{background:#c5b8f8;padding:18px 20px 14px;text-align:center;}
+.header h1{font-size:24px;font-weight:800;color:#3a2a7a;}
+.header p{font-size:14px;color:#5a4aa0;margin-top:4px;}
+
+.progress-row{display:flex;justify-content:center;gap:10px;padding:12px 0 4px;}
+.dp{width:14px;height:14px;border-radius:50%;background:#e0d9f9;border:2px solid #c5b8f8;}
+.dp.done{background:#f5c842;border-color:#d4a000;}
+.dp.current{background:#ff8fd8;border-color:#e060b0;}
+
+.score-row{text-align:center;margin:6px 0 14px;}
+.score-pill{display:inline-block;background:#fff;border:2px solid #c5b8f8;border-radius:30px;padding:5px 22px;font-size:15px;font-weight:700;color:#3a2a7a;}
+
+/* PRICE LIST */
+.price-board{margin:0 20px 16px;background:#fff9e0;border:3px solid #f5c842;border-radius:20px;padding:14px 20px;}
+.price-board-title{text-align:center;font-size:13px;font-weight:800;color:#7a5c00;margin-bottom:10px;}
+.price-list{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+.price-item{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #f5c842;border-radius:12px;padding:7px 14px;}
+.price-item .prod-icon{font-size:26px;line-height:1;}
+.price-item .prod-name{font-size:13px;font-weight:700;color:#5a4aa0;}
+.price-item .prod-price{font-size:16px;font-weight:900;color:#e05050;background:#fde8e8;border-radius:8px;padding:2px 8px;}
+
+/* QUESTION CARD */
+.qcard{margin:0 20px 14px;background:#e6f9f1;border:2.5px dashed #3dba7e;border-radius:20px;padding:20px 22px;}
+.qcard-top{display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
+.character{font-size:44px;line-height:1;flex-shrink:0;}
+.qtext{font-size:16px;font-weight:700;color:#1a7a50;line-height:1.55;}
+.qtext .name{color:#a87cf5;font-weight:900;}
+.qtext .item-highlight{
+  display:inline-flex;align-items:center;gap:4px;
+  background:#fff;border:2px solid #4a9ef5;border-radius:8px;
+  padding:1px 8px;font-size:15px;
+}
+.qtext .item-price{color:#e05050;font-weight:900;}
+.calc-hint{
+  background:#fff;border:2px solid #b8aef0;border-radius:12px;
+  padding:10px 14px;font-size:14px;color:#5a4aa0;font-weight:700;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;
+}
+.calc-hint span{background:#eee9ff;border-radius:8px;padding:2px 8px;}
+
+.answer-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.answer-label{font-size:15px;font-weight:700;color:#3a2a7a;}
+.coins-display{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.coin{
+  width:36px;height:36px;border-radius:50%;background:#f5c842;border:3px solid #d4a000;
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#7a5c00;
+  cursor:pointer;user-select:none;transition:transform 0.1s,background 0.15s;box-shadow:0 2px 6px rgba(0,0,0,0.12);
+}
+.coin:hover{transform:scale(1.12);}
+.coin.spent{background:#ccc;border-color:#aaa;color:#666;}
+.coin.spent::after{content:'✖';font-size:13px;}
+
+.answer-input{width:56px;height:46px;text-align:center;font-size:20px;font-weight:800;border:3px solid #b8aef0;border-radius:10px;color:#3a2a7a;background:#fff;}
+.answer-input:focus{outline:none;border-color:#f5c842;}
+.answer-input.correct{border-color:#3dba7e !important;background:#e6f9f1;}
+.answer-input.wrong{border-color:#e05050 !important;background:#fde8e8;}
+
+.btn-check{border:none;border-radius:30px;padding:10px 24px;font-size:14px;font-weight:800;cursor:pointer;background:#3dba7e;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.btn-check:active{transform:scale(0.96);}
+
+.fb{text-align:center;min-height:30px;font-size:15px;font-weight:700;color:#3a2a7a;margin:10px 20px 4px;}
+.btn-row{text-align:center;margin-top:8px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+.btn{border:none;border-radius:30px;padding:11px 28px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.btn:active{transform:scale(0.96);}
+.btn-reset{background:#f5c842;color:#3a2a7a;}
+.btn-next{background:#a87cf5;color:#fff;display:none;}
+
+/* WIN */
+.win-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:50;align-items:center;justify-content:center;}
+.win-overlay.show{display:flex;}
+.win-box{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;padding:32px 28px;text-align:center;max-width:340px;width:90%;}
+.win-trophy{font-size:64px;animation:tbounce 0.7s infinite alternate;}
+@keyframes tbounce{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+.win-title{font-size:26px;font-weight:900;color:#3a2a7a;margin:10px 0 4px;}
+.win-sub{font-size:14px;color:#5a4aa0;font-weight:600;margin-bottom:16px;}
+.btn-again{background:linear-gradient(135deg,#a87cf5,#3dba7e);color:#fff;border:none;border-radius:30px;padding:12px 32px;font-size:16px;font-weight:800;cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="header">
+    <h1>🏪 Juguemos a la Tienda</h1>
+    <p>Lee los precios, haz cuentas y contesta</p>
+  </div>
+  <div class="progress-row" id="prog"></div>
+  <div class="score-row"><div class="score-pill">⭐ Puntos: <span id="sc">0</span></div></div>
+
+  <!-- Price board always visible -->
+  <div class="price-board">
+    <div class="price-board-title">🏷️ Lista de precios</div>
+    <div class="price-list" id="price-list"></div>
+  </div>
+
+  <!-- Question card -->
+  <div class="qcard">
+    <div class="qcard-top">
+      <div class="character" id="char-emoji"></div>
+      <div class="qtext" id="qtext"></div>
+    </div>
+    <div class="calc-hint" id="calc-hint"></div>
+    <div class="answer-row">
+      <span class="answer-label" id="answer-label"></span>
+      <input type="number" class="answer-input" id="answer" min="0" max="30">
+      <span style="font-size:15px;font-weight:700;color:#5a4aa0;">pesos</span>
+      <button class="btn-check" id="btn-check">✅ Comprobar</button>
+    </div>
+  </div>
+
+  <div class="fb" id="fb">💡 Lee el precio de cada producto y haz la suma</div>
+  <div class="btn-row">
+    <button class="btn btn-reset" id="btn-reset">🔄 Reiniciar</button>
+    <button class="btn btn-next" id="btn-next">Siguiente ▶</button>
+  </div>
+</div>
+
+<div class="win-overlay" id="win-overlay">
+  <div class="win-box">
+    <div class="win-trophy">🏆</div>
+    <div class="win-title">¡Felicitaciones!</div>
+    <div class="win-sub" id="win-sub">Eres un gran matemático</div>
+    <button class="btn-again" id="btn-again">🔄 Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+// Store items with prices
+const PRODUCTS = [
+  { id:'dulce',   name:'Dulce',   icon:'🍬', price:3 },
+  { id:'cono',    name:'Cono',    icon:'🍦', price:5 },
+  { id:'galleta', name:'Galleta', icon:'🍪', price:2 },
+  { id:'jugo',    name:'Jugo',    icon:'🧃', price:4 },
+];
+
+// Questions
+const LEVELS = [
+  {
+    char:'👧', name:'Mariana',
+    bought:['galleta','dulce'],
+    type:'suma',
+    question:(items,total)=>`<span class="name">Mariana</span> compró una <span class="item-highlight">${items[0].icon} ${items[0].name}</span> y un <span class="item-highlight">${items[1].icon} ${items[1].name}</span>.<br>¿Cuánto pagó?`,
+    hint:(items)=>`${items[0].icon} + ${items[1].icon} = ?`,
+    answer:(items)=>items.reduce((s,i)=>s+i.price,0),
+    label:'Pagó:'
+  },
+  {
+    char:'👦', name:'Alejo',
+    bought:['galleta','cono'],
+    type:'suma',
+    question:(items,total)=>`<span class="name">Alejo</span> compró una <span class="item-highlight">${items[0].icon} ${items[0].name}</span> y un <span class="item-highlight">${items[1].icon} ${items[1].name}</span>.<br>¿Cuánto pagó?`,
+    hint:(items)=>`${items[0].icon} + ${items[1].icon} = ?`,
+    answer:(items)=>items.reduce((s,i)=>s+i.price,0),
+    label:'Pagó:'
+  },
+  {
+    char:'👧', name:'Mariana',
+    bought:['dulce'],
+    type:'resta',
+    tenia:10,
+    question:(items,total)=>`<span class="name">Mariana</span> tenía <strong>10 monedas</strong> de 1 peso.<br>Compró un <span class="item-highlight">${items[0].icon} ${items[0].name}</span> (${items[0].price} pesos).<br>¿Cuántas monedas le quedan?`,
+    hint:(items,tenia)=>`${tenia} − ${items[0].icon} = ?`,
+    answer:(items,tenia)=>tenia-items.reduce((s,i)=>s+i.price,0),
+    label:'Le quedan:'
+  },
+  {
+    char:'👦', name:'Alejo',
+    bought:['cono','dulce'],
+    type:'resta',
+    tenia:9,
+    question:(items,total)=>`<span class="name">Alejo</span> tenía <strong>9 monedas</strong> de 1 peso.<br>Compró un <span class="item-highlight">${items[0].icon} ${items[0].name}</span> y un <span class="item-highlight">${items[1].icon} ${items[1].name}</span>.<br>¿Cuántas monedas le quedan?`,
+    hint:(items,tenia)=>`${tenia} − ${items[0].icon} − ${items[1].icon} = ?`,
+    answer:(items,tenia)=>tenia-items.reduce((s,i)=>s+i.price,0),
+    label:'Le quedan:'
+  },
+  {
+    char:'👧', name:'Mariana',
+    bought:['jugo','galleta'],
+    type:'suma',
+    question:(items)=>`<span class="name">Mariana</span> compró un <span class="item-highlight">${items[0].icon} ${items[0].name}</span> y una <span class="item-highlight">${items[1].icon} ${items[1].name}</span>.<br>¿Cuánto pagó en total?`,
+    hint:(items)=>`${items[0].icon} + ${items[1].icon} = ?`,
+    answer:(items)=>items.reduce((s,i)=>s+i.price,0),
+    label:'Pagó:'
+  },
+  {
+    char:'👦', name:'Alejo',
+    bought:['jugo','dulce'],
+    type:'resta',
+    tenia:10,
+    question:(items)=>`<span class="name">Alejo</span> tenía <strong>10 monedas</strong> de 1 peso.<br>Compró un <span class="item-highlight">${items[0].icon} ${items[0].name}</span> y un <span class="item-highlight">${items[1].icon} ${items[1].name}</span>.<br>¿Cuántas monedas le quedan?`,
+    hint:(items,tenia)=>`${tenia} − ${items[0].icon} − ${items[1].icon} = ?`,
+    answer:(items,tenia)=>tenia-items.reduce((s,i)=>s+i.price,0),
+    label:'Le quedan:'
+  },
+];
+
+let lvl=0, score=0, answered=false;
+const isLast=()=>lvl===LEVELS.length-1;
+const L=()=>LEVELS[lvl];
+const getItems=()=>L().bought.map(id=>PRODUCTS.find(p=>p.id===id));
+
+function buildProg(){
+  const r=document.getElementById('prog');r.innerHTML='';
+  LEVELS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dp'+(i<lvl?' done':i===lvl?' current':'');
+    r.appendChild(d);
+  });
+}
+
+function buildPriceList(){
+  const pl=document.getElementById('price-list');pl.innerHTML='';
+  PRODUCTS.forEach(p=>{
+    const div=document.createElement('div');div.className='price-item';
+    div.innerHTML=`<span class="prod-icon">${p.icon}</span><div><div class="prod-name">${p.name}</div></div><span class="prod-price">${p.price}$</span>`;
+    pl.appendChild(div);
+  });
+}
+
+function buildQuestion(){
+  const lv=L();
+  const items=getItems();
+  document.getElementById('char-emoji').textContent=lv.char;
+  document.getElementById('qtext').innerHTML=lv.question(items,lv.tenia||0);
+  const tenia=lv.tenia||0;
+  const hintText=lv.hint(items,tenia);
+  document.getElementById('calc-hint').innerHTML=`🧮 Pista: <span>${hintText}</span>`;
+  document.getElementById('answer-label').textContent=lv.label;
+  document.getElementById('answer').value='';
+  document.getElementById('answer').className='answer-input';
+  document.getElementById('fb').textContent='💡 Lee el precio de cada producto y haz la cuenta';
+  document.getElementById('btn-next').style.display='none';
+  answered=false;
+}
+
+function checkAnswer(){
+  if(answered)return;
+  const lv=L();
+  const items=getItems();
+  const tenia=lv.tenia||0;
+  const correct=lv.answer(items,tenia);
+  const val=parseInt(document.getElementById('answer').value,10);
+  const inp=document.getElementById('answer');
+
+  if(isNaN(val)){document.getElementById('fb').textContent='🔢 Escribe un número';return;}
+
+  if(val===correct){
+    answered=true;
+    score+=15;document.getElementById('sc').textContent=score;
+    inp.classList.add('correct');
+    document.getElementById('fb').innerHTML=`🎉 ¡Correcto! La respuesta es <strong>${correct} pesos</strong>`;
+    document.getElementById('btn-next').style.display='inline-block';
+    document.getElementById('btn-next').textContent=isLast()?'🏆 Ver resultados':'Siguiente ▶';
+  } else {
+    inp.classList.add('wrong');
+    const hint=lv.type==='suma'?`Suma los precios: ${items.map(i=>i.price).join(' + ')}`
+      :`Resta: ${tenia} − ${items.map(i=>i.price).join(' − ')}`;
+    document.getElementById('fb').textContent=`😅 No es correcto. ${hint}`;
+    setTimeout(()=>{inp.classList.remove('wrong');},900);
+  }
+}
+
+function nextLevel(){
+  if(isLast()&&answered){
+    document.getElementById('win-sub').textContent=`Completaste ${LEVELS.length} problemas con ${score} puntos 🎊`;
+    document.getElementById('win-overlay').classList.add('show');return;
+  }
+  lvl++;buildProg();buildQuestion();
+}
+
+function reset(){
+  lvl=0;score=0;answered=false;
+  document.getElementById('sc').textContent=0;
+  document.getElementById('win-overlay').classList.remove('show');
+  buildProg();buildQuestion();
+}
+
+document.getElementById('btn-check').addEventListener('click',checkAnswer);
+document.getElementById('answer').addEventListener('keypress',e=>{if(e.key==='Enter')checkAnswer();});
+document.getElementById('btn-next').addEventListener('click',nextLevel);
+document.getElementById('btn-reset').addEventListener('click',reset);
+document.getElementById('btn-again').addEventListener('click',reset);
+
+buildPriceList();
+reset();
+</script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Palotes para hacer cuentas</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',sans-serif;background:#f0ecff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px;}
+#wrap{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;overflow:hidden;max-width:700px;width:100%;padding-bottom:26px;box-shadow:0 8px 32px rgba(160,130,240,0.2);}
+
+.header{background:#c5b8f8;padding:18px 20px 14px;text-align:center;}
+.header h1{font-size:21px;font-weight:800;color:#3a2a7a;}
+.header p{font-size:13px;color:#5a4aa0;margin-top:4px;}
+
+.progress-row{display:flex;justify-content:center;gap:10px;padding:12px 0 4px;}
+.dp{width:14px;height:14px;border-radius:50%;background:#e0d9f9;border:2px solid #c5b8f8;}
+.dp.done{background:#f5c842;border-color:#d4a000;}
+.dp.current{background:#ff8fd8;border-color:#e060b0;}
+
+.score-row{text-align:center;margin:6px 0 12px;}
+.score-pill{display:inline-block;background:#fff;border:2px solid #c5b8f8;border-radius:30px;padding:5px 22px;font-size:15px;font-weight:700;color:#3a2a7a;}
+
+/* PROBLEM CARD */
+.problem-card{margin:0 18px 14px;background:#fff9e0;border:3px solid #f5c842;border-radius:20px;padding:16px 18px;}
+.bubble-row{display:flex;align-items:flex-end;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+.char-emoji{font-size:46px;line-height:1;flex-shrink:0;}
+.bubble{background:#fff;border:2.5px solid #b8aef0;border-radius:16px 16px 16px 4px;padding:11px 15px;font-size:14px;font-weight:700;color:#3a2a7a;line-height:1.6;max-width:340px;}
+.bubble .hi{color:#a87cf5;font-weight:900;font-size:18px;}
+.bubble .num{color:#e05050;font-weight:900;font-size:17px;}
+
+/* TALLY AREA */
+.tally-section{background:#fff;border:2px solid #b8aef0;border-radius:16px;padding:16px;margin-bottom:14px;}
+.tally-title{font-size:13px;font-weight:800;color:#5a4aa0;margin-bottom:10px;text-align:center;}
+.tally-instr{font-size:12px;color:#999;font-weight:600;text-align:center;margin-bottom:12px;}
+
+.tally-groups{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:10px;}
+.tally-group{
+  background:#f8f6ff;border:2.5px solid #b8aef0;border-radius:12px;
+  padding:10px 12px;display:flex;flex-wrap:wrap;gap:5px;align-items:center;
+  min-width:110px;justify-content:center;position:relative;
+}
+.tally-group-label{
+  position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+  background:#b8aef0;color:#fff;font-size:10px;font-weight:800;
+  padding:1px 8px;border-radius:8px;white-space:nowrap;
+}
+
+/* individual tally mark */
+.tmark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:36px;cursor:pointer;position:relative;
+  user-select:none;flex-shrink:0;
+}
+.tmark svg{width:100%;height:100%;}
+.tmark.crossed .cross-line{display:block;}
+.tmark .cross-line{display:none;}
+
+/* ADD AREA: draw extra palotes */
+.add-area{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center;
+  background:#e6f9f1;border:2px dashed #3dba7e;border-radius:10px;padding:8px;min-height:52px;}
+.add-slot{
+  width:22px;height:36px;border:2px dashed #3dba7e;border-radius:4px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:18px;color:#3dba7e;
+  transition:background 0.12s;
+}
+.add-slot:hover{background:#c5f0d8;}
+.add-slot.drawn{border-style:solid;border-color:#3dba7e;}
+
+/* ANSWER */
+.answer-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px;flex-wrap:wrap;}
+.answer-label{font-size:14px;font-weight:700;color:#3a2a7a;}
+.answer-input{width:60px;height:48px;text-align:center;font-size:22px;font-weight:900;border:3px solid #b8aef0;border-radius:12px;color:#3a2a7a;background:#fff;}
+.answer-input:focus{outline:none;border-color:#f5c842;}
+.answer-input.correct{border-color:#3dba7e!important;background:#e6f9f1;}
+.answer-input.wrong{border-color:#e05050!important;background:#fde8e8;}
+.btn-check{border:none;border-radius:30px;padding:10px 24px;font-size:14px;font-weight:800;cursor:pointer;background:#3dba7e;color:#fff;}
+.btn-check:active{transform:scale(0.96);}
+
+.fb{text-align:center;min-height:28px;font-size:15px;font-weight:700;color:#3a2a7a;margin:8px 18px 4px;}
+.btn-row{text-align:center;margin-top:8px;display:flex;justify-content:center;gap:12px;}
+.btn{border:none;border-radius:30px;padding:11px 28px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.btn:active{transform:scale(0.96);}
+.btn-reset{background:#f5c842;color:#3a2a7a;}
+.btn-next{background:#a87cf5;color:#fff;display:none;}
+
+.win-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:50;align-items:center;justify-content:center;}
+.win-overlay.show{display:flex;}
+.win-box{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;padding:32px 28px;text-align:center;max-width:340px;width:90%;}
+.win-trophy{font-size:68px;animation:tb 0.7s infinite alternate;}
+@keyframes tb{from{transform:translateY(0)}to{transform:translateY(-14px)}}
+.win-title{font-size:26px;font-weight:900;color:#3a2a7a;margin:10px 0 4px;}
+.win-sub{font-size:14px;color:#5a4aa0;font-weight:600;margin-bottom:16px;}
+.btn-again{background:linear-gradient(135deg,#a87cf5,#3dba7e);color:#fff;border:none;border-radius:30px;padding:12px 32px;font-size:16px;font-weight:800;cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="header">
+    <h1>✏️ Palotes para hacer cuentas</h1>
+    <p>Dibuja palotes y tácha los que se van — ¡así resuelves los problemas!</p>
+  </div>
+  <div class="progress-row" id="prog"></div>
+  <div class="score-row"><div class="score-pill">⭐ Puntos: <span id="sc">0</span></div></div>
+
+  <div class="problem-card" id="problem-card">
+    <div class="bubble-row" id="bubble-row"></div>
+    <div class="tally-section">
+      <div class="tally-title" id="tally-title"></div>
+      <div class="tally-instr" id="tally-instr"></div>
+      <div class="tally-groups" id="tally-groups"></div>
+    </div>
+    <div class="answer-row">
+      <span class="answer-label" id="answer-label"></span>
+      <input type="number" class="answer-input" id="answer" min="0" max="100" placeholder="?">
+      <button class="btn-check" id="btn-check">✅ Comprobar</button>
+    </div>
+  </div>
+
+  <div class="fb" id="fb"></div>
+  <div class="btn-row">
+    <button class="btn btn-reset" id="btn-reset">🔄 Reiniciar</button>
+    <button class="btn btn-next" id="btn-next">Siguiente ▶</button>
+  </div>
+</div>
+
+<div class="win-overlay" id="win-overlay">
+  <div class="win-box">
+    <div class="win-trophy">🏆</div>
+    <div class="win-title">¡Felicitaciones!</div>
+    <div class="win-sub" id="win-sub">¡Eres muy bueno con los palotes!</div>
+    <button class="btn-again" id="btn-again">🔄 Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+// type: 'resta' = start with N, cross out K, answer N-K
+//       'suma'  = start with N, draw K more, answer N+K
+const LEVELS = [
+  {
+    type:'resta',
+    char:'👧', charColor:'#a87cf5',
+    bubble: 'Juego a la tienda. En la mañana tenía <span class="num">43</span> 🍎<br>He vendido <span class="num">9</span>. ¿Cuántas 🍎 tengo ahora?',
+    start:43, change:9, icon:'🍎',
+    tallyTitle:'Dibuja 43 palotes, luego tacha los 9 que vendiste',
+    tallyInstr:'Toca los palotes para tacharlos (los que se van)',
+    answerLabel:'Ahora tengo:',
+    correct: 34
+  },
+  {
+    type:'resta',
+    char:'🧺', charColor:'#4a9ef5',
+    bubble: 'Del canasto había <span class="num">54</span> 🫐<br>Se quiebran <span class="num">8</span>. ¿Cuántos 🫐 buenos quedan?',
+    start:54, change:8, icon:'🫐',
+    tallyTitle:'Dibuja 54 palotes, luego tacha los 8 que se quebraron',
+    tallyInstr:'Toca los palotes para tacharlos (los que se quiebran)',
+    answerLabel:'Quedan:',
+    correct: 46
+  },
+  {
+    type:'resta',
+    char:'🐒', charColor:'#3dba7e',
+    bubble: 'Los micos se comen <span class="num">28</span> 🍌<br>De las <span class="num">53</span> que había. ¿Cuántas 🍌 quedan?',
+    start:53, change:28, icon:'🍌',
+    tallyTitle:'Dibuja 53 palotes, luego tacha los 28 que se comieron',
+    tallyInstr:'Toca los palotes para tacharlos (los que se comen)',
+    answerLabel:'Quedan:',
+    correct: 25
+  },
+  {
+    type:'suma',
+    char:'🧒', charColor:'#f5a623',
+    bubble: 'Tenía <span class="num">36</span> 🟡 bolitas.<br>Me regalaron <span class="num">15</span> más. ¿Cuántas tengo ahora?',
+    start:36, change:15, icon:'🟡',
+    tallyTitle:'Dibuja 36 palotes (los que tenías), luego agrega 15 más',
+    tallyInstr:'Los palotes azules son los nuevos — dibújalos en el área verde',
+    answerLabel:'Tengo ahora:',
+    correct: 51
+  },
+  {
+    type:'resta',
+    char:'🌳', charColor:'#3dba7e',
+    bubble: 'En el árbol había <span class="num">47</span> 🐦<br>Se van volando <span class="num">19</span>. ¿Cuántos 🐦 quedan?',
+    start:47, change:19, icon:'🐦',
+    tallyTitle:'Dibuja 47 palotes, luego tacha los 19 que se fueron',
+    tallyInstr:'Toca los palotes para tacharlos (los que vuelan)',
+    answerLabel:'Quedan:',
+    correct: 28
+  },
+  {
+    type:'suma',
+    char:'🧒', charColor:'#e060b0',
+    bubble: 'Recogí <span class="num">24</span> 🍓 en la mañana.<br>En la tarde recogí <span class="num">18</span> más. ¿Cuántas tengo?',
+    start:24, change:18, icon:'🍓',
+    tallyTitle:'Dibuja 24 palotes (mañana), luego agrega 18 más (tarde)',
+    tallyInstr:'Dibuja los palotes nuevos en el área verde',
+    answerLabel:'Total:',
+    correct: 42
+  },
+];
+
+// SVG for a single tally mark (vertical line)
+function tallyMarkSVG(color='#5a4aa0', crossed=false){
+  const crossLine = crossed
+    ? `<line x1="2" y1="32" x2="20" y2="4" stroke="#e05050" stroke-width="2.5" stroke-linecap="round"/>`
+    : '';
+  return `<svg viewBox="0 0 22 36" xmlns="http://www.w3.org/2000/svg">
+    <line x1="11" y1="3" x2="11" y2="33" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/>
+    ${crossLine}
+  </svg>`;
+}
+
+let lvl=0, score=0, answered=false;
+let crossedCount=0, drawnExtra=0;
+const isLast=()=>lvl===LEVELS.length-1;
+const L=()=>LEVELS[lvl];
+
+function buildProg(){
+  const r=document.getElementById('prog');r.innerHTML='';
+  LEVELS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dp'+(i<lvl?' done':i===lvl?' current':'');
+    r.appendChild(d);
+  });
+}
+
+function buildQuestion(){
+  const lv=L();
+  answered=false; crossedCount=0; drawnExtra=0;
+  document.getElementById('btn-next').style.display='none';
+  document.getElementById('fb').textContent='';
+  document.getElementById('answer').value='';
+  document.getElementById('answer').className='answer-input';
+
+  // Bubble
+  document.getElementById('bubble-row').innerHTML=`
+    <span class="char-emoji">${lv.char}</span>
+    <div class="bubble">${lv.bubble}</div>
+  `;
+
+  // Tally area
+  document.getElementById('tally-title').textContent=lv.tallyTitle;
+  document.getElementById('tally-instr').textContent=lv.tallyInstr;
+
+  const groups=document.getElementById('tally-groups');
+  groups.innerHTML='';
+
+  if(lv.type==='resta'){
+    // Show start marks in groups of 10, clickable to cross
+    const fullGroups=Math.floor(lv.start/10);
+    const rem=lv.start%10;
+
+    for(let g=0;g<fullGroups;g++){
+      const grp=document.createElement('div');
+      grp.className='tally-group';
+      grp.innerHTML=`<span class="tally-group-label">10</span>`;
+      for(let k=0;k<10;k++){
+        const idx=g*10+k;
+        const tm=document.createElement('span');
+        tm.className='tmark';
+        tm.id='tm-'+idx;
+        tm.innerHTML=tallyMarkSVG('#5a4aa0',false);
+        tm.addEventListener('click',()=>onTmarkClick(idx));
+        grp.appendChild(tm);
+      }
+      groups.appendChild(grp);
+    }
+    if(rem>0){
+      const grp=document.createElement('div');
+      grp.className='tally-group';
+      grp.innerHTML=`<span class="tally-group-label">${rem}</span>`;
+      for(let k=0;k<rem;k++){
+        const idx=fullGroups*10+k;
+        const tm=document.createElement('span');
+        tm.className='tmark';
+        tm.id='tm-'+idx;
+        tm.innerHTML=tallyMarkSVG('#5a4aa0',false);
+        tm.addEventListener('click',()=>onTmarkClick(idx));
+        grp.appendChild(tm);
+      }
+      groups.appendChild(grp);
+    }
+
+  } else {
+    // suma: show existing marks (fixed, no cross) + add area
+    const fullGroups=Math.floor(lv.start/10);
+    const rem=lv.start%10;
+    for(let g=0;g<fullGroups;g++){
+      const grp=document.createElement('div');
+      grp.className='tally-group';
+      grp.innerHTML=`<span class="tally-group-label">10</span>`;
+      for(let k=0;k<10;k++){
+        const tm=document.createElement('span');
+        tm.className='tmark';
+        tm.innerHTML=tallyMarkSVG('#5a4aa0',false);
+        grp.appendChild(tm);
+      }
+      groups.appendChild(grp);
+    }
+    if(rem>0){
+      const grp=document.createElement('div');
+      grp.className='tally-group';
+      grp.innerHTML=`<span class="tally-group-label">${rem}</span>`;
+      for(let k=0;k<rem;k++){
+        const tm=document.createElement('span');
+        tm.className='tmark';
+        tm.innerHTML=tallyMarkSVG('#5a4aa0',false);
+        grp.appendChild(tm);
+      }
+      groups.appendChild(grp);
+    }
+    // Add area for drawing new marks
+    const addGrp=document.createElement('div');
+    addGrp.className='tally-group';
+    addGrp.style.background='#e6f9f1';
+    addGrp.style.borderColor='#3dba7e';
+    addGrp.innerHTML=`<span class="tally-group-label" style="background:#3dba7e">+ nuevos</span>`;
+    for(let k=0;k<lv.change+2;k++){
+      const slot=document.createElement('span');
+      slot.className='tmark add-slot-tm';
+      slot.id='add-'+k;
+      slot.style.width='22px';slot.style.height='36px';
+      slot.style.border='2px dashed #3dba7e';slot.style.borderRadius='4px';
+      slot.style.cursor='pointer';slot.style.display='inline-flex';
+      slot.style.alignItems='center';slot.style.justifyContent='center';
+      slot.innerHTML='<span style="color:#3dba7e;font-size:18px;line-height:1">+</span>';
+      slot.addEventListener('click',()=>onAddSlot(k,slot));
+      addGrp.appendChild(slot);
+    }
+    groups.appendChild(addGrp);
+  }
+
+  document.getElementById('answer-label').textContent=lv.answerLabel;
+  document.getElementById('btn-check').addEventListener('click',checkAnswer);
+  document.getElementById('answer').addEventListener('keypress',e=>{if(e.key==='Enter')checkAnswer();});
+}
+
+function onTmarkClick(idx){
+  if(answered)return;
+  const lv=L();
+  const tm=document.getElementById('tm-'+idx);
+  const isCrossed=tm.classList.contains('crossed');
+  if(isCrossed){
+    tm.classList.remove('crossed');
+    tm.innerHTML=tallyMarkSVG('#5a4aa0',false);
+    crossedCount--;
+  } else {
+    if(crossedCount>=lv.change){
+      document.getElementById('fb').textContent=`⚠️ Solo debes tachar ${lv.change} palotes`;
+      return;
+    }
+    tm.classList.add('crossed');
+    tm.innerHTML=tallyMarkSVG('#5a4aa0',true);
+    crossedCount++;
+  }
+  document.getElementById('fb').textContent=`Tachados: ${crossedCount} de ${lv.change}`;
+}
+
+function onAddSlot(k, slot){
+  if(answered)return;
+  const lv=L();
+  if(slot.classList.contains('drawn')){
+    // remove this and all above
+    let count=0;
+    document.querySelectorAll('.add-slot-tm').forEach((s,i)=>{
+      if(i>=k){s.classList.remove('drawn');s.innerHTML='<span style="color:#3dba7e;font-size:18px;line-height:1">+</span>';s.style.border='2px dashed #3dba7e';}
+      else if(s.classList.contains('drawn')) count++;
+    });
+    drawnExtra=count;
+  } else {
+    if(drawnExtra>=lv.change){
+      document.getElementById('fb').textContent=`⚠️ Solo necesitas dibujar ${lv.change} palotes nuevos`;
+      return;
+    }
+    // fill up to k
+    document.querySelectorAll('.add-slot-tm').forEach((s,i)=>{
+      if(i<=k){
+        s.classList.add('drawn');
+        s.innerHTML=tallyMarkSVG('#3dba7e',false);
+        s.style.border='2px solid #3dba7e';
+      }
+    });
+    drawnExtra=k+1;
+  }
+  document.getElementById('fb').textContent=`Dibujados: ${drawnExtra} de ${lv.change}`;
+}
+
+function checkAnswer(){
+  if(answered)return;
+  const lv=L();
+  const val=parseInt(document.getElementById('answer').value,10);
+  const inp=document.getElementById('answer');
+  if(isNaN(val)){document.getElementById('fb').textContent='🔢 Escribe tu respuesta';return;}
+
+  // Validate tally usage
+  if(lv.type==='resta' && crossedCount!==lv.change){
+    document.getElementById('fb').textContent=`✏️ Primero tacha exactamente ${lv.change} palotes`;
+    return;
+  }
+  if(lv.type==='suma' && drawnExtra!==lv.change){
+    document.getElementById('fb').textContent=`✏️ Primero dibuja exactamente ${lv.change} palotes nuevos`;
+    return;
+  }
+
+  if(val===lv.correct){
+    inp.classList.add('correct');
+    answered=true; score+=15; document.getElementById('sc').textContent=score;
+    const op=lv.type==='resta'?'-':'+';
+    document.getElementById('fb').innerHTML=`🎉 ¡Correcto! ${lv.start} ${op} ${lv.change} = <strong>${lv.correct}</strong>`;
+    document.getElementById('btn-next').style.display='inline-block';
+    document.getElementById('btn-next').textContent=isLast()?'🏆 Ver resultados':'Siguiente ▶';
+  } else {
+    inp.classList.add('wrong');
+    document.getElementById('fb').textContent=`😅 No es correcto — ¡cuenta bien los palotes que quedan!`;
+    setTimeout(()=>{inp.classList.remove('wrong');},900);
+  }
+}
+
+function nextLevel(){
+  if(isLast()&&answered){
+    document.getElementById('win-sub').textContent=`Completaste ${LEVELS.length} problemas con ${score} puntos 🎊`;
+    document.getElementById('win-overlay').classList.add('show');return;
+  }
+  lvl++;buildProg();buildQuestion();
+}
+
+function reset(){
+  lvl=0;score=0;answered=false;crossedCount=0;drawnExtra=0;
+  document.getElementById('sc').textContent=0;
+  document.getElementById('win-overlay').classList.remove('show');
+  buildProg();buildQuestion();
+}
+
+document.getElementById('btn-next').addEventListener('click',nextLevel);
+document.getElementById('btn-reset').addEventListener('click',reset);
+document.getElementById('btn-again').addEventListener('click',reset);
+
+reset();
+</script>
+</body>
+</html>

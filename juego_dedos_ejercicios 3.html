@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: linear-gradient(135deg,#FFF9F0,#F0EEFF); font-family: Arial, sans-serif; padding: 14px; min-height: 100vh; }
+.banner { background: linear-gradient(90deg,#a78bfa,#7c3aed); border-radius: 20px; padding: 14px 16px 10px; text-align: center; margin-bottom: 14px; box-shadow: 0 4px 16px rgba(124,58,237,0.3); }
+.banner h1 { font-size: 20px; color: #fff; }
+.banner p { font-size: 12px; color: #ede9fe; }
+.score-pill { background: linear-gradient(90deg,#fde68a,#fbbf24); border-radius: 40px; padding: 6px 20px; font-size: 14px; font-weight: bold; color: #78350f; text-align: center; width: fit-content; margin: 0 auto 12px; display: block; box-shadow: 0 2px 8px rgba(251,191,36,0.4); }
+.progreso { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; }
+.dot { width: 16px; height: 16px; border-radius: 50%; background: #ddd6fe; border: 2px solid #c4b5fd; }
+.dot.ok { background: #86efac; border-color: #22c55e; }
+.dot.fail { background: #fca5a5; border-color: #ef4444; }
+.dot.active { background: #fbbf24; border-color: #f59e0b; }
+.card { background: linear-gradient(135deg,#e0f2fe,#ddd6fe); border: 3px solid #93c5fd; border-radius: 28px; padding: 22px 20px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 16px; box-shadow: 0 6px 24px rgba(99,102,241,0.15); }
+.mano-big { font-size: 110px; line-height: 1; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.18)); user-select: none; }
+.puntos-box { background: #fff; border: 3px solid #93c5fd; border-radius: 18px; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; min-width: 110px; min-height: 62px; max-width: 160px; }
+.punto { width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle at 35% 35%,#6366f1,#1e1b4b); box-shadow: 0 2px 6px rgba(99,102,241,0.4); animation: pop .35s cubic-bezier(.36,.07,.19,.97); }
+.punto-cero { font-size: 13px; color: #94a3b8; font-style: italic; }
+@keyframes pop { 0%{transform:scale(0)} 70%{transform:scale(1.3)} 100%{transform:scale(1)} }
+.flecha { font-size: 32px; color: #7c3aed; }
+.resp-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.resp-num { font-size: 56px; font-weight: bold; background: linear-gradient(135deg,#ec4899,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; min-width: 60px; text-align: center; }
+.resp-txt { font-size: 20px; color: #4c1d95; font-style: italic; font-weight: bold; min-width: 90px; text-align: center; }
+.fase-box { background: #fff; border-radius: 22px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 16px rgba(99,102,241,0.10); border: 2px solid #e0e7ff; }
+.fase-titulo { font-size: 14px; font-weight: bold; color: #065f46; background: linear-gradient(90deg,#d1fae5,#a7f3d0); border: 2px solid #34d399; border-radius: 14px; padding: 8px 14px; text-align: center; margin-bottom: 12px; }
+.opciones-row { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.op-num { background: linear-gradient(135deg,#ede9fe,#ddd6fe); border: 3px solid #a78bfa; border-radius: 18px; padding: 14px 18px; text-align: center; cursor: pointer; transition: all .18s; min-width: 72px; box-shadow: 0 3px 10px rgba(124,58,237,.15); }
+.op-num:hover { transform: scale(1.12) translateY(-2px); border-color: #7c3aed; background: linear-gradient(135deg,#ddd6fe,#c4b5fd); }
+.op-num span { font-size: 34px; font-weight: bold; color: #3730a3; display: block; }
+.op-num.correcto { background: linear-gradient(135deg,#d1fae5,#a7f3d0); border-color: #059669; transform: scale(1.14); }
+.op-num.correcto span { color: #064e3b; }
+.op-num.incorrecto { background: linear-gradient(135deg,#fee2e2,#fecaca); border-color: #dc2626; }
+.op-num.incorrecto span { color: #7f1d1d; }
+.op-pal { background: linear-gradient(135deg,#fce7f3,#fbcfe8); border: 3px solid #f9a8d4; border-radius: 18px; padding: 14px 20px; text-align: center; cursor: pointer; transition: all .18s; font-size: 20px; font-weight: bold; color: #9d174d; box-shadow: 0 3px 10px rgba(236,72,153,.15); }
+.op-pal:hover { transform: scale(1.1) translateY(-2px); border-color: #ec4899; }
+.op-pal.correcto { background: linear-gradient(135deg,#d1fae5,#a7f3d0); border-color: #059669; color: #064e3b; transform: scale(1.12); }
+.op-pal.incorrecto { background: linear-gradient(135deg,#fee2e2,#fecaca); border-color: #dc2626; color: #7f1d1d; }
+.mensaje { min-height: 38px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 14px; padding: 8px 16px; margin: 0 auto 12px; max-width: 400px; }
+.mensaje.bien { background: linear-gradient(90deg,#d1fae5,#a7f3d0); color: #064e3b; border: 2px solid #34d399; }
+.mensaje.mal { background: linear-gradient(90deg,#fee2e2,#fecaca); color: #7f1d1d; border: 2px solid #f87171; }
+.mensaje.vacio { background: transparent; border: none; }
+.btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.btn-sig { background: linear-gradient(135deg,#7c3aed,#a78bfa); color: #fff; border: none; border-radius: 40px; padding: 11px 26px; font-size: 15px; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 4px 14px rgba(124,58,237,.4); }
+.btn-rei { background: linear-gradient(135deg,#fbbf24,#f59e0b); color: #78350f; border: none; border-radius: 40px; padding: 11px 22px; font-size: 14px; font-weight: bold; cursor: pointer; }
+.final { background: linear-gradient(135deg,#ede9fe,#ddd6fe); border: 3px solid #7c3aed; border-radius: 24px; padding: 20px; text-align: center; margin-top: 12px; }
+.final h2 { font-size: 22px; color: #3b0764; }
+.final p { font-size: 14px; color: #4c1d95; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <h1>🖐️ Representemos números con los dedos</h1>
+  <p>Mira la mano, elige el número y cómo se escribe</p>
+</div>
+<div class="progreso" id="dots"></div>
+<div class="score-pill" id="score">⭐ Puntos: 0 / 0</div>
+
+<div class="card">
+  <div class="mano-big" id="mano"></div>
+  <div class="puntos-box" id="puntos-box"></div>
+  <div class="flecha">➨</div>
+  <div class="resp-wrap">
+    <div class="resp-num" id="resp-num">?</div>
+    <div class="resp-txt" id="resp-txt">___</div>
+  </div>
+</div>
+
+<div class="fase-box" id="fase1">
+  <div class="fase-titulo">🔢 Paso 1: ¿Cuántos dedos ves?</div>
+  <div class="opciones-row" id="ops-num"></div>
+</div>
+
+<div class="fase-box" id="fase2" style="display:none">
+  <div class="fase-titulo">✏️ Paso 2: ¿Cómo se escribe?</div>
+  <div class="opciones-row" id="ops-pal"></div>
+</div>
+
+<div class="mensaje vacio" id="mensaje"></div>
+<div class="btns">
+  <button class="btn-sig" id="btn-sig" onclick="continuar()">Siguiente ➡</button>
+  <button class="btn-rei" onclick="reiniciar()">🔄 Reiniciar</button>
+</div>
+<div id="final-panel"></div>
+
+<script>
+const DATOS = {
+  0: { emoji:'✊', nombre:'cero'  },
+  1: { emoji:'☝️', nombre:'uno'   },
+  2: { emoji:'✌️', nombre:'dos'   },
+  5: { emoji:'🖐️', nombre:'cinco' },
+};
+const NUMEROS = [0,1,2,5];
+
+// 6 rondas, cada número aparece al menos una vez, variado
+const RONDAS = [
+  {n:0},{n:1},{n:2},{n:5},{n:1},{n:0}
+];
+
+let idx=0, pts=0, res=[], fase=1;
+
+function renderDots(){
+  const d=document.getElementById('dots'); d.innerHTML='';
+  RONDAS.forEach((_,i)=>{
+    const el=document.createElement('div');
+    el.className='dot'+(i<res.length?(res[i]?' ok':' fail'):(i===idx?' active':''));
+    d.appendChild(el);
+  });
+}
+
+function render(){
+  fase=1;
+  const r=RONDAS[idx];
+  const d=DATOS[r.n];
+  document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${idx}`;
+  document.getElementById('mano').textContent=d.emoji;
+  document.getElementById('puntos-box').innerHTML='';
+  document.getElementById('resp-num').textContent='?';
+  document.getElementById('resp-txt').textContent='___';
+  document.getElementById('mensaje').textContent=''; document.getElementById('mensaje').className='mensaje vacio';
+  document.getElementById('btn-sig').style.display='none';
+  document.getElementById('final-panel').innerHTML='';
+  document.getElementById('fase1').style.display='block';
+  document.getElementById('fase2').style.display='none';
+
+  const opsNum=generarOps(r.n);
+  const g1=document.getElementById('ops-num'); g1.innerHTML='';
+  opsNum.forEach(op=>{
+    const btn=document.createElement('button'); btn.className='op-num';
+    btn.innerHTML=`<span>${op}</span>`;
+    btn.onclick=()=>elegirNum(op,r.n);
+    g1.appendChild(btn);
+  });
+  renderDots();
+}
+
+function generarOps(correcto){
+  const pool=[...NUMEROS].filter(x=>x!==correcto);
+  pool.sort(()=>Math.random()-0.5);
+  return [correcto,pool[0],pool[1]].sort((a,b)=>a-b);
+}
+
+function animarPuntos(n){
+  const box=document.getElementById('puntos-box'); box.innerHTML='';
+  if(n===0){ const s=document.createElement('span'); s.className='punto-cero'; s.textContent='ninguno'; box.appendChild(s); return; }
+  for(let i=0;i<n;i++) setTimeout(()=>{ const p=document.createElement('div'); p.className='punto'; box.appendChild(p); },i*180);
+}
+
+function elegirNum(val,correcto){
+  document.querySelectorAll('.op-num').forEach(b=>{
+    const nv=parseInt(b.querySelector('span').textContent);
+    if(nv===correcto) b.classList.add('correcto');
+    else if(nv===val&&val!==correcto) b.classList.add('incorrecto');
+    b.style.pointerEvents='none';
+  });
+  animarPuntos(correcto);
+  document.getElementById('resp-num').textContent=correcto;
+  const msg=document.getElementById('mensaje');
+  if(val===correcto){ msg.textContent=`🎉 ¡Correcto! Son ${correcto} dedos`; msg.className='mensaje bien'; }
+  else { msg.textContent=`😊 Eran ${correcto}. ¡Mira el verde!`; msg.className='mensaje mal'; }
+  setTimeout(()=>{ document.getElementById('mensaje').textContent=''; document.getElementById('mensaje').className='mensaje vacio'; mostrarFase2(); },1200);
+}
+
+function mostrarFase2(){
+  fase=2;
+  const r=RONDAS[idx];
+  document.getElementById('fase2').style.display='block';
+  const opsPal=generarOpsPal(r.n);
+  const g2=document.getElementById('ops-pal'); g2.innerHTML='';
+  opsPal.forEach(op=>{
+    const btn=document.createElement('button'); btn.className='op-pal';
+    btn.textContent=DATOS[op].nombre;
+    btn.onclick=()=>elegirNombre(op,r.n);
+    g2.appendChild(btn);
+  });
+}
+
+function generarOpsPal(correcto){
+  const pool=[...NUMEROS].filter(x=>x!==correcto);
+  pool.sort(()=>Math.random()-0.5);
+  return [correcto,pool[0],pool[1]].sort((a,b)=>a-b);
+}
+
+function elegirNombre(val,correcto){
+  document.querySelectorAll('.op-pal').forEach(b=>{
+    if(b.textContent===DATOS[correcto].nombre) b.classList.add('correcto');
+    else if(b.textContent===DATOS[val].nombre&&val!==correcto) b.classList.add('incorrecto');
+    b.style.pointerEvents='none';
+  });
+  document.getElementById('resp-txt').textContent=DATOS[correcto].nombre;
+  const msg=document.getElementById('mensaje');
+  if(val===correcto){ msg.textContent=`🏆 ¡Perfecto! ${correcto} = ${DATOS[correcto].nombre}`; msg.className='mensaje bien'; pts++; res.push(true); }
+  else { msg.textContent=`😊 Era "${DATOS[correcto].nombre}". ¡Mira el verde!`; msg.className='mensaje mal'; res.push(false); }
+  document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${idx+1}`;
+  renderDots();
+  if(idx<RONDAS.length-1) document.getElementById('btn-sig').style.display='inline-block';
+  else {
+    const stars=pts>=5?'🏆🌟🌟🌟':pts>=4?'🎊🌟🌟':'😊🌟';
+    document.getElementById('final-panel').innerHTML=`<div class="final">
+      <div style="font-size:38px;margin:8px 0">${stars}</div>
+      <h2>¡Terminaste!</h2>
+      <p>Obtuviste <strong>${pts}</strong> de <strong>${RONDAS.length}</strong> puntos</p>
+      <p style="margin-top:8px;font-size:13px;color:#534AB7">${pts===RONDAS.length?'¡Perfecto! Eres un campeón 🏆':pts>=4?'¡Muy bien!':'¡Sigue practicando!'}</p>
+    </div>`;
+  }
+}
+
+function continuar(){ idx++; if(idx<RONDAS.length) render(); }
+function reiniciar(){ idx=0; pts=0; res=[]; render(); }
+render();
+</script>
+</body>
+</html>

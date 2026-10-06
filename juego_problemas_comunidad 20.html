@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html><head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;padding:14px;min-height:100vh;background:linear-gradient(135deg,#FFF9F0,#F0EEFF)}
+.banner{background:linear-gradient(135deg,#f59e0b,#ef4444);border-radius:24px;padding:16px 20px 12px;text-align:center;margin-bottom:16px;box-shadow:0 4px 16px rgba(245,158,11,.35)}
+.banner h1{font-size:21px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.2)}
+.banner p{font-size:12px;color:rgba(255,255,255,.9);margin-top:4px}
+.score-pill{background:linear-gradient(90deg,#fde68a,#fbbf24);border-radius:40px;padding:6px 22px;font-size:15px;font-weight:bold;color:#78350f;text-align:center;width:fit-content;margin:0 auto 14px;display:block;box-shadow:0 3px 10px rgba(251,191,36,.4)}
+.progreso{display:flex;justify-content:center;gap:8px;margin-bottom:14px}
+.dot{width:14px;height:14px;border-radius:50%;background:#ddd6fe;border:2px solid #c4b5fd;transition:all .3s}
+.dot.ok{background:#86efac;border-color:#22c55e}
+.dot.fail{background:#fca5a5;border-color:#ef4444}
+.dot.act{background:#fbbf24;border-color:#f59e0b}
+
+.card{border-radius:28px;padding:22px 18px;margin-bottom:14px}
+.c1{background:linear-gradient(135deg,#fce7f3,#ede9fe);border:3px solid #f9a8d4}
+.c2{background:linear-gradient(135deg,#d1fae5,#dbeafe);border:3px solid #6ee7b7}
+.c3{background:linear-gradient(135deg,#fef3c7,#fee2e2);border:3px solid #fbbf24}
+.c4{background:linear-gradient(135deg,#cffafe,#e0e7ff);border:3px solid #67e8f9}
+.c5{background:linear-gradient(135deg,#ecfccb,#ffedd5);border:3px solid #a3e635}
+.c6{background:linear-gradient(135deg,#fce7f3,#fef3c7);border:3px solid #f472b6}
+.titulo-card{font-size:13px;font-weight:bold;margin-bottom:12px;padding:6px 16px;border-radius:40px;display:inline-block}
+.t1{background:#fdf4ff;color:#7e22ce}
+.t2{background:#ecfdf5;color:#065f46}
+.t3{background:#fffbeb;color:#92400e}
+.t4{background:#ecfeff;color:#164e63}
+.t5{background:#f7fee7;color:#3f6212}
+.t6{background:#fdf2f8;color:#9d174d}
+
+/* Ilustración emoji grande */
+.ilustracion{font-size:48px;text-align:center;margin-bottom:10px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.15))}
+
+/* Problema */
+.problema{background:#fff;border-radius:18px;padding:14px 16px;margin-bottom:14px;line-height:1.9;font-size:16px;font-weight:bold}
+.p1{border:2px solid #f9a8d4;color:#6d28d9}
+.p2{border:2px solid #6ee7b7;color:#065f46}
+.p3{border:2px solid #fbbf24;color:#92400e}
+.p4{border:2px solid #67e8f9;color:#164e63}
+.p5{border:2px solid #a3e635;color:#3f6212}
+.p6{border:2px solid #f472b6;color:#9d174d}
+.num-badge{display:inline-block;background:linear-gradient(135deg,#e879f9,#a855f7);color:#fff;border-radius:50%;width:32px;height:32px;text-align:center;line-height:32px;font-size:16px;font-weight:900;margin:0 2px;vertical-align:middle}
+.nb2{background:linear-gradient(135deg,#34d399,#3b82f6)}
+.nb3{background:linear-gradient(135deg,#fbbf24,#ef4444)}
+.nb4{background:linear-gradient(135deg,#22d3ee,#6366f1)}
+.nb5{background:linear-gradient(135deg,#a3e635,#f97316)}
+.nb6{background:linear-gradient(135deg,#f472b6,#a855f7)}
+
+/* Operación visual */
+.operacion{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.op-box{background:#fff;border-radius:14px;padding:10px 14px;font-size:20px;font-weight:900;border:2.5px solid}
+.op-signo{font-size:24px;font-weight:900;color:#6366f1}
+.op-result{font-size:20px;font-weight:900;background:linear-gradient(135deg,#fde68a,#fbbf24);border:2.5px solid #f59e0b;border-radius:14px;padding:10px 18px;color:#78350f}
+
+/* Opciones */
+.pregunta{font-size:16px;font-weight:bold;text-align:center;margin-bottom:12px;padding:10px 14px;border-radius:14px;background:#fff}
+.opciones{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.opcion{padding:13px 10px;border-radius:18px;font-size:19px;font-weight:bold;cursor:pointer;text-align:center;border:3px solid transparent;transition:all .18s}
+.o1{background:#fdf4ff;border-color:#d946ef;color:#7e22ce}
+.o1:hover{background:#fae8ff;transform:scale(1.06)}
+.o1.sel{background:#e879f9;color:#fff;border-color:#a21caf}
+.o2{background:#ecfdf5;border-color:#10b981;color:#065f46}
+.o2:hover{background:#d1fae5;transform:scale(1.06)}
+.o2.sel{background:#34d399;color:#fff;border-color:#059669}
+.o3{background:#fffbeb;border-color:#f59e0b;color:#92400e}
+.o3:hover{background:#fef3c7;transform:scale(1.06)}
+.o3.sel{background:#fbbf24;color:#fff;border-color:#d97706}
+.o4{background:#ecfeff;border-color:#06b6d4;color:#164e63}
+.o4:hover{background:#cffafe;transform:scale(1.06)}
+.o4.sel{background:#22d3ee;color:#fff;border-color:#0891b2}
+.o5{background:#f7fee7;border-color:#84cc16;color:#3f6212}
+.o5:hover{background:#ecfccb;transform:scale(1.06)}
+.o5.sel{background:#a3e635;color:#fff;border-color:#65a30d}
+.o6{background:#fdf2f8;border-color:#ec4899;color:#9d174d}
+.o6:hover{background:#fce7f3;transform:scale(1.06)}
+.o6.sel{background:#f472b6;color:#fff;border-color:#db2777}
+.opcion.ok{background:linear-gradient(135deg,#d1fae5,#a7f3d0)!important;border-color:#059669!important;color:#064e3b!important;transform:scale(1.08)!important}
+.opcion.fail{background:linear-gradient(135deg,#fee2e2,#fecaca)!important;border-color:#dc2626!important;color:#7f1d1d!important}
+
+.btn-check{display:block;margin:0 auto 10px;padding:12px 30px;border:none;border-radius:40px;font-size:16px;font-weight:bold;cursor:pointer;color:#fff;transition:all .18s}
+.bc1{background:linear-gradient(135deg,#e879f9,#a855f7);box-shadow:0 4px 14px rgba(168,85,247,.4)}
+.bc2{background:linear-gradient(135deg,#34d399,#3b82f6);box-shadow:0 4px 14px rgba(59,130,246,.4)}
+.bc3{background:linear-gradient(135deg,#fbbf24,#ef4444);box-shadow:0 4px 14px rgba(239,68,68,.4)}
+.bc4{background:linear-gradient(135deg,#22d3ee,#6366f1);box-shadow:0 4px 14px rgba(99,102,241,.4)}
+.bc5{background:linear-gradient(135deg,#a3e635,#f97316);box-shadow:0 4px 14px rgba(249,115,22,.4)}
+.bc6{background:linear-gradient(135deg,#f472b6,#a855f7);box-shadow:0 4px 14px rgba(244,114,182,.4)}
+.btn-check:hover{transform:scale(1.05)}
+.msg{text-align:center;font-size:17px;font-weight:bold;min-height:26px;margin-bottom:10px}
+.msg.bien{color:#059669}.msg.mal{color:#dc2626}
+.resp-final{border-radius:16px;padding:12px;text-align:center;font-size:15px;font-weight:bold;margin-bottom:12px;display:none;background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:2.5px solid #34d399;color:#065f46}
+.btn-sig{display:none;margin:0 auto;padding:12px 32px;border:none;border-radius:40px;font-size:16px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 4px 14px rgba(99,102,241,.4)}
+.btn-sig:hover{transform:scale(1.05)}
+.final-box{background:linear-gradient(135deg,#ede9fe,#fce7f3);border:3px solid #a78bfa;border-radius:24px;padding:22px;text-align:center;margin-top:12px}
+.final-box h2{font-size:22px;color:#4c1d95}.final-box p{font-size:15px;color:#6d28d9;margin-top:8px}
+</style>
+</head><body>
+
+<div class="banner">
+  <h1>🧮 Problemas de la comunidad</h1>
+  <p>Lee, piensa y elige la respuesta correcta</p>
+</div>
+<div class="score-pill" id="score">⭐ Puntos: 0 / 0</div>
+<div class="progreso" id="dots"></div>
+<div id="contenido"></div>
+<button class="btn-sig" id="btn-sig" onclick="sigRonda()">Siguiente ➡️</button>
+<div id="final-panel"></div>
+
+<script>
+function nb(n, c=1){
+  const cls=['','','nb2','nb3','nb4','nb5','nb6'];
+  return `<span class="num-badge ${cls[c]||''}">${n}</span>`;
+}
+
+const RONDAS=[
+  {
+    cl:'1', icono:'🪡👒',
+    titulo:'Problema 1 — Tejiendo juntos',
+    enunciado:`Él teje ${nb(32,1)} 👒 y ella ${nb(5,1)} 👒.<br>¿Cuántos 👒 tejen entre ambos?`,
+    operacion:{a:32, op:'+', b:5, tipo:'suma'},
+    correcto:37,
+    ops:[34,37,40,27],
+    pregunta:'¿Cuántos 👒 tejen entre ambos?',
+    respuesta:`Entre los dos tejen <strong>37 👒</strong> en total. (32 + 5 = 37)`
+  },
+  {
+    cl:'2', icono:'🍌🌿',
+    titulo:'Problema 2 — Recogiendo bananos',
+    enunciado:`Recogen ${nb(25,2)} 🍌 y cortan ${nb(38,2)} 🍌 más.<br>¿Cuántos 🍌 cortan entre ambos?`,
+    operacion:{a:25, op:'+', b:38, tipo:'suma'},
+    correcto:63,
+    ops:[53,60,63,70],
+    pregunta:'¿Cuántos 🍌 cortan entre ambos?',
+    respuesta:`Entre los dos cortan <strong>63 🍌</strong>. (25 + 38 = 63)`
+  },
+  {
+    cl:'3', icono:'🧵👗',
+    titulo:'Problema 3 — Cosiendo ropa',
+    enunciado:`Necesita coser ${nb(45,3)} 👗 y ya cosió ${nb(23,3)} 👗.<br>¿Cuántas 👗 le faltan por coser?`,
+    operacion:{a:45, op:'−', b:23, tipo:'resta'},
+    correcto:22,
+    ops:[18,22,25,30],
+    pregunta:'¿Cuántas 👗 le faltan por coser?',
+    respuesta:`Le faltan <strong>22 👗</strong> por coser. (45 − 23 = 22)`
+  },
+  {
+    cl:'4', icono:'🪑🏠',
+    titulo:'Problema 4 — Salón comunal',
+    enunciado:`En el salón hay ${nb(42,4)} 🪑.<br>Van a asistir ${nb(58,4)} 🧍.<br>¿Cuántas 🧍 quedarán paradas?`,
+    operacion:{a:58, op:'−', b:42, tipo:'resta'},
+    correcto:16,
+    ops:[12,16,20,24],
+    pregunta:'¿Cuántas personas quedarán paradas?',
+    respuesta:`Quedarán paradas <strong>16 🧍</strong>. (58 − 42 = 16)`
+  },
+  {
+    cl:'5', icono:'🚛👥',
+    titulo:'Problema 5 — El camión del pueblo',
+    enunciado:`Cuando el 🚛 salió había ${nb(34,5)} 🧍.<br>Se han bajado ${nb(18,5)} 🧍.<br>¿Cuántas 🧍 quedan en el 🚛?`,
+    operacion:{a:34, op:'−', b:18, tipo:'resta'},
+    correcto:16,
+    ops:[14,16,18,20],
+    pregunta:'¿Cuántas personas quedan en el 🚛?',
+    respuesta:`Quedan <strong>16 🧍</strong> en el camión. (34 − 18 = 16)`
+  },
+  {
+    cl:'6', icono:'🐄🌾',
+    titulo:'Problema 6 — Marcando el ganado',
+    enunciado:`Ramón tiene que marcar ${nb(32,6)} 🐄.<br>Ya marcó ${nb(14,6)} 🐄.<br>¿Cuántas 🐄 le faltan por marcar?`,
+    operacion:{a:32, op:'−', b:14, tipo:'resta'},
+    correcto:18,
+    ops:[14,16,18,20],
+    pregunta:'¿Cuántas 🐄 le faltan por marcar?',
+    respuesta:`Le faltan <strong>18 🐄</strong> por marcar. (32 − 14 = 18)`
+  },
+  {
+    cl:'1', icono:'🪑👥',
+    titulo:'Problema 7 — Las sillas paradas',
+    enunciado:`Hay ${nb(32,1)} 🪑 y ${nb(8,1)} 🧍.<br>¿Cuántas 🪑 se quedan sin usar?`,
+    operacion:{a:32, op:'−', b:8, tipo:'resta'},
+    correcto:24,
+    ops:[20,22,24,26],
+    pregunta:'¿Cuántas 🪑 se quedan sin usar?',
+    respuesta:`Se quedan sin usar <strong>24 🪑</strong>. (32 − 8 = 24)`
+  },
+];
+
+let rondaIdx=0, pts=0, respondido=false, respuesta=null;
+
+function renderDots(){
+  const d=document.getElementById('dots'); d.innerHTML='';
+  RONDAS.forEach((_,i)=>{
+    const el=document.createElement('div');
+    el.className='dot'+(i<rondaIdx?' ok':i===rondaIdx?' act':'');
+    d.appendChild(el);
+  });
+}
+
+function renderRonda(){
+  respondido=false; respuesta=null;
+  const r=RONDAS[rondaIdx];
+  const cl=r.cl;
+  document.getElementById('btn-sig').style.display='none';
+  document.getElementById('final-panel').innerHTML='';
+  document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${rondaIdx}`;
+  renderDots();
+
+  let opsHtml='';
+  r.ops.forEach(op=>{
+    opsHtml+=`<button class="opcion o${cl}" data-val="${op}" onclick="selOp(this)">${op}</button>`;
+  });
+
+  const opColor=['','#e879f9','#34d399','#fbbf24','#22d3ee','#a3e635','#f472b6'];
+  const opBorder=['','#a21caf','#059669','#d97706','#0891b2','#65a30d','#db2777'];
+
+  document.getElementById('contenido').innerHTML=`
+  <div class="card c${cl}">
+    <div class="titulo-card t${cl}">${r.titulo}</div>
+    <div class="ilustracion">${r.icono}</div>
+    <div class="problema p${cl}">${r.enunciado}</div>
+
+    <div class="operacion">
+      <div class="op-box" style="border-color:${opBorder[cl]};color:${opColor[cl]}">${r.operacion.a}</div>
+      <div class="op-signo">${r.operacion.op}</div>
+      <div class="op-box" style="border-color:${opBorder[cl]};color:${opColor[cl]}">${r.operacion.b}</div>
+      <div class="op-signo">=</div>
+      <div class="op-result">?</div>
+    </div>
+
+    <div class="pregunta p${cl}">🤔 ${r.pregunta}</div>
+    <div class="opciones">${opsHtml}</div>
+    <button class="btn-check bc${cl}" onclick="comprobar(${r.correcto})">✅ Comprobar</button>
+    <div class="msg" id="msg"></div>
+    <div class="resp-final" id="resp-final">✅ ${r.respuesta}</div>
+  </div>`;
+}
+
+function selOp(btn){
+  if(respondido) return;
+  document.querySelectorAll('.opcion').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  respuesta=parseInt(btn.dataset.val);
+  // Mostrar en caja resultado
+  document.querySelector('.op-result').textContent=respuesta;
+}
+
+function comprobar(correcto){
+  if(respuesta===null){document.getElementById('msg').textContent='👆 Elige una respuesta primero'; return;}
+  if(respondido) return;
+  respondido=true;
+  const ok=respuesta===correcto;
+  document.querySelectorAll('.opcion').forEach(b=>{
+    if(parseInt(b.dataset.val)===correcto) b.classList.add('ok');
+    else if(b.classList.contains('sel')) b.classList.add('fail');
+    b.style.pointerEvents='none';
+  });
+  document.querySelector('.op-result').textContent=correcto;
+  document.querySelector('.op-result').style.background='linear-gradient(135deg,#d1fae5,#a7f3d0)';
+  document.querySelector('.op-result').style.borderColor='#059669';
+  document.querySelector('.op-result').style.color='#064e3b';
+  const msg=document.getElementById('msg');
+  if(ok){
+    msg.textContent='🎉 ¡Perfecto! ¡Correcto!'; msg.className='msg bien';
+    pts++; document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${rondaIdx+1}`;
+  }else{
+    msg.textContent='😊 ¡Casi! Mira la respuesta correcta'; msg.className='msg mal';
+  }
+  document.getElementById('resp-final').style.display='block';
+  renderDots();
+  if(rondaIdx<RONDAS.length-1){
+    document.getElementById('btn-sig').style.display='block';
+  }else{
+    const stars=pts>=6?'🏆🌟🌟🌟':pts>=5?'🎊🌟🌟':pts>=4?'😊🌟':'💪';
+    document.getElementById('final-panel').innerHTML=`<div class="final-box">
+      <div style="font-size:42px;margin:8px 0">${stars}</div>
+      <h2>¡Terminaste!</h2>
+      <p>Obtuviste <strong>${pts}</strong> de <strong>${RONDAS.length}</strong> puntos</p>
+      <p style="margin-top:8px;font-size:13px">${pts===RONDAS.length?'¡Perfecto campeón! 🏆':pts>=5?'¡Muy bien!':'¡Sigue practicando!'}</p>
+      <button onclick="rondaIdx=0;pts=0;renderRonda()" style="margin-top:14px;padding:12px 28px;border:none;border-radius:40px;font-size:15px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff">🔄 Jugar de nuevo</button>
+    </div>`;
+  }
+}
+
+function sigRonda(){rondaIdx++; renderRonda();}
+renderRonda();
+</script>
+</body></html>

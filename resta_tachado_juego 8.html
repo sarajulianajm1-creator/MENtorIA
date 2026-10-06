@@ -1,0 +1,241 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',sans-serif;background:#fdf6ec;}
+#wrap{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;overflow:hidden;max-width:680px;margin:0 auto;padding-bottom:22px;}
+.header{background:#c5b8f8;padding:14px 20px 12px;text-align:center;}
+.header h1{font-size:22px;font-weight:800;color:#3a2a7a;}
+.header p{font-size:13px;color:#5a4aa0;margin-top:3px;}
+.progress-row{display:flex;justify-content:center;gap:10px;padding:12px 0 4px;}
+.dp{width:14px;height:14px;border-radius:50%;background:#e0d9f9;border:2px solid #c5b8f8;}
+.dp.done{background:#f5c842;border-color:#d4a000;}
+.dp.current{background:#ff8fd8;border-color:#e060b0;}
+.score-row{text-align:center;margin:4px 0 10px;}
+.score-pill{display:inline-block;background:#fff;border:2px solid #c5b8f8;border-radius:30px;padding:4px 20px;font-size:14px;font-weight:700;color:#3a2a7a;}
+
+.qbox{margin:0 16px 12px;background:#e6f9f1;border:2.5px solid #3dba7e;border-radius:20px;padding:16px 18px;}
+.qtext{font-size:16px;font-weight:700;color:#1a7a50;text-align:center;line-height:1.5;margin-bottom:14px;}
+.qtext .num{color:#a0207a;font-weight:900;}
+
+.items-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:6px;}
+.item{
+  width:54px;height:54px;border-radius:14px;background:#fff;
+  border:2.5px solid #b8aef0;display:flex;align-items:center;justify-content:center;
+  font-size:28px;cursor:pointer;position:relative;user-select:none;
+  transition:transform 0.12s,border-color 0.12s,background 0.12s;
+}
+.item:hover{transform:scale(1.08);}
+.item.crossed{background:#fde8e8;border-color:#e05050;}
+.item.crossed::after{
+  content:'';position:absolute;left:6px;right:6px;top:50%;height:3px;
+  background:#e05050;transform:rotate(-30deg);border-radius:2px;
+}
+
+.instruction{text-align:center;font-size:13px;color:#5a4aa0;font-weight:600;margin-bottom:10px;}
+
+.answer-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.answer-label{font-size:15px;font-weight:700;color:#3a2a7a;}
+.answer-input{
+  width:64px;height:48px;border-radius:12px;border:2.5px solid #b8aef0;
+  text-align:center;font-size:22px;font-weight:800;color:#3a2a7a;background:#fff;
+}
+.answer-input:focus{outline:none;border-color:#f5c842;}
+.btn-check{
+  border:none;border-radius:30px;padding:10px 26px;font-size:14px;font-weight:800;
+  cursor:pointer;background:#3dba7e;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+.btn-check:active{transform:scale(0.96);}
+
+.fb{text-align:center;min-height:30px;font-size:15px;font-weight:700;color:#3a2a7a;margin:10px 0 2px;}
+
+.btn-row{text-align:center;margin-top:8px;display:flex;justify-content:center;gap:10px;}
+.btn{border:none;border-radius:30px;padding:10px 26px;font-size:14px;font-weight:800;cursor:pointer;}
+.btn-reset{background:#f5c842;color:#3a2a7a;}
+.btn-next{background:#a87cf5;color:#fff;display:none;}
+
+.win-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:50;align-items:center;justify-content:center;}
+.win-overlay.show{display:flex;}
+.win-box{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;padding:32px 28px;text-align:center;max-width:340px;width:90%;}
+.win-trophy{font-size:68px;animation:tbounce 0.7s infinite alternate;}
+@keyframes tbounce{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+.win-title{font-size:26px;font-weight:900;color:#3a2a7a;margin:10px 0 4px;}
+.win-sub{font-size:14px;color:#5a4aa0;font-weight:600;margin-bottom:16px;}
+.btn-again{background:linear-gradient(135deg,#a87cf5,#3dba7e);color:#fff;border:none;border-radius:30px;padding:12px 32px;font-size:16px;font-weight:800;cursor:pointer;}
+</style>
+
+<div id="wrap">
+  <div class="header">
+    <h1>✏️ Tacha y Resuelve</h1>
+    <p>Toca los elementos que se quitan y resuelve la resta</p>
+  </div>
+  <div class="progress-row" id="prog"></div>
+  <div class="score-row"><div class="score-pill">⭐ Puntos: <span id="sc">0</span></div></div>
+
+  <div class="qbox">
+    <div class="qtext" id="qtext"></div>
+    <div class="instruction" id="instruction"></div>
+    <div class="items-grid" id="grid"></div>
+    <div class="answer-row">
+      <span class="answer-label">¿Cuántos quedan?</span>
+      <input type="number" class="answer-input" id="answer" min="0" max="20">
+      <button class="btn-check" id="btn-check">✅ Comprobar</button>
+    </div>
+  </div>
+
+  <div class="fb" id="fb"></div>
+  <div class="btn-row">
+    <button class="btn btn-reset" id="btn-reset">🔄 Reiniciar</button>
+    <button class="btn btn-next" id="btn-next">Siguiente ▶</button>
+  </div>
+</div>
+
+<div class="win-overlay" id="win-overlay">
+  <div class="win-box">
+    <div class="win-trophy">🏆</div>
+    <div class="win-title">¡Felicitaciones!</div>
+    <div class="win-sub" id="win-sub">Resolviste todos los problemas</div>
+    <button class="btn-again" id="btn-again">🔄 Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+const LEVELS = [
+  {
+    total: 8, remove: 2, emoji: "🚴",
+    text: "8 🚴 montan en sus 🚲. 2 se bajan. ¿Cuántos siguen montados?",
+  },
+  {
+    total: 7, remove: 3, emoji: "🌳",
+    text: "El jardinero va a podar 7 🌳. Ya podó 3. ¿Cuántos le quedan por podar?",
+  },
+  {
+    total: 10, remove: 4, emoji: "🐦",
+    text: "10 🐦 están en el árbol. 4 vuelan lejos. ¿Cuántos quedan en el árbol?",
+  },
+  {
+    total: 9, remove: 5, emoji: "🍎",
+    text: "Hay 9 🍎 en la canasta. Se comen 5. ¿Cuántas manzanas quedan?",
+  },
+  {
+    total: 6, remove: 2, emoji: "🐶",
+    text: "6 🐶 juegan en el parque. 2 se van a casa. ¿Cuántos perritos quedan?",
+  }
+];
+
+let lvl = 0, score = 0, crossedCount = 0, answered = false;
+
+const L = () => LEVELS[lvl % LEVELS.length];
+const isLast = () => lvl === LEVELS.length - 1;
+
+function buildProg() {
+  const r = document.getElementById('prog');
+  r.innerHTML = '';
+  LEVELS.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dp' + (i < lvl ? ' done' : i === lvl ? ' current' : '');
+    r.appendChild(d);
+  });
+}
+
+function buildLevel() {
+  const lv = L();
+  document.getElementById('qtext').innerHTML = lv.text.replace(
+    /(\d+)/g, '<span class="num">$1</span>'
+  );
+  document.getElementById('instruction').innerHTML =
+    `👆 Toca <strong>${lv.remove}</strong> elementos para tacharlos (marcar con /)`;
+
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  crossedCount = 0;
+  for (let i = 0; i < lv.total; i++) {
+    const it = document.createElement('div');
+    it.className = 'item';
+    it.textContent = lv.emoji;
+    it.dataset.crossed = '0';
+    it.addEventListener('click', () => toggleItem(it));
+    grid.appendChild(it);
+  }
+  document.getElementById('answer').value = '';
+  document.getElementById('fb').textContent = '';
+  document.getElementById('btn-next').style.display = 'none';
+  answered = false;
+}
+
+function toggleItem(el) {
+  if (answered) return;
+  const lv = L();
+  const isCrossed = el.dataset.crossed === '1';
+  if (isCrossed) {
+    el.dataset.crossed = '0';
+    el.classList.remove('crossed');
+    crossedCount--;
+  } else {
+    if (crossedCount >= lv.remove) {
+      document.getElementById('fb').textContent = `⚠️ Solo debes tachar ${lv.remove} elementos`;
+      return;
+    }
+    el.dataset.crossed = '1';
+    el.classList.add('crossed');
+    crossedCount++;
+  }
+  document.getElementById('instruction').innerHTML =
+    `👆 Tachados: <strong>${crossedCount}</strong> de <strong>${lv.remove}</strong>`;
+  document.getElementById('fb').textContent = '';
+}
+
+function checkAnswer() {
+  if (answered) return;
+  const lv = L();
+  const val = parseInt(document.getElementById('answer').value, 10);
+  const correctAnswer = lv.total - lv.remove;
+
+  if (crossedCount !== lv.remove) {
+    document.getElementById('fb').textContent = `✏️ Primero tacha ${lv.remove} elementos`;
+    return;
+  }
+  if (isNaN(val)) {
+    document.getElementById('fb').textContent = '🔢 Escribe un número en la casilla';
+    return;
+  }
+
+  if (val === correctAnswer) {
+    answered = true;
+    score += 20;
+    document.getElementById('sc').textContent = score;
+    document.getElementById('fb').innerHTML = `🎉 ¡Correcto! ${lv.total} - ${lv.remove} = <strong>${correctAnswer}</strong>`;
+    document.getElementById('btn-next').style.display = 'inline-block';
+    document.getElementById('btn-next').textContent = isLast() ? '🏆 Ver resultados' : 'Siguiente ▶';
+  } else {
+    document.getElementById('fb').textContent = '😅 ¡Casi! Cuenta de nuevo los que NO están tachados';
+  }
+}
+
+function nextLevel() {
+  if (isLast() && answered) {
+    document.getElementById('win-sub').textContent = `Resolviste ${LEVELS.length} problemas con ${score} puntos`;
+    document.getElementById('win-overlay').classList.add('show');
+    return;
+  }
+  lvl++;
+  buildProg();
+  buildLevel();
+}
+
+function reset() {
+  lvl = 0; score = 0;
+  document.getElementById('sc').textContent = 0;
+  document.getElementById('win-overlay').classList.remove('show');
+  buildProg();
+  buildLevel();
+}
+
+document.getElementById('btn-check').addEventListener('click', checkAnswer);
+document.getElementById('answer').addEventListener('keypress', e => { if (e.key === 'Enter') checkAnswer(); });
+document.getElementById('btn-next').addEventListener('click', nextLevel);
+document.getElementById('btn-reset').addEventListener('click', reset);
+document.getElementById('btn-again').addEventListener('click', reset);
+
+buildProg();
+buildLevel();
+</script>

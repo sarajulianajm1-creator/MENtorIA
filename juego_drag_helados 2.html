@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #FFF9F0; font-family: Arial, sans-serif; padding: 16px; }
+.banner { background: #CECBF6; border-radius: 20px; padding: 12px 16px 8px; text-align: center; border: 3px solid #7F77DD; margin-bottom: 14px; }
+.banner h1 { font-size: 22px; color: #26215C; }
+.banner p { font-size: 13px; color: #534AB7; }
+.score-pill { background: #EEEDFE; border: 2px solid #7F77DD; border-radius: 40px; padding: 5px 18px; font-size: 14px; font-weight: bold; color: #3C3489; text-align: center; width: fit-content; margin: 0 auto 10px; display: block; }
+.instruccion { background: #E1F5EE; border: 2px solid #1D9E75; border-radius: 14px; padding: 10px 14px; text-align: center; margin-bottom: 10px; font-size: 15px; color: #085041; font-weight: bold; }
+.fase-label { text-align: center; font-size: 13px; color: #534AB7; font-weight: bold; margin-bottom: 10px; background: #EEEDFE; border-radius: 10px; padding: 5px 12px; display: inline-block; width: 100%; }
+
+/* Zona principal */
+.escenario { background: #E6F1FB; border: 3px solid #378ADD; border-radius: 20px; padding: 14px; margin-bottom: 12px; position: relative; min-height: 200px; }
+.zonas { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; }
+.zona-ninos, .zona-helados { flex: 1; }
+.zona-titulo { font-size: 12px; font-weight: bold; color: #185FA5; text-align: center; margin-bottom: 8px; background: #B5D4F4; border-radius: 8px; padding: 4px; }
+.ninos-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.helados-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+/* Niño */
+.nino-slot {
+  width: 64px; height: 76px;
+  background: #fff;
+  border: 3px dashed #378ADD;
+  border-radius: 16px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative; font-size: 30px;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.nino-slot.over { border-color: #1D9E75; background: #E1F5EE; transform: scale(1.1); border-style: solid; }
+.nino-slot.done { border-color: #97C459; border-style: solid; background: #EAF3DE; }
+.nino-obj { position: absolute; top: -10px; right: -8px; font-size: 20px; animation: pop 0.3s; }
+@keyframes pop { 0%{transform:scale(0)} 60%{transform:scale(1.4)} 100%{transform:scale(1)} }
+
+/* Helado arrastrable */
+.helado-item {
+  width: 54px; height: 54px;
+  background: #FFF0F3;
+  border: 2px solid #ED93B1;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  cursor: grab;
+  transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+  user-select: none;
+}
+.helado-item:hover { transform: scale(1.15); box-shadow: 0 4px 12px rgba(212,83,126,0.3); }
+.helado-item.dragging { opacity: 0.4; cursor: grabbing; transform: scale(0.9); }
+.helado-item.usado { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
+
+/* Opciones */
+.opciones-wrap { background: #FFF0F3; border: 3px solid #D4537E; border-radius: 18px; padding: 14px; margin-bottom: 12px; display: none; }
+.opciones-titulo { font-size: 15px; font-weight: bold; color: #72243E; text-align: center; margin-bottom: 10px; }
+.opciones-grid { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.opcion-btn { background: #fff; border: 3px solid #ED93B1; border-radius: 16px; padding: 14px 22px; font-size: 26px; font-weight: bold; color: #72243E; cursor: pointer; transition: all 0.15s; min-width: 75px; text-align: center; }
+.opcion-btn:hover { background: #FBEAF0; transform: scale(1.1); border-color: #D4537E; }
+.opcion-btn.correcto { background: #EAF3DE; border-color: #3B6D11; color: #27500A; transform: scale(1.12); }
+.opcion-btn.incorrecto { background: #FCEBEB; border-color: #A32D2D; color: #791F1F; }
+
+.mensaje { min-height: 34px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 14px; padding: 7px 14px; margin: 0 auto 12px; max-width: 360px; }
+.mensaje.bien { background: #EAF3DE; color: #27500A; border: 2px solid #97C459; }
+.mensaje.mal { background: #FCEBEB; color: #791F1F; border: 2px solid #F09595; }
+.mensaje.vacio { background: transparent; border: none; }
+.btns { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.btn-sig { background: #7F77DD; color: #fff; border: none; border-radius: 40px; padding: 10px 24px; font-size: 15px; font-weight: bold; cursor: pointer; display: none; }
+.btn-rei { background: #FAC775; color: #412402; border: none; border-radius: 40px; padding: 10px 20px; font-size: 14px; font-weight: bold; cursor: pointer; }
+.final { background: #CECBF6; border: 3px solid #7F77DD; border-radius: 20px; padding: 18px; text-align: center; margin-top: 10px; }
+.final h2 { font-size: 22px; color: #26215C; }
+.final p { font-size: 14px; color: #3C3489; margin-top: 6px; }
+
+/* Fantasma de arrastre */
+#drag-ghost { position: fixed; pointer-events: none; font-size: 36px; z-index: 9999; display: none; transform: translate(-50%, -50%); }
+
+.progreso { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }
+.dot { width: 16px; height: 16px; border-radius: 50%; background: #D3D1C7; border: 2px solid #B4B2A9; }
+.dot.ok { background: #97C459; border-color: #3B6D11; }
+.dot.fail { background: #F09595; border-color: #A32D2D; }
+.dot.active { background: #FAC775; border-color: #BA7517; }
+</style>
+</head>
+<body>
+
+<div id="drag-ghost"></div>
+
+<div class="banner">
+  <h1>🍦 ¡Arrastra el helado al niño! 🧍</h1>
+  <p>Arrastra cada helado y suéltalo sobre un niño</p>
+</div>
+
+<div class="progreso" id="dots"></div>
+<div class="score-pill" id="score">⭐ Puntos: 0 / 0</div>
+<div class="instruccion" id="instruccion"></div>
+<div class="fase-label" id="fase-label">Fase 1: ¡Arrastra los helados a los niños!</div>
+
+<div class="escenario">
+  <div class="zonas">
+    <div class="zona-helados">
+      <div class="zona-titulo" id="titulo-obj"></div>
+      <div class="helados-grid" id="helados-grid"></div>
+    </div>
+    <div class="zona-ninos">
+      <div class="zona-titulo" id="titulo-ninos"></div>
+      <div class="ninos-grid" id="ninos-grid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="opciones-wrap" id="opciones-wrap">
+  <div class="opciones-titulo" id="op-titulo"></div>
+  <div class="opciones-grid" id="opciones-grid"></div>
+</div>
+
+<div class="mensaje vacio" id="mensaje"></div>
+<div class="btns">
+  <button class="btn-sig" id="btn-sig" onclick="continuar()">Siguiente ➡</button>
+  <button class="btn-rei" onclick="reiniciar()">🔄 Reiniciar</button>
+</div>
+<div id="final-panel"></div>
+
+<script>
+const RONDAS = [
+  { ninos:5, objs:8, en:'🧍', eo:'🍦', obj:'helado', objpl:'helados' },
+  { ninos:4, objs:7, en:'👦', eo:'🍭', obj:'paleta', objpl:'paletas' },
+  { ninos:6, objs:9, en:'👧', eo:'🍪', obj:'galleta', objpl:'galletas' },
+  { ninos:3, objs:6, en:'🧒', eo:'🎈', obj:'globo', objpl:'globos' },
+  { ninos:5, objs:9, en:'🧍', eo:'🌮', obj:'taco', objpl:'tacos' },
+];
+
+let idx=0, pts=0, res=[], ninosTiene=[], fase=1;
+let draggingId=null;
+
+function renderDots(){
+  const d=document.getElementById('dots'); d.innerHTML='';
+  RONDAS.forEach((_, i)=>{
+    const el=document.createElement('div');
+    el.className='dot'+(i<res.length?(res[i]?' ok':' fail'):(i===idx?' active':''));
+    d.appendChild(el);
+  });
+}
+
+function render(){
+  fase=1; ninosTiene=[]; draggingId=null;
+  const r=RONDAS[idx];
+  document.getElementById('instruccion').textContent=`${r.en} Cada niño recibe un ${r.eo} — ¡arrástralos!`;
+  document.getElementById('fase-label').textContent='Fase 1: ¡Arrastra los '+r.objpl+' a los niños!';
+  document.getElementById('titulo-obj').textContent=r.eo+' '+r.objpl.charAt(0).toUpperCase()+r.objpl.slice(1)+' ('+r.objs+')';
+  document.getElementById('titulo-ninos').textContent=r.en+' Niños ('+r.ninos+')';
+  document.getElementById('opciones-wrap').style.display='none';
+  document.getElementById('mensaje').textContent=''; document.getElementById('mensaje').className='mensaje vacio';
+  document.getElementById('btn-sig').style.display='none';
+  document.getElementById('final-panel').innerHTML='';
+  document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${idx}`;
+  renderDots();
+
+  // Helados
+  const hg=document.getElementById('helados-grid'); hg.innerHTML='';
+  for(let i=0;i<r.objs;i++){
+    const h=document.createElement('div');
+    h.className='helado-item'; h.id='h-'+i; h.textContent=r.eo;
+    h.dataset.hid=i;
+    // Touch
+    h.addEventListener('touchstart', onTouchStart, {passive:false});
+    h.addEventListener('touchmove', onTouchMove, {passive:false});
+    h.addEventListener('touchend', onTouchEnd, {passive:false});
+    // Mouse
+    h.addEventListener('mousedown', onMouseDown);
+    hg.appendChild(h);
+  }
+
+  // Niños
+  const ng=document.getElementById('ninos-grid'); ng.innerHTML='';
+  for(let i=0;i<r.ninos;i++){
+    const n=document.createElement('div');
+    n.className='nino-slot'; n.id='n-'+i;
+    n.innerHTML=`<span>${r.en}</span>`;
+    n.dataset.nid=i;
+    ng.appendChild(n);
+  }
+}
+
+// ---- DRAG CON MOUSE ----
+let mouseGhost=null;
+
+function onMouseDown(e){
+  if(fase!==1) return;
+  const el=e.currentTarget;
+  if(el.classList.contains('usado')) return;
+  e.preventDefault();
+  draggingId=parseInt(el.dataset.hid);
+  el.classList.add('dragging');
+  const ghost=document.getElementById('drag-ghost');
+  ghost.textContent=RONDAS[idx].eo;
+  ghost.style.display='block';
+  ghost.style.left=e.clientX+'px'; ghost.style.top=e.clientY+'px';
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+}
+
+function onMouseMove(e){
+  const ghost=document.getElementById('drag-ghost');
+  ghost.style.left=e.clientX+'px'; ghost.style.top=e.clientY+'px';
+  // highlight niños
+  document.querySelectorAll('.nino-slot').forEach(n=>{
+    const rect=n.getBoundingClientRect();
+    if(e.clientX>=rect.left && e.clientX<=rect.right && e.clientY>=rect.top && e.clientY<=rect.bottom){
+      n.classList.add('over');
+    } else {
+      n.classList.remove('over');
+    }
+  });
+}
+
+function onMouseUp(e){
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
+  document.getElementById('drag-ghost').style.display='none';
+  if(draggingId!==null) document.getElementById('h-'+draggingId)?.classList.remove('dragging');
+  document.querySelectorAll('.nino-slot').forEach(n=>n.classList.remove('over'));
+  // buscar niño bajo cursor
+  const ninos=document.querySelectorAll('.nino-slot');
+  let hit=null;
+  ninos.forEach(n=>{
+    const rect=n.getBoundingClientRect();
+    if(e.clientX>=rect.left && e.clientX<=rect.right && e.clientY>=rect.top && e.clientY<=rect.bottom) hit=n;
+  });
+  if(hit) soltarEnNino(parseInt(hit.dataset.nid));
+  draggingId=null;
+}
+
+// ---- DRAG CON TOUCH ----
+function onTouchStart(e){
+  if(fase!==1) return;
+  const el=e.currentTarget;
+  if(el.classList.contains('usado')) return;
+  e.preventDefault();
+  draggingId=parseInt(el.dataset.hid);
+  el.classList.add('dragging');
+  const t=e.touches[0];
+  const ghost=document.getElementById('drag-ghost');
+  ghost.textContent=RONDAS[idx].eo;
+  ghost.style.display='block';
+  ghost.style.left=t.clientX+'px'; ghost.style.top=t.clientY+'px';
+}
+
+function onTouchMove(e){
+  e.preventDefault();
+  const t=e.touches[0];
+  const ghost=document.getElementById('drag-ghost');
+  ghost.style.left=t.clientX+'px'; ghost.style.top=t.clientY+'px';
+  document.querySelectorAll('.nino-slot').forEach(n=>{
+    const rect=n.getBoundingClientRect();
+    if(t.clientX>=rect.left && t.clientX<=rect.right && t.clientY>=rect.top && t.clientY<=rect.bottom){
+      n.classList.add('over');
+    } else {
+      n.classList.remove('over');
+    }
+  });
+}
+
+function onTouchEnd(e){
+  e.preventDefault();
+  document.getElementById('drag-ghost').style.display='none';
+  if(draggingId!==null) document.getElementById('h-'+draggingId)?.classList.remove('dragging');
+  document.querySelectorAll('.nino-slot').forEach(n=>n.classList.remove('over'));
+  const t=e.changedTouches[0];
+  const ninos=document.querySelectorAll('.nino-slot');
+  let hit=null;
+  ninos.forEach(n=>{
+    const rect=n.getBoundingClientRect();
+    if(t.clientX>=rect.left && t.clientX<=rect.right && t.clientY>=rect.top && t.clientY<=rect.bottom) hit=n;
+  });
+  if(hit) soltarEnNino(parseInt(hit.dataset.nid));
+  draggingId=null;
+}
+
+// ---- LÓGICA ----
+function soltarEnNino(nid){
+  if(draggingId===null) return;
+  const r=RONDAS[idx];
+  const msg=document.getElementById('mensaje');
+  if(ninosTiene.includes(nid)){
+    msg.textContent='¡Este niño ya tiene su '+r.obj+'! 😊'; msg.className='mensaje mal';
+    return;
+  }
+  ninosTiene.push(nid);
+  // marcar helado como usado
+  document.getElementById('h-'+draggingId).classList.add('usado');
+  // mostrar objeto sobre niño
+  const nEl=document.getElementById('n-'+nid);
+  nEl.classList.add('done');
+  const obj=document.createElement('span');
+  obj.className='nino-obj'; obj.textContent=r.eo;
+  nEl.appendChild(obj);
+  msg.textContent=''; msg.className='mensaje vacio';
+  if(ninosTiene.length===r.ninos) setTimeout(mostrarOpciones, 600);
+}
+
+function mostrarOpciones(){
+  fase=2;
+  const r=RONDAS[idx];
+  const sobran=r.objs-r.ninos;
+  document.getElementById('fase-label').textContent='Fase 2: ¿Cuántos '+r.objpl+' sobraron?';
+  document.getElementById('instruccion').textContent='✅ ¡Todos tienen su '+r.obj+'! Ahora responde:';
+  const ops=generarOpciones(sobran, r.objs);
+  document.getElementById('op-titulo').textContent='¿Cuántos '+r.eo+' sobraron?';
+  const grid=document.getElementById('opciones-grid'); grid.innerHTML='';
+  ops.forEach(op=>{
+    const btn=document.createElement('button');
+    btn.className='opcion-btn'; btn.textContent=op;
+    btn.onclick=()=>responder(op, sobran);
+    grid.appendChild(btn);
+  });
+  document.getElementById('opciones-wrap').style.display='block';
+}
+
+function generarOpciones(correcto, max){
+  const set=new Set([correcto]);
+  let intentos=0;
+  while(set.size<3 && intentos<50){
+    intentos++;
+    const d=Math.floor(Math.random()*3)+1;
+    const v=Math.random()<0.5?correcto+d:correcto-d;
+    if(v>0 && v<max) set.add(v);
+  }
+  while(set.size<3){ set.add(correcto+(set.size)); }
+  return [...set].sort((a,b)=>a-b);
+}
+
+function responder(val, correcto){
+  document.querySelectorAll('.opcion-btn').forEach(b=>{
+    const n=parseInt(b.textContent);
+    if(n===correcto) b.classList.add('correcto');
+    else if(n===val && val!==correcto) b.classList.add('incorrecto');
+    b.style.pointerEvents='none';
+  });
+  const msg=document.getElementById('mensaje');
+  if(val===correcto){
+    msg.textContent='🎉 ¡Correcto! Sobraron '+correcto; msg.className='mensaje bien';
+    pts++; res.push(true);
+  } else {
+    msg.textContent='😊 Eran '+correcto+'. ¡Mira el verde!'; msg.className='mensaje mal';
+    res.push(false);
+  }
+  document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${idx+1}`;
+  renderDots();
+  if(idx<RONDAS.length-1){
+    document.getElementById('btn-sig').style.display='inline-block';
+  } else {
+    const stars=pts>=4?'🏆🌟🌟🌟':pts>=3?'🎊🌟🌟':'😊🌟';
+    document.getElementById('final-panel').innerHTML=`
+      <div class="final">
+        <div style="font-size:36px;margin:8px 0">${stars}</div>
+        <h2>¡Juego terminado!</h2>
+        <p>Obtuviste <strong>${pts}</strong> de <strong>${RONDAS.length}</strong> puntos</p>
+        <p style="margin-top:8px;font-size:12px;color:#534AB7">${pts===RONDAS.length?'¡Perfecto! Eres un campeón 🏆':pts>=3?'¡Muy buen trabajo!':'¡Sigue practicando, tú puedes!'}</p>
+      </div>`;
+  }
+}
+
+function continuar(){ idx++; if(idx<RONDAS.length) render(); }
+function reiniciar(){ idx=0; pts=0; res=[]; render(); }
+
+render();
+</script>
+</body>
+</html>

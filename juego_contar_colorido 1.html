@@ -1,0 +1,202 @@
+
+<style>
+  * { box-sizing: border-box; }
+  .wrap {
+    background: #FFF9F0;
+    border-radius: 24px;
+    padding: 24px 16px 28px;
+    border: 3px solid #FAC775;
+    font-family: var(--font-sans);
+  }
+  .banner {
+    background: #CECBF6;
+    border-radius: 20px;
+    padding: 14px 20px 10px;
+    text-align: center;
+    border: 3px solid #7F77DD;
+    margin-bottom: 18px;
+  }
+  .banner h1 { font-size: 26px; font-weight: 500; color: #26215C; margin: 0 0 2px; }
+  .banner p { font-size: 14px; color: #534AB7; margin: 0; }
+  .stars-row { text-align: center; font-size: 20px; letter-spacing: 4px; margin-bottom: 14px; }
+  .progreso { display: flex; justify-content: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .dot {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #D3D1C7; border: 2px solid #B4B2A9;
+    transition: background 0.2s;
+  }
+  .dot.ok { background: #97C459; border-color: #3B6D11; }
+  .dot.fail { background: #F09595; border-color: #A32D2D; }
+  .dot.active { background: #FAC775; border-color: #BA7517; }
+  .score-pill {
+    background: #EEEDFE; border: 2px solid #7F77DD;
+    border-radius: 40px; padding: 6px 20px;
+    font-size: 15px; font-weight: 500; color: #3C3489;
+    text-align: center; display: inline-block;
+    margin: 0 auto 16px; display: block; width: fit-content; margin: 0 auto 16px;
+  }
+  .ref-box {
+    background: #E1F5EE; border: 3px dashed #1D9E75;
+    border-radius: 20px; padding: 14px 20px; text-align: center;
+    margin: 0 auto 8px; max-width: 320px;
+  }
+  .ref-label { font-size: 13px; color: #0F6E56; font-weight: 500; margin-bottom: 6px; }
+  .ref-emojis { font-size: 30px; letter-spacing: 4px; line-height: 1.4; }
+  .pregunta { font-size: 17px; font-weight: 500; color: #3C3489; text-align: center; margin: 10px 0 14px; }
+  .opciones { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+  .op-card {
+    background: #fff; border: 3px solid #B5D4F4;
+    border-radius: 20px; padding: 14px 18px; min-width: 130px;
+    text-align: center; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    user-select: none;
+  }
+  .op-card:hover { border-color: #378ADD; background: #E6F1FB; transform: scale(1.04); }
+  .op-card.correcto { border: 3px solid #3B6D11; background: #EAF3DE; transform: scale(1.06); }
+  .op-card.incorrecto { border: 3px solid #A32D2D; background: #FCEBEB; }
+  .op-emojis { font-size: 26px; letter-spacing: 3px; line-height: 1.5; }
+  .op-label { font-size: 12px; color: #5F5E5A; margin-top: 6px; font-weight: 500; }
+  .mensaje {
+    min-height: 36px; font-size: 18px; font-weight: 500;
+    text-align: center; border-radius: 14px;
+    padding: 7px 16px; margin: 0 auto 14px;
+    max-width: 340px;
+  }
+  .mensaje.bien { background: #EAF3DE; color: #27500A; border: 2px solid #97C459; }
+  .mensaje.mal { background: #FCEBEB; color: #791F1F; border: 2px solid #F09595; }
+  .mensaje.vacio { background: transparent; border: none; }
+  .btns { display: flex; justify-content: center; gap: 12px; }
+  .btn-sig {
+    background: #7F77DD; color: #fff; border: none;
+    border-radius: 40px; padding: 10px 28px; font-size: 16px; font-weight: 500;
+    cursor: pointer; transition: background 0.15s, transform 0.1s;
+  }
+  .btn-sig:hover { background: #534AB7; transform: scale(1.03); }
+  .btn-rei {
+    background: #FAC775; color: #412402; border: none;
+    border-radius: 40px; padding: 10px 22px; font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: background 0.15s, transform 0.1s;
+  }
+  .btn-rei:hover { background: #EF9F27; transform: scale(1.03); }
+  .final {
+    background: #CECBF6; border: 3px solid #7F77DD; border-radius: 20px;
+    padding: 20px; text-align: center; margin-top: 10px;
+  }
+  .final h2 { font-size: 24px; color: #26215C; margin: 0 0 8px; }
+  .final p { font-size: 15px; color: #3C3489; margin: 0; }
+  .estrellas-final { font-size: 36px; margin: 10px 0; }
+</style>
+
+<div class="wrap">
+  <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden">Juego colorido de contar grupos para primer grado</h2>
+
+  <div class="banner">
+    <h1>🔢 ¿Cuántos hay? 🎉</h1>
+    <p>Encuentra el grupo con la misma cantidad</p>
+  </div>
+
+  <div class="progreso" id="dots"></div>
+  <div class="score-pill" id="score">⭐ Puntos: 0 / 0</div>
+
+  <div class="ref-box">
+    <div class="ref-label">👀 Cuenta este grupo:</div>
+    <div class="ref-emojis" id="ref-emojis"></div>
+  </div>
+
+  <div class="pregunta">¿Cuál grupo tiene la misma cantidad? 👇</div>
+
+  <div class="opciones" id="opciones"></div>
+  <div class="mensaje vacio" id="mensaje"></div>
+  <div class="btns">
+    <button class="btn-sig" id="btn-sig" onclick="continuar()" style="display:none">Siguiente ➡</button>
+    <button class="btn-rei" onclick="reiniciar()">🔄 Reiniciar</button>
+  </div>
+  <div id="final-panel"></div>
+</div>
+
+<script>
+const RONDAS = [
+  { ref:{emoji:'🐶',n:3}, ops:[{emoji:'🌟',n:5},{emoji:'🍎',n:3},{emoji:'🐱',n:7}], c:1 },
+  { ref:{emoji:'🌸',n:5}, ops:[{emoji:'🚗',n:5},{emoji:'⚽',n:3},{emoji:'🍕',n:6}], c:0 },
+  { ref:{emoji:'🐟',n:4}, ops:[{emoji:'🦋',n:6},{emoji:'🎈',n:2},{emoji:'🐸',n:4}], c:2 },
+  { ref:{emoji:'⭐',n:6}, ops:[{emoji:'🍓',n:4},{emoji:'🐝',n:6},{emoji:'🦆',n:8}], c:1 },
+  { ref:{emoji:'🌊',n:2}, ops:[{emoji:'🌵',n:2},{emoji:'🦁',n:5},{emoji:'🍦',n:3}], c:0 },
+  { ref:{emoji:'🎀',n:7}, ops:[{emoji:'🌈',n:4},{emoji:'🍄',n:9},{emoji:'🐻',n:7}], c:2 },
+  { ref:{emoji:'🐞',n:3}, ops:[{emoji:'🍋',n:3},{emoji:'🚀',n:6},{emoji:'🌺',n:5}], c:0 },
+  { ref:{emoji:'🦊',n:8}, ops:[{emoji:'🍉',n:5},{emoji:'🎵',n:8},{emoji:'🌙',n:3}], c:1 },
+];
+
+let idx=0, pts=0, ok=false, res=[];
+
+function rep(e,n){ let s=''; for(let i=0;i<n;i++) s+=e+' '; return s.trim(); }
+
+function renderDots(){
+  const d=document.getElementById('dots'); d.innerHTML='';
+  for(let i=0;i<RONDAS.length;i++){
+    const el=document.createElement('div');
+    el.className='dot'+(i<res.length?(res[i]?' ok':' fail'):(i===idx?' active':''));
+    d.appendChild(el);
+  }
+}
+
+function render(){
+  const r=RONDAS[idx];
+  document.getElementById('ref-emojis').textContent=rep(r.ref.emoji,r.ref.n);
+  const cont=document.getElementById('opciones'); cont.innerHTML='';
+  const colors=['#E6F1FB','#FFF0F3','#EEEDFE'];
+  const borders=['#378ADD','#D4537E','#7F77DD'];
+  r.ops.forEach((op,i)=>{
+    const card=document.createElement('div');
+    card.className='op-card'; card.id='op-'+i;
+    card.style.background=colors[i]; card.style.borderColor=borders[i];
+    card.innerHTML=`<div class="op-emojis">${rep(op.emoji,op.n)}</div><div class="op-label">Grupo ${i+1}</div>`;
+    card.onclick=()=>elegir(i);
+    cont.appendChild(card);
+  });
+  const msg=document.getElementById('mensaje');
+  msg.textContent=''; msg.className='mensaje vacio';
+  document.getElementById('btn-sig').style.display='none';
+  document.getElementById('final-panel').innerHTML='';
+  ok=false;
+  renderDots();
+  document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${idx}`;
+}
+
+function elegir(i){
+  if(ok) return;
+  ok=true;
+  const r=RONDAS[idx];
+  const cards=document.querySelectorAll('.op-card');
+  const msg=document.getElementById('mensaje');
+  if(i===r.c){
+    cards[i].className='op-card correcto';
+    msg.textContent='🎉 ¡Muy bien! ¡Correcto!'; msg.className='mensaje bien';
+    pts++; res.push(true);
+  } else {
+    cards[i].className='op-card incorrecto';
+    cards[r.c].className='op-card correcto';
+    msg.textContent='😊 ¡Casi! El correcto era el verde'; msg.className='mensaje mal';
+    res.push(false);
+  }
+  document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${idx+1}`;
+  renderDots();
+  if(idx<RONDAS.length-1){
+    document.getElementById('btn-sig').style.display='inline-block';
+  } else {
+    const stars = pts>=7?'🏆🌟🌟🌟':pts>=5?'🎊🌟🌟':'😊🌟';
+    document.getElementById('final-panel').innerHTML=`
+      <div class="final">
+        <div class="estrellas-final">${stars}</div>
+        <h2>¡Juego terminado!</h2>
+        <p>Obtuviste <strong>${pts}</strong> de <strong>${RONDAS.length}</strong> puntos</p>
+        <p style="margin-top:8px;font-size:13px;color:#534AB7">${pts===RONDAS.length?'¡Perfecto! Eres un campeón 🏆':pts>=6?'¡Excelente trabajo!':'¡Sigue practicando!'}</p>
+      </div>`;
+  }
+}
+
+function continuar(){ idx++; if(idx<RONDAS.length) render(); }
+
+function reiniciar(){ idx=0; pts=0; ok=false; res=[]; render(); }
+
+render();
+</script>

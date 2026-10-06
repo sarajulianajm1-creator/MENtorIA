@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html><head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;padding:14px;min-height:100vh;background:linear-gradient(135deg,#FFF9F0,#F0EEFF)}
+.banner{background:linear-gradient(135deg,#a78bfa,#7c3aed);border-radius:24px;padding:16px 20px 12px;text-align:center;margin-bottom:16px;box-shadow:0 4px 16px rgba(124,58,237,.35)}
+.banner h1{font-size:21px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.2)}
+.banner p{font-size:12px;color:rgba(255,255,255,.9);margin-top:4px}
+.score-pill{background:linear-gradient(90deg,#fde68a,#fbbf24);border-radius:40px;padding:6px 22px;font-size:15px;font-weight:bold;color:#78350f;text-align:center;width:fit-content;margin:0 auto 14px;display:block;box-shadow:0 3px 10px rgba(251,191,36,.4)}
+.progreso{display:flex;justify-content:center;gap:8px;margin-bottom:14px}
+.dot{width:14px;height:14px;border-radius:50%;background:#ddd6fe;border:2px solid #c4b5fd;transition:all .3s}
+.dot.ok{background:#86efac;border-color:#22c55e}
+.dot.fail{background:#fca5a5;border-color:#ef4444}
+.dot.act{background:#fbbf24;border-color:#f59e0b}
+
+.card{border-radius:28px;padding:20px 18px;margin-bottom:14px}
+.card1{background:linear-gradient(135deg,#fce7f3,#ede9fe);border:3px solid #f9a8d4}
+.card2{background:linear-gradient(135deg,#d1fae5,#dbeafe);border:3px solid #6ee7b7}
+.card3{background:linear-gradient(135deg,#fef3c7,#fee2e2);border:3px solid #fbbf24}
+.card-titulo{font-size:14px;font-weight:bold;margin-bottom:14px;padding:7px 16px;border-radius:40px;display:inline-block}
+.t1{background:#fdf4ff;color:#7e22ce}
+.t2{background:#ecfdf5;color:#065f46}
+.t3{background:#fffbeb;color:#92400e}
+
+/* Puntos sin número */
+.puntos-wrap{background:#fff;border-radius:20px;padding:16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:9px;justify-content:center;align-items:center;border:2.5px solid #e9d5ff;min-height:70px}
+.punto-vis{width:24px;height:24px;border-radius:50%}
+.pv1{background:radial-gradient(circle at 35% 35%,#e879f9,#7c3aed)}
+.pv2{background:radial-gradient(circle at 35% 35%,#34d399,#3b82f6)}
+.pv3{background:radial-gradient(circle at 35% 35%,#fbbf24,#ef4444)}
+
+/* Burbujas personajes — solo texto */
+.personajes{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+.personaje{background:#fff;border-radius:18px;padding:14px;text-align:center;flex:1;min-width:120px;max-width:170px;border:2px solid #e9d5ff}
+.per-nombre{font-size:14px;font-weight:bold;color:#6d28d9;margin-bottom:6px}
+.per-emoji{font-size:38px;margin-bottom:6px}
+.burb{background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:2px solid #a78bfa;border-radius:14px 14px 14px 4px;padding:9px 12px;font-size:14px;font-weight:bold;color:#4c1d95;text-align:left}
+.burb2{background:linear-gradient(135deg,#d1fae5,#dbeafe);border:2px solid #6ee7b7;border-radius:14px 14px 4px 14px;padding:9px 12px;font-size:14px;font-weight:bold;color:#065f46;text-align:left}
+
+.pregunta{font-size:16px;font-weight:bold;text-align:center;margin-bottom:13px;padding:10px 14px;border-radius:14px;background:#fff}
+.p1{color:#7e22ce;border:2px solid #f9a8d4}
+.p2{color:#065f46;border:2px solid #6ee7b7}
+.p3{color:#92400e;border:2px solid #fbbf24}
+
+.opciones{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.opcion{padding:14px 10px;border-radius:18px;font-size:20px;font-weight:bold;cursor:pointer;text-align:center;border:3px solid transparent;transition:all .18s}
+.o1{background:#fdf4ff;border-color:#d946ef;color:#7e22ce}
+.o1:hover{background:#fae8ff;transform:scale(1.06)}
+.o1.sel{background:#e879f9;color:#fff;border-color:#a21caf}
+.o2{background:#ecfdf5;border-color:#10b981;color:#065f46}
+.o2:hover{background:#d1fae5;transform:scale(1.06)}
+.o2.sel{background:#34d399;color:#fff;border-color:#059669}
+.o3{background:#fffbeb;border-color:#f59e0b;color:#92400e}
+.o3:hover{background:#fef3c7;transform:scale(1.06)}
+.o3.sel{background:#fbbf24;color:#fff;border-color:#d97706}
+.opcion.ok{background:linear-gradient(135deg,#d1fae5,#a7f3d0)!important;border-color:#059669!important;color:#064e3b!important;transform:scale(1.08)!important}
+.opcion.fail{background:linear-gradient(135deg,#fee2e2,#fecaca)!important;border-color:#dc2626!important;color:#7f1d1d!important}
+
+.btn-check{display:block;margin:0 auto 10px;padding:12px 30px;border:none;border-radius:40px;font-size:16px;font-weight:bold;cursor:pointer;color:#fff;transition:all .18s}
+.bc1{background:linear-gradient(135deg,#e879f9,#a855f7);box-shadow:0 4px 14px rgba(168,85,247,.4)}
+.bc2{background:linear-gradient(135deg,#34d399,#3b82f6);box-shadow:0 4px 14px rgba(59,130,246,.4)}
+.bc3{background:linear-gradient(135deg,#fbbf24,#ef4444);box-shadow:0 4px 14px rgba(239,68,68,.4)}
+.btn-check:hover{transform:scale(1.05)}
+.msg{text-align:center;font-size:17px;font-weight:bold;min-height:26px;margin-bottom:10px}
+.msg.bien{color:#059669}.msg.mal{color:#dc2626}
+.resp-final{border-radius:16px;padding:12px;text-align:center;font-size:15px;font-weight:bold;margin-bottom:12px;display:none;background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:2.5px solid #34d399;color:#065f46}
+.btn-sig{display:none;margin:0 auto;padding:12px 32px;border:none;border-radius:40px;font-size:16px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 4px 14px rgba(99,102,241,.4)}
+.btn-sig:hover{transform:scale(1.05)}
+.final-box{background:linear-gradient(135deg,#ede9fe,#fce7f3);border:3px solid #a78bfa;border-radius:24px;padding:22px;text-align:center;margin-top:12px}
+.final-box h2{font-size:22px;color:#4c1d95}.final-box p{font-size:15px;color:#6d28d9;margin-top:8px}
+</style>
+</head><body>
+
+<div class="banner">
+  <h1>🔢 Usemos escrituras como 2⁸</h1>
+  <p>¡Cuenta, piensa y elige la respuesta correcta!</p>
+</div>
+<div class="score-pill" id="score">⭐ Puntos: 0 / 0</div>
+<div class="progreso" id="dots"></div>
+<div id="contenido"></div>
+<button class="btn-sig" id="btn-sig" onclick="sigRonda()">Siguiente ➡️</button>
+<div id="final-panel"></div>
+
+<script>
+const RONDAS=[
+  {tipo:'puntos', cl:'1', numero:8,  ops:[6,8,10,5]},
+  {tipo:'puntos', cl:'2', numero:9,  ops:[7,9,12,4]},
+  {tipo:'puntos', cl:'3', numero:3,  ops:[3,5,1,7]},
+  {tipo:'masomenos', cl:'1', quien:'Mariana', tieneM:2,  emoji:'🚗', nombre:'carros',   alejo:'Alejo',  diferencia:1, tipo2:'mas'},
+  {tipo:'masomenos', cl:'2', quien:'Mariana', tieneM:18, emoji:'🔵', nombre:'pelotas',  alejo:'Alejo',  diferencia:1, tipo2:'menos'},
+  {tipo:'puntos',    cl:'3', numero:10, ops:[8,10,13,6]},
+  {tipo:'masomenos', cl:'1', quien:'Sofía',   tieneM:5,  emoji:'⭐', nombre:'estrellas', alejo:'Lucas',  diferencia:2, tipo2:'mas'},
+];
+
+let rondaIdx=0,pts=0,respondido=false,respuesta=null;
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+
+function renderDots(){
+  const d=document.getElementById('dots');d.innerHTML='';
+  RONDAS.forEach((_,i)=>{
+    const el=document.createElement('div');
+    el.className='dot'+(i<rondaIdx?' ok':i===rondaIdx?' act':'');
+    d.appendChild(el);
+  });
+}
+
+function renderRonda(){
+  respondido=false;respuesta=null;
+  const r=RONDAS[rondaIdx];
+  document.getElementById('btn-sig').style.display='none';
+  document.getElementById('final-panel').innerHTML='';
+  document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${rondaIdx}`;
+  renderDots();
+  if(r.tipo==='puntos') renderPuntos(r);
+  else renderMasMenos(r);
+}
+
+function renderPuntos(r){
+  const cl=r.cl;
+  // Solo puntos — sin número visible
+  let puntosHtml='';
+  for(let i=0;i<r.numero;i++){
+    puntosHtml+=`<div class="punto-vis pv${cl}"></div>`;
+  }
+  let opsHtml='';
+  r.ops.forEach(op=>{
+    opsHtml+=`<button class="opcion o${cl}" data-val="${op}" onclick="selOp(this)">${op}</button>`;
+  });
+
+  document.getElementById('contenido').innerHTML=`
+  <div class="card card${cl}">
+    <div class="card-titulo t${cl}">✏️ Haz la cantidad que indica el número</div>
+    <div class="puntos-wrap">${puntosHtml}</div>
+    <div class="pregunta p${cl}">¿Cuántos puntos ves?</div>
+    <div class="opciones">${opsHtml}</div>
+    <button class="btn-check bc${cl}" onclick="comprobar(${r.numero})">✅ Comprobar</button>
+    <div class="msg" id="msg"></div>
+    <div class="resp-final" id="resp-final">✅ ¡Correcto! Hay <strong>${r.numero} puntos</strong>.</div>
+  </div>`;
+}
+
+function renderMasMenos(r){
+  const cl=r.cl;
+  const correcto=r.tipo2==='mas'?r.tieneM+r.diferencia:r.tieneM-r.diferencia;
+  const opVals=new Set([correcto]);
+  while(opVals.size<4){const v=rnd(Math.max(0,correcto-4),correcto+4);if(v!==correcto&&v>=0)opVals.add(v);}
+  const ops=[...opVals].sort((a,b)=>a-b);
+  let opsHtml='';
+  ops.forEach(op=>{
+    opsHtml+=`<button class="opcion o${cl}" data-val="${op}" onclick="selOp(this)">${op} ${r.emoji}</button>`;
+  });
+
+  document.getElementById('contenido').innerHTML=`
+  <div class="card card${cl}">
+    <div class="card-titulo t${cl}">🧮 ¿Cuántos tiene ${r.alejo}?</div>
+
+    <div class="personajes">
+      <div class="personaje">
+        <div class="per-nombre">${r.quien}</div>
+        <div class="per-emoji">👧</div>
+        <div class="burb">Tengo ${r.tieneM} ${r.emoji} ${r.nombre}.</div>
+      </div>
+      <div class="personaje">
+        <div class="per-nombre">${r.alejo}</div>
+        <div class="per-emoji">👦</div>
+        <div class="burb2">Yo tengo ${r.diferencia} ${r.emoji} <strong>${r.tipo2==='mas'?'más':'menos'}</strong> que ${r.quien}.</div>
+      </div>
+    </div>
+
+    <div class="pregunta p${cl}">¿Cuántos ${r.emoji} <strong>${r.nombre}</strong> tiene <strong>${r.alejo}</strong>?</div>
+    <div class="opciones">${opsHtml}</div>
+    <button class="btn-check bc${cl}" onclick="comprobar(${correcto})">✅ Comprobar</button>
+    <div class="msg" id="msg"></div>
+    <div class="resp-final" id="resp-final">
+      ✅ <strong>${r.alejo} tiene ${correcto} ${r.emoji} ${r.nombre}.</strong>
+    </div>
+  </div>`;
+}
+
+function selOp(btn){
+  if(respondido)return;
+  document.querySelectorAll('.opcion').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  respuesta=btn;
+}
+
+function comprobar(correcto){
+  if(!respuesta){document.getElementById('msg').textContent='👆 Elige una respuesta primero';return;}
+  if(respondido)return;
+  respondido=true;
+  const ok=parseInt(respuesta.dataset.val)===correcto;
+  document.querySelectorAll('.opcion').forEach(b=>{
+    if(parseInt(b.dataset.val)===correcto)b.classList.add('ok');
+    else if(b===respuesta)b.classList.add('fail');
+    b.style.pointerEvents='none';
+  });
+  const msg=document.getElementById('msg');
+  if(ok){
+    msg.textContent='🎉 ¡Perfecto! ¡Correcto!';msg.className='msg bien';
+    pts++;document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${rondaIdx+1}`;
+  }else{
+    msg.textContent='😊 ¡Casi! Mira la respuesta en verde';msg.className='msg mal';
+  }
+  document.getElementById('resp-final').style.display='block';
+  renderDots();
+  if(rondaIdx<RONDAS.length-1){
+    document.getElementById('btn-sig').style.display='block';
+  }else{
+    const stars=pts>=6?'🏆🌟🌟🌟':pts>=5?'🎊🌟🌟':pts>=4?'😊🌟':'💪';
+    document.getElementById('final-panel').innerHTML=`<div class="final-box">
+      <div style="font-size:42px;margin:8px 0">${stars}</div>
+      <h2>¡Terminaste!</h2>
+      <p>Obtuviste <strong>${pts}</strong> de <strong>${RONDAS.length}</strong> puntos</p>
+      <p style="margin-top:8px;font-size:13px">${pts===RONDAS.length?'¡Perfecto campeón! 🏆':pts>=5?'¡Muy bien!':'¡Sigue practicando!'}</p>
+      <button onclick="rondaIdx=0;pts=0;renderRonda()" style="margin-top:14px;padding:12px 28px;border:none;border-radius:40px;font-size:15px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#a855f7,#6366f1);color:#fff">🔄 Jugar de nuevo</button>
+    </div>`;
+  }
+}
+
+function sigRonda(){rondaIdx++;renderRonda();}
+renderRonda();
+</script>
+</body></html>

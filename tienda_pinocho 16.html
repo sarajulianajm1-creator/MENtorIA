@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Tienda de Don Pinocho</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',sans-serif;background:#f0ecff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px;}
+#wrap{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;overflow:hidden;max-width:700px;width:100%;padding-bottom:26px;box-shadow:0 8px 32px rgba(160,130,240,0.2);}
+
+.header{background:#c5b8f8;padding:18px 20px 14px;text-align:center;}
+.header h1{font-size:22px;font-weight:800;color:#3a2a7a;}
+.header p{font-size:14px;color:#5a4aa0;margin-top:4px;}
+
+.progress-row{display:flex;justify-content:center;gap:10px;padding:12px 0 4px;}
+.dp{width:14px;height:14px;border-radius:50%;background:#e0d9f9;border:2px solid #c5b8f8;}
+.dp.done{background:#f5c842;border-color:#d4a000;}
+.dp.current{background:#ff8fd8;border-color:#e060b0;}
+
+.score-row{text-align:center;margin:6px 0 12px;}
+.score-pill{display:inline-block;background:#fff;border:2px solid #c5b8f8;border-radius:30px;padding:5px 22px;font-size:15px;font-weight:700;color:#3a2a7a;}
+
+/* PRICE BOARD */
+.price-board{margin:0 18px 14px;background:#fff9e0;border:3px solid #f5c842;border-radius:20px;padding:12px 16px;}
+.price-board-title{text-align:center;font-size:13px;font-weight:800;color:#7a5c00;margin-bottom:10px;}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.price-item{display:flex;align-items:center;gap:7px;background:#fff;border:2px solid #f5c842;border-radius:10px;padding:6px 10px;}
+.price-item .pi-icon{font-size:22px;line-height:1;}
+.price-item .pi-name{font-size:12px;font-weight:700;color:#5a4aa0;flex:1;}
+.price-item .pi-price{font-size:14px;font-weight:900;color:#e05050;background:#fde8e8;border-radius:6px;padding:1px 7px;white-space:nowrap;}
+
+/* QUESTION CARD */
+.qcard{margin:0 18px 12px;background:#e6f9f1;border:2.5px dashed #3dba7e;border-radius:20px;padding:18px 20px;}
+.qtype-badge{display:inline-block;font-size:11px;font-weight:800;border-radius:20px;padding:3px 12px;margin-bottom:10px;color:#fff;}
+.qcard-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+.char-bubble{display:flex;align-items:flex-end;gap:8px;}
+.char-emoji{font-size:44px;line-height:1;flex-shrink:0;}
+.bubble{background:#fff;border:2.5px solid #b8aef0;border-radius:16px 16px 16px 4px;padding:10px 14px;font-size:14px;font-weight:700;color:#3a2a7a;line-height:1.5;max-width:300px;}
+.bubble .hi{color:#a87cf5;font-weight:900;}
+.bubble .item-tag{display:inline-flex;align-items:center;gap:4px;background:#eee9ff;border:1.5px solid #b8aef0;border-radius:8px;padding:1px 8px;font-size:15px;}
+
+/* OPTIONS for ¿Me alcanza? */
+.yn-row{display:flex;gap:14px;justify-content:center;margin-top:6px;}
+.yn-card{flex:1;max-width:140px;border-radius:16px;border:3px solid;padding:16px 8px;text-align:center;cursor:pointer;font-size:18px;font-weight:900;color:#3a2a7a;background:#fff;transition:transform 0.12s;}
+.yn-card:hover{transform:scale(1.06);}
+.yn-card.correct{background:#e6f9f1 !important;border-color:#3dba7e !important;color:#1a7a50;}
+.yn-card.wrong{background:#fde8e8 !important;border-color:#e05050 !important;color:#e05050;animation:wob 0.4s;}
+
+/* Options for más/menos */
+.opts-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:6px;}
+.opt-card{
+  flex:1;min-width:120px;max-width:180px;border-radius:16px;border:3px solid;
+  padding:14px 10px;text-align:center;cursor:pointer;background:#fff;
+  transition:transform 0.12s,box-shadow 0.12s;
+}
+.opt-card:hover{transform:scale(1.05);box-shadow:0 4px 16px rgba(0,0,0,0.1);}
+.opt-card .opt-icon{font-size:32px;line-height:1.3;}
+.opt-card .opt-name{font-size:13px;font-weight:700;color:#5a4aa0;margin-top:4px;}
+.opt-card .opt-price{font-size:16px;font-weight:900;color:#e05050;margin-top:3px;}
+.opt-card.correct{background:#e6f9f1 !important;border-color:#3dba7e !important;}
+.opt-card.wrong{animation:wob 0.4s;background:#fde8e8 !important;border-color:#e05050 !important;}
+@keyframes wob{0%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}100%{transform:rotate(0)}}
+
+.fb{text-align:center;min-height:30px;font-size:15px;font-weight:700;color:#3a2a7a;margin:10px 18px 4px;}
+.btn-row{text-align:center;margin-top:8px;display:flex;justify-content:center;gap:12px;}
+.btn{border:none;border-radius:30px;padding:11px 28px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.btn:active{transform:scale(0.96);}
+.btn-reset{background:#f5c842;color:#3a2a7a;}
+.btn-next{background:#a87cf5;color:#fff;display:none;}
+
+.win-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:50;align-items:center;justify-content:center;}
+.win-overlay.show{display:flex;}
+.win-box{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;padding:32px 28px;text-align:center;max-width:340px;width:90%;}
+.win-trophy{font-size:68px;animation:tb 0.7s infinite alternate;}
+@keyframes tb{from{transform:translateY(0)}to{transform:translateY(-14px)}}
+.win-title{font-size:26px;font-weight:900;color:#3a2a7a;margin:10px 0 4px;}
+.win-sub{font-size:14px;color:#5a4aa0;font-weight:600;margin-bottom:16px;}
+.btn-again{background:linear-gradient(135deg,#a87cf5,#3dba7e);color:#fff;border:none;border-radius:30px;padding:12px 32px;font-size:16px;font-weight:800;cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="header">
+    <h1>🏪 La Tienda de Don Pinocho</h1>
+    <p>¿Me alcanza? ¿Cuál cuesta más? ¿Cuál cuesta menos?</p>
+  </div>
+  <div class="progress-row" id="prog"></div>
+  <div class="score-row"><div class="score-pill">⭐ Puntos: <span id="sc">0</span></div></div>
+
+  <div class="price-board">
+    <div class="price-board-title">🏷️ Precios de algunos artículos</div>
+    <div class="price-grid" id="price-grid"></div>
+  </div>
+
+  <div class="qcard" id="qcard">
+    <div id="q-content"></div>
+  </div>
+
+  <div class="fb" id="fb"></div>
+  <div class="btn-row">
+    <button class="btn btn-reset" id="btn-reset">🔄 Reiniciar</button>
+    <button class="btn btn-next" id="btn-next">Siguiente ▶</button>
+  </div>
+</div>
+
+<div class="win-overlay" id="win-overlay">
+  <div class="win-box">
+    <div class="win-trophy">🏆</div>
+    <div class="win-title">¡Felicitaciones!</div>
+    <div class="win-sub" id="win-sub">¡Eres un experto comprando!</div>
+    <button class="btn-again" id="btn-again">🔄 Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+const PRODUCTS = [
+  {id:'caballo',  name:'Caballo',   icon:'🐴', price:73},
+  {id:'olla',     name:'Olla',      icon:'🍲', price:47},
+  {id:'cuchillo', name:'Cuchillo',  icon:'🔪', price:13},
+  {id:'balde',    name:'Balde',     icon:'🪣', price:35},
+  {id:'sarten',   name:'Sartén',    icon:'🍳', price:42},
+  {id:'gato',     name:'Gato',      icon:'🐱', price:72},
+  {id:'pala',     name:'Pala',      icon:'🪛', price:61},
+  {id:'martillo', name:'Martillo',  icon:'🔨', price:58},
+  {id:'pajaros',  name:'Pájaros',   icon:'🦜', price:59},
+  {id:'taza',     name:'Taza',      icon:'☕', price:30},
+  {id:'plato',    name:'Plato',     icon:'🍽️', price:17},
+];
+
+// 3 types: 'alcanza' (¿me alcanza?), 'mas' (encierra el que cuesta más), 'menos' (encierra el que cuesta menos)
+const LEVELS = [
+  // ¿Me alcanza?
+  {type:'alcanza', char:'👦', coins:70, item:'caballo',
+   text:(p,item)=>`Tengo <strong>70 monedas</strong> de 1 peso.<br>¿Me alcanza para comprar un <span class="item-tag">${item.icon} ${item.name}</span>?`,
+   answer: coins => coins >= 73, // 73 = caballo
+  },
+  {type:'alcanza', char:'👧', coins:53, item:'olla',
+   text:(p,item)=>`Tengo <strong>53 monedas</strong> de 1 peso.<br>¿Puedo comprar una <span class="item-tag">${item.icon} ${item.name}</span>?`,
+   answer: coins => coins >= 47,
+  },
+  {type:'alcanza', char:'👦', coins:40, item:'sarten',
+   text:(p,item)=>`Tengo <strong>40 monedas</strong> de 1 peso.<br>¿Me alcanza para comprar una <span class="item-tag">${item.icon} ${item.name}</span>?`,
+   answer: coins => coins >= 42,
+  },
+  {type:'alcanza', char:'👧', coins:65, item:'gato',
+   text:(p,item)=>`Tengo <strong>65 monedas</strong> de 1 peso.<br>¿Me alcanza para comprar un <span class="item-tag">${item.icon} ${item.name}</span>?`,
+   answer: coins => coins >= 72,
+  },
+  // ¿Cuál cuesta más?
+  {type:'mas', items:['olla','sarten'],
+   text:'Encierra el que cuesta más'},
+  {type:'mas', items:['pala','martillo'],
+   text:'Encierra el que cuesta más'},
+  {type:'mas', items:['caballo','gato'],
+   text:'Encierra el que cuesta más'},
+  // ¿Cuál cuesta menos?
+  {type:'menos', items:['taza','plato'],
+   text:'Encierra el que cuesta menos'},
+  {type:'menos', items:['cuchillo','balde'],
+   text:'Encierra el que cuesta menos'},
+  {type:'menos', items:['sarten','olla'],
+   text:'Encierra el que cuesta menos'},
+];
+
+const BADGE = {
+  alcanza:{label:'💰 ¿Me alcanza?', bg:'#4a9ef5'},
+  mas:    {label:'⬆️ ¿Cuál cuesta más?', bg:'#e05050'},
+  menos:  {label:'⬇️ ¿Cuál cuesta menos?', bg:'#3dba7e'},
+};
+const OPT_COLORS=['#4a9ef5','#f56fa0','#a87cf5'];
+
+let lvl=0, score=0, answered=false;
+const isLast=()=>lvl===LEVELS.length-1;
+const L=()=>LEVELS[lvl];
+const getP=id=>PRODUCTS.find(p=>p.id===id);
+
+function buildProg(){
+  const r=document.getElementById('prog');r.innerHTML='';
+  LEVELS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dp'+(i<lvl?' done':i===lvl?' current':'');
+    r.appendChild(d);
+  });
+}
+
+function buildPriceGrid(){
+  const g=document.getElementById('price-grid');g.innerHTML='';
+  PRODUCTS.forEach(p=>{
+    const div=document.createElement('div');div.className='price-item';
+    div.innerHTML=`<span class="pi-icon">${p.icon}</span><span class="pi-name">${p.name}</span><span class="pi-price">${p.price}$</span>`;
+    g.appendChild(div);
+  });
+}
+
+function buildQuestion(){
+  const lv=L();
+  const b=BADGE[lv.type];
+  const qc=document.getElementById('q-content');
+  answered=false;
+  document.getElementById('btn-next').style.display='none';
+  document.getElementById('fb').textContent='';
+
+  let html=`<div style="margin-bottom:10px"><span class="qtype-badge" style="background:${b.bg}">${b.label}</span></div>`;
+
+  if(lv.type==='alcanza'){
+    const item=getP(lv.item);
+    html+=`<div class="char-bubble" style="margin-bottom:16px">
+      <span class="char-emoji">${lv.char}</span>
+      <div class="bubble">${lv.text(lv.coins,item)}</div>
+    </div>`;
+    html+=`<div class="yn-row">
+      <div class="yn-card" style="border-color:#3dba7e" onclick="onYN(true,this)">✅ Sí me alcanza</div>
+      <div class="yn-card" style="border-color:#e05050" onclick="onYN(false,this)">❌ No me alcanza</div>
+    </div>`;
+  } else {
+    const items=lv.items.map(getP);
+    const label=lv.type==='mas'?'el que cuesta más':'el que cuesta menos';
+    html+=`<div style="text-align:center;font-size:16px;font-weight:800;color:#1a7a50;margin-bottom:14px">👆 Toca ${label}</div>`;
+    html+=`<div class="opts-row">`;
+    items.forEach((item,i)=>{
+      html+=`<div class="opt-card" style="border-color:${OPT_COLORS[i]}" onclick="onOpt('${item.id}',this)">
+        <div class="opt-icon">${item.icon}</div>
+        <div class="opt-name">${item.name}</div>
+        <div class="opt-price">${item.price} pesos</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  qc.innerHTML=html;
+}
+
+function onYN(userSays, card){
+  if(answered)return;
+  answered=true;
+  const lv=L();
+  const correct=lv.answer(lv.coins);
+  const ok=(userSays===correct);
+  card.classList.add(ok?'correct':'wrong');
+  const item=getP(lv.item);
+  if(ok){
+    score+=15;document.getElementById('sc').textContent=score;
+    const msg=correct
+      ? `✅ ¡Correcto! ${lv.coins} ≥ ${item.price} — ¡sí le alcanza!`
+      : `✅ ¡Correcto! ${lv.coins} < ${item.price} — no le alcanza`;
+    document.getElementById('fb').textContent=msg;
+    document.getElementById('btn-next').style.display='inline-block';
+    document.getElementById('btn-next').textContent=isLast()?'🏆 Ver resultados':'Siguiente ▶';
+  } else {
+    document.getElementById('fb').textContent=`😅 ¡Revisa! El ${item.name} cuesta ${item.price} pesos y tiene ${lv.coins}`;
+    setTimeout(()=>{card.classList.remove('wrong');answered=false;},1000);
+  }
+}
+
+function onOpt(id, card){
+  if(answered)return;
+  answered=true;
+  const lv=L();
+  const items=lv.items.map(getP);
+  const prices=items.map(i=>i.price);
+  const correctId=lv.type==='mas'
+    ? items[prices.indexOf(Math.max(...prices))].id
+    : items[prices.indexOf(Math.min(...prices))].id;
+  const ok=(id===correctId);
+  card.classList.add(ok?'correct':'wrong');
+  const winner=getP(correctId);
+  if(ok){
+    score+=15;document.getElementById('sc').textContent=score;
+    const word=lv.type==='mas'?'más caro':'más barato';
+    document.getElementById('fb').innerHTML=`🎉 ¡Correcto! El ${winner.icon} <strong>${winner.name}</strong> (${winner.price}$) es el ${word}`;
+    document.getElementById('btn-next').style.display='inline-block';
+    document.getElementById('btn-next').textContent=isLast()?'🏆 Ver resultados':'Siguiente ▶';
+  } else {
+    document.getElementById('fb').textContent=`😅 ¡Compara los precios! ${items[0].name}: ${items[0].price}$ vs ${items[1].name}: ${items[1].price}$`;
+    setTimeout(()=>{card.classList.remove('wrong');answered=false;},1100);
+  }
+}
+
+function nextLevel(){
+  if(isLast()&&answered){
+    document.getElementById('win-sub').textContent=`Completaste ${LEVELS.length} preguntas con ${score} puntos 🎊`;
+    document.getElementById('win-overlay').classList.add('show');return;
+  }
+  lvl++;buildProg();buildQuestion();
+}
+
+function reset(){
+  lvl=0;score=0;answered=false;
+  document.getElementById('sc').textContent=0;
+  document.getElementById('win-overlay').classList.remove('show');
+  buildProg();buildQuestion();
+}
+
+document.getElementById('btn-next').addEventListener('click',nextLevel);
+document.getElementById('btn-reset').addEventListener('click',reset);
+document.getElementById('btn-again').addEventListener('click',reset);
+
+buildPriceGrid();
+reset();
+</script>
+</body>
+</html>

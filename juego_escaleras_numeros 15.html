@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+<html><head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;padding:14px;min-height:100vh;background:linear-gradient(135deg,#FFF9F0,#F0EEFF)}
+.banner{background:linear-gradient(135deg,#34d399,#3b82f6);border-radius:24px;padding:16px 20px 12px;text-align:center;margin-bottom:16px;box-shadow:0 4px 16px rgba(59,130,246,.35)}
+.banner h1{font-size:21px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.2)}
+.banner p{font-size:12px;color:rgba(255,255,255,.9);margin-top:4px}
+.score-pill{background:linear-gradient(90deg,#fde68a,#fbbf24);border-radius:40px;padding:6px 22px;font-size:15px;font-weight:bold;color:#78350f;text-align:center;width:fit-content;margin:0 auto 14px;display:block;box-shadow:0 3px 10px rgba(251,191,36,.4)}
+.progreso{display:flex;justify-content:center;gap:8px;margin-bottom:14px}
+.dot{width:14px;height:14px;border-radius:50%;background:#ddd6fe;border:2px solid #c4b5fd;transition:all .3s}
+.dot.ok{background:#86efac;border-color:#22c55e}
+.dot.fail{background:#fca5a5;border-color:#ef4444}
+.dot.act{background:#fbbf24;border-color:#f59e0b}
+
+.card{border-radius:28px;padding:22px 18px;margin-bottom:14px}
+.c1{background:linear-gradient(135deg,#fce7f3,#ede9fe);border:3px solid #f9a8d4}
+.c2{background:linear-gradient(135deg,#d1fae5,#dbeafe);border:3px solid #6ee7b7}
+.c3{background:linear-gradient(135deg,#fef3c7,#fee2e2);border:3px solid #fbbf24}
+.c4{background:linear-gradient(135deg,#cffafe,#e0e7ff);border:3px solid #67e8f9}
+.c5{background:linear-gradient(135deg,#ecfccb,#ffedd5);border:3px solid #a3e635}
+.c6{background:linear-gradient(135deg,#fce7f3,#fef3c7);border:3px solid #f9a8d4}
+
+.titulo-card{font-size:14px;font-weight:bold;margin-bottom:14px;padding:7px 16px;border-radius:40px;display:inline-block}
+.t1{background:#fdf4ff;color:#7e22ce}
+.t2{background:#ecfdf5;color:#065f46}
+.t3{background:#fffbeb;color:#92400e}
+.t4{background:#ecfeff;color:#164e63}
+.t5{background:#f7fee7;color:#3f6212}
+.t6{background:#fdf4ff;color:#9d174d}
+
+.enunciado{font-size:15px;font-weight:bold;text-align:center;margin-bottom:14px;background:#fff;border-radius:14px;padding:10px 14px}
+
+/* ESCALERA */
+.escalera-wrap{margin-bottom:16px;overflow-x:auto}
+.escalera{display:flex;flex-direction:column;align-items:flex-start;gap:0;width:fit-content;margin:0 auto}
+.escalon{display:flex;align-items:center;gap:0}
+.escalon-num{font-size:20px;font-weight:900;color:#1e3a8a;background:#fff;border:2.5px solid #93c5fd;border-radius:10px;padding:5px 12px;min-width:52px;text-align:center;margin-right:6px}
+.escalon-bloque{display:flex;flex-wrap:wrap;gap:2px;align-items:center;max-width:120px}
+.bloque10{display:flex;gap:1px;align-items:center}
+.puntico{width:7px;height:7px;border-radius:50%;display:inline-block}
+.pc1{background:#f472b6}
+.pc2{background:#34d399}
+.pc3{background:#f59e0b}
+.pc4{background:#06b6d4}
+.pc5{background:#84cc16}
+.pc6{background:#a855f7}
+
+/* HUECO en escalera */
+.escalon-num.hueco{background:#fef9c3;border:2.5px dashed #fbbf24;color:transparent;cursor:pointer;position:relative}
+.escalon-num.hueco::after{content:'?';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:20px;font-weight:900;color:#f59e0b}
+.escalon-num.hueco:hover{background:#fef3c7}
+.escalon-num.lleno{background:linear-gradient(135deg,#d1fae5,#a7f3d0);border-color:#059669;color:#064e3b}
+.escalon-num.error{background:linear-gradient(135deg,#fee2e2,#fecaca);border-color:#dc2626;color:#dc2626}
+
+/* ORDENAR tarjetas */
+.tarjetas-banco{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
+.tarjeta-drag{padding:12px 18px;border-radius:16px;font-size:22px;font-weight:900;cursor:grab;border:3px solid;transition:all .2s;user-select:none;min-width:60px;text-align:center}
+.tarjeta-drag:active{cursor:grabbing;transform:scale(1.1)}
+.tarjeta-drag.usada{opacity:.3;pointer-events:none}
+
+.slots-wrap{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+.slot{width:64px;height:52px;border-radius:14px;border:3px dashed #94a3b8;background:#f8faff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#94a3b8;transition:all .2s}
+.slot.ocupado{border-style:solid;color:#1e3a8a}
+.slot.ok-slot{border-color:#059669;background:#d1fae5;color:#064e3b}
+.slot.fail-slot{border-color:#dc2626;background:#fee2e2;color:#dc2626}
+.slot.over{border-color:#6366f1;background:#ede9fe}
+
+.opciones{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.opcion{padding:12px 10px;border-radius:16px;font-size:18px;font-weight:bold;cursor:pointer;text-align:center;border:3px solid transparent;transition:all .18s}
+.o1{background:#fdf4ff;border-color:#d946ef;color:#7e22ce}
+.o1:hover{background:#fae8ff;transform:scale(1.06)}
+.o1.sel{background:#e879f9;color:#fff;border-color:#a21caf}
+.o2{background:#ecfdf5;border-color:#10b981;color:#065f46}
+.o2:hover{background:#d1fae5;transform:scale(1.06)}
+.o2.sel{background:#34d399;color:#fff;border-color:#059669}
+.o3{background:#fffbeb;border-color:#f59e0b;color:#92400e}
+.o3:hover{background:#fef3c7;transform:scale(1.06)}
+.o3.sel{background:#fbbf24;color:#fff;border-color:#d97706}
+.o4{background:#ecfeff;border-color:#06b6d4;color:#164e63}
+.o4:hover{background:#cffafe;transform:scale(1.06)}
+.o4.sel{background:#22d3ee;color:#fff;border-color:#0891b2}
+.o5{background:#f7fee7;border-color:#84cc16;color:#3f6212}
+.o5:hover{background:#ecfccb;transform:scale(1.06)}
+.o5.sel{background:#a3e635;color:#fff;border-color:#65a30d}
+.o6{background:#fdf4ff;border-color:#a855f7;color:#6b21a8}
+.o6:hover{background:#ede9fe;transform:scale(1.06)}
+.o6.sel{background:#a855f7;color:#fff;border-color:#7e22ce}
+.opcion.ok{background:linear-gradient(135deg,#d1fae5,#a7f3d0)!important;border-color:#059669!important;color:#064e3b!important;transform:scale(1.08)!important}
+.opcion.fail{background:linear-gradient(135deg,#fee2e2,#fecaca)!important;border-color:#dc2626!important;color:#7f1d1d!important}
+
+.btn-check{display:block;margin:0 auto 10px;padding:12px 30px;border:none;border-radius:40px;font-size:16px;font-weight:bold;cursor:pointer;color:#fff;transition:all .18s}
+.bc1{background:linear-gradient(135deg,#e879f9,#a855f7)}
+.bc2{background:linear-gradient(135deg,#34d399,#3b82f6)}
+.bc3{background:linear-gradient(135deg,#fbbf24,#ef4444)}
+.bc4{background:linear-gradient(135deg,#22d3ee,#6366f1)}
+.bc5{background:linear-gradient(135deg,#a3e635,#f97316)}
+.bc6{background:linear-gradient(135deg,#f472b6,#a855f7)}
+.btn-check:hover{transform:scale(1.05)}
+.msg{text-align:center;font-size:17px;font-weight:bold;min-height:26px;margin-bottom:10px}
+.msg.bien{color:#059669}.msg.mal{color:#dc2626}
+.resp-final{border-radius:16px;padding:12px;text-align:center;font-size:15px;font-weight:bold;margin-bottom:12px;display:none;background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:2.5px solid #34d399;color:#065f46}
+.btn-sig{display:none;margin:0 auto;padding:12px 32px;border:none;border-radius:40px;font-size:16px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 4px 14px rgba(99,102,241,.4)}
+.btn-sig:hover{transform:scale(1.05)}
+.final-box{background:linear-gradient(135deg,#ede9fe,#fce7f3);border:3px solid #a78bfa;border-radius:24px;padding:22px;text-align:center;margin-top:12px}
+.final-box h2{font-size:22px;color:#4c1d95}.final-box p{font-size:15px;color:#6d28d9;margin-top:8px}
+
+.instruccion{font-size:13px;color:#6d28d9;text-align:center;margin-bottom:10px;font-weight:bold}
+</style>
+</head><body>
+
+<div class="banner">
+  <h1>🪜 Escaleras de números</h1>
+  <p>Completa las escaleras y ordena los números</p>
+</div>
+<div class="score-pill" id="score">⭐ Puntos: 0 / 0</div>
+<div class="progreso" id="dots"></div>
+<div id="contenido"></div>
+<button class="btn-sig" id="btn-sig" onclick="sigRonda()">Siguiente ➡️</button>
+<div id="final-panel"></div>
+
+<script>
+// Tipo 'escalera': completa los huecos de una secuencia
+// Tipo 'ordenar': arrastra tarjetas al orden correcto
+const RONDAS=[
+  {tipo:'escalera', cl:'1', titulo:'La escalera de 2 grupos de 10',
+   enunciado:'Completa la escalera — ¿qué número falta?',
+   inicio:20, fin:29, hueco:24},
+  {tipo:'escalera', cl:'2', titulo:'La escalera de 4 grupos de 10',
+   enunciado:'Completa la escalera — ¿qué número falta?',
+   inicio:40, fin:49, hueco:46},
+  {tipo:'escalera', cl:'3', titulo:'La escalera de 1 grupo de 10',
+   enunciado:'Completa la escalera — ¿qué número falta?',
+   inicio:10, fin:19, hueco:15},
+  {tipo:'escalera', cl:'4', titulo:'La escalera de 3 grupos de 10',
+   enunciado:'Completa la escalera — ¿qué número falta?',
+   inicio:30, fin:39, hueco:33},
+  {tipo:'ordenar', cl:'5', titulo:'Ordena las tarjetas de menor a mayor',
+   enunciado:'Arrastra las tarjetas para ordenarlas de menor a mayor',
+   numeros:[73,78,79,70,75]},
+  {tipo:'ordenar', cl:'6', titulo:'Ordena estas tarjetas',
+   enunciado:'Ordena de menor a mayor',
+   numeros:[39,32,30,38,35]},
+  {tipo:'ordenar', cl:'2', titulo:'Ordena estas tarjetas',
+   enunciado:'Ordena de menor a mayor',
+   numeros:[92,98,96,99,94]},
+];
+
+let rondaIdx=0,pts=0,respondido=false,respuesta=null;
+let slotData=[], dragNum=null;
+
+function renderDots(){
+  const d=document.getElementById('dots');d.innerHTML='';
+  RONDAS.forEach((_,i)=>{
+    const el=document.createElement('div');
+    el.className='dot'+(i<rondaIdx?' ok':i===rondaIdx?' act':'');
+    d.appendChild(el);
+  });
+}
+
+function renderRonda(){
+  respondido=false;respuesta=null;slotData=[];dragNum=null;
+  const r=RONDAS[rondaIdx];
+  document.getElementById('btn-sig').style.display='none';
+  document.getElementById('final-panel').innerHTML='';
+  document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${rondaIdx}`;
+  renderDots();
+  if(r.tipo==='escalera') renderEscalera(r);
+  else renderOrdenar(r);
+}
+
+// ── ESCALERA ──
+function puntitos(n, cl){
+  const decenas=Math.floor(n/10);
+  const unidades=n%10;
+  let h='<div class="escalon-bloque">';
+  for(let d=0;d<decenas;d++){
+    h+=`<div class="bloque10">`;
+    for(let p=0;p<10;p++) h+=`<span class="puntico pc${cl}"></span>`;
+    h+='</div>';
+  }
+  for(let u=0;u<unidades;u++) h+=`<span class="puntico pc${cl}"></span>`;
+  h+='</div>';
+  return h;
+}
+
+function renderEscalera(r){
+  const cl=r.cl;
+  const nums=[];
+  for(let i=r.inicio;i<=r.fin;i++) nums.push(i);
+  // Opciones: el hueco + 3 distractores cercanos
+  const ops=new Set([r.hueco]);
+  while(ops.size<4){
+    const v=r.hueco+Math.floor(Math.random()*7)-3;
+    if(v>=r.inicio&&v<=r.fin&&v!==r.hueco) ops.add(v);
+  }
+  const opsArr=[...ops].sort((a,b)=>a-b);
+  let opsHtml='';
+  opsArr.forEach(op=>{
+    opsHtml+=`<button class="opcion o${cl}" data-val="${op}" onclick="selOpEsc(this)">${op}</button>`;
+  });
+
+  let escaleraHtml='<div class="escalera">';
+  [...nums].reverse().forEach(n=>{
+    const esHueco=n===r.hueco;
+    escaleraHtml+=`<div class="escalon">
+      <div class="escalon-num${esHueco?' hueco':''}" id="esc-num-${n}">${esHueco?'':n}</div>
+      ${puntitos(n,cl)}
+    </div>`;
+  });
+  escaleraHtml+='</div>';
+
+  document.getElementById('contenido').innerHTML=`
+  <div class="card c${cl}">
+    <div class="titulo-card t${cl}">🪜 ${r.titulo}</div>
+    <div class="enunciado">${r.enunciado}</div>
+    <div class="escalera-wrap">${escaleraHtml}</div>
+    <div class="instruccion">👆 ¿Qué número va en el espacio con <strong>?</strong></div>
+    <div class="opciones">${opsHtml}</div>
+    <button class="btn-check bc${cl}" onclick="comprobarEsc(${r.hueco})">✅ Comprobar</button>
+    <div class="msg" id="msg"></div>
+    <div class="resp-final" id="resp-final">✅ ¡Correcto! El número que faltaba era <strong>${r.hueco}</strong>.</div>
+  </div>`;
+}
+
+function selOpEsc(btn){
+  if(respondido)return;
+  document.querySelectorAll('.opcion').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  respuesta=parseInt(btn.dataset.val);
+  // Mostrar en el hueco
+  const hEl=document.querySelector('.escalon-num.hueco');
+  if(hEl) hEl.style.color='transparent';
+}
+
+function comprobarEsc(correcto){
+  if(respuesta===null){document.getElementById('msg').textContent='👆 Elige el número que falta';return;}
+  if(respondido)return;
+  respondido=true;
+  const ok=respuesta===correcto;
+  document.querySelectorAll('.opcion').forEach(b=>{
+    if(parseInt(b.dataset.val)===correcto) b.classList.add('ok');
+    else if(b.classList.contains('sel')) b.classList.add('fail');
+    b.style.pointerEvents='none';
+  });
+  // Rellenar el hueco
+  const hEl=document.querySelector('.escalon-num.hueco');
+  if(hEl){
+    hEl.classList.remove('hueco');
+    hEl.textContent=correcto;
+    hEl.classList.add(ok?'lleno':'error');
+  }
+  finComprobar(ok,`El número que faltaba era ${correcto}.`);
+}
+
+// ── ORDENAR ──
+function renderOrdenar(r){
+  const cl=r.cl;
+  const mezclados=[...r.numeros].sort(()=>Math.random()-.5);
+  slotData=new Array(r.numeros.length).fill(null);
+
+  let tarjetasHtml='';
+  const colores=['#f472b6','#34d399','#fbbf24','#60a5fa','#a78bfa'];
+  mezclados.forEach((n,i)=>{
+    const col=colores[i%colores.length];
+    tarjetasHtml+=`<div class="tarjeta-drag" id="td-${n}" data-num="${n}"
+      style="background:#fff;border-color:${col};color:${col}"
+      draggable="true"
+      ondragstart="dragStart(event,${n})"
+      ontouchstart="touchStart(event,${n})"
+      >${n}</div>`;
+  });
+
+  let slotsHtml='';
+  for(let i=0;i<r.numeros.length;i++){
+    slotsHtml+=`<div class="slot" id="slot-${i}" data-idx="${i}"
+      ondragover="dragOver(event)" ondrop="drop(event,${i})"
+      onclick="slotClick(${i})"
+      >?</div>`;
+  }
+
+  document.getElementById('contenido').innerHTML=`
+  <div class="card c${cl}">
+    <div class="titulo-card t${cl}">🔢 ${r.titulo}</div>
+    <div class="enunciado">${r.enunciado}</div>
+    <div class="instruccion">👆 Toca una tarjeta y luego toca la casilla donde va</div>
+    <div class="tarjetas-banco" id="banco">${tarjetasHtml}</div>
+    <div style="text-align:center;font-size:13px;font-weight:bold;color:#6d28d9;margin-bottom:8px">⬇️ Menor a mayor</div>
+    <div class="slots-wrap" id="slots">${slotsHtml}</div>
+    <button class="btn-check bc${cl}" onclick="comprobarOrden()">✅ Comprobar</button>
+    <div class="msg" id="msg"></div>
+    <div class="resp-final" id="resp-final">✅ Orden correcto: <strong>${[...r.numeros].sort((a,b)=>a-b).join(' → ')}</strong></div>
+  </div>`;
+
+  // Touch: selección por toque
+  document.querySelectorAll('.tarjeta-drag').forEach(t=>{
+    t.addEventListener('click',()=>selectCard(t));
+  });
+}
+
+let cardSelected=null;
+
+function selectCard(t){
+  if(respondido)return;
+  if(t.classList.contains('usada'))return;
+  document.querySelectorAll('.tarjeta-drag').forEach(x=>x.style.transform='scale(1)');
+  if(cardSelected===t){cardSelected=null;return;}
+  cardSelected=t;
+  t.style.transform='scale(1.12)';
+}
+
+function slotClick(idx){
+  if(respondido)return;
+  const r=RONDAS[rondaIdx];
+  const slotEl=document.getElementById('slot-'+idx);
+  if(cardSelected&&!cardSelected.classList.contains('usada')){
+    const num=parseInt(cardSelected.dataset.num);
+    // Si el slot ya tenía algo, devolver
+    if(slotData[idx]!==null){
+      const prev=slotData[idx];
+      document.getElementById('td-'+prev).classList.remove('usada');
+      document.getElementById('td-'+prev).style.transform='scale(1)';
+    }
+    slotData[idx]=num;
+    slotEl.textContent=num;
+    slotEl.classList.add('ocupado');
+    slotEl.style.borderColor=cardSelected.style.borderColor;
+    slotEl.style.color=cardSelected.style.borderColor;
+    cardSelected.classList.add('usada');
+    cardSelected.style.transform='scale(1)';
+    cardSelected=null;
+  } else if(slotData[idx]!==null){
+    // Devolver al banco
+    const prev=slotData[idx];
+    document.getElementById('td-'+prev).classList.remove('usada');
+    slotData[idx]=null;
+    slotEl.textContent='?';
+    slotEl.classList.remove('ocupado');
+    slotEl.style.borderColor='';slotEl.style.color='';
+  }
+}
+
+// Drag & drop
+function dragStart(e,n){dragNum=n;e.dataTransfer.setData('text',n);}
+function dragOver(e){e.preventDefault();e.currentTarget.classList.add('over');}
+function drop(e,idx){
+  e.preventDefault();
+  e.currentTarget.classList.remove('over');
+  const n=parseInt(e.dataTransfer.getData('text'));
+  colocarEnSlot(idx,n);
+}
+function colocarEnSlot(idx,n){
+  if(respondido)return;
+  const r=RONDAS[rondaIdx];
+  const slotEl=document.getElementById('slot-'+idx);
+  if(slotData[idx]!==null){
+    const prev=slotData[idx];
+    document.getElementById('td-'+prev).classList.remove('usada');
+  }
+  slotData[idx]=n;
+  const tEl=document.getElementById('td-'+n);
+  slotEl.textContent=n;
+  slotEl.classList.add('ocupado');
+  slotEl.style.borderColor=tEl.style.borderColor;
+  slotEl.style.color=tEl.style.borderColor;
+  tEl.classList.add('usada');
+}
+
+function comprobarOrden(){
+  const r=RONDAS[rondaIdx];
+  if(slotData.some(x=>x===null)){document.getElementById('msg').textContent='👆 Coloca todos los números';return;}
+  if(respondido)return;
+  respondido=true;
+  const correcto=[...r.numeros].sort((a,b)=>a-b);
+  let ok=true;
+  slotData.forEach((v,i)=>{
+    const sl=document.getElementById('slot-'+i);
+    if(v===correcto[i]){sl.classList.add('ok-slot');}
+    else{sl.classList.add('fail-slot');ok=false;}
+  });
+  finComprobar(ok,`Orden correcto: ${correcto.join(' → ')}`);
+}
+
+function touchStart(e,n){dragNum=n;}
+
+function finComprobar(ok,respTxt){
+  const msg=document.getElementById('msg');
+  if(ok){
+    msg.textContent='🎉 ¡Perfecto! ¡Correcto!';msg.className='msg bien';
+    pts++;document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${rondaIdx+1}`;
+  }else{
+    msg.textContent='😊 ¡Casi! Mira la respuesta correcta';msg.className='msg mal';
+  }
+  const rf=document.getElementById('resp-final');
+  if(rf) rf.style.display='block';
+  renderDots();
+  if(rondaIdx<RONDAS.length-1){
+    document.getElementById('btn-sig').style.display='block';
+  }else{
+    const stars=pts>=6?'🏆🌟🌟🌟':pts>=5?'🎊🌟🌟':pts>=4?'😊🌟':'💪';
+    document.getElementById('final-panel').innerHTML=`<div class="final-box">
+      <div style="font-size:42px;margin:8px 0">${stars}</div>
+      <h2>¡Terminaste!</h2>
+      <p>Obtuviste <strong>${pts}</strong> de <strong>${RONDAS.length}</strong> puntos</p>
+      <p style="margin-top:8px;font-size:13px">${pts===RONDAS.length?'¡Perfecto campeón! 🏆':pts>=5?'¡Muy bien!':'¡Sigue practicando!'}</p>
+      <button onclick="rondaIdx=0;pts=0;renderRonda()" style="margin-top:14px;padding:12px 28px;border:none;border-radius:40px;font-size:15px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#34d399,#3b82f6);color:#fff">🔄 Jugar de nuevo</button>
+    </div>`;
+  }
+}
+
+function sigRonda(){rondaIdx++;renderRonda();}
+renderRonda();
+</script>
+</body></html>

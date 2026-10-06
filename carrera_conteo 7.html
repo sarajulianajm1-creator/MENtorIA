@@ -1,0 +1,310 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',sans-serif;background:#fdf6ec;}
+#wrap{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;overflow:hidden;max-width:700px;margin:0 auto;padding-bottom:24px;}
+.header{background:#c5b8f8;padding:14px 20px 12px;text-align:center;}
+.header h1{font-size:22px;font-weight:800;color:#3a2a7a;}
+.header p{font-size:13px;color:#5a4aa0;margin-top:3px;}
+.game-area{padding:14px 16px 0;}
+.turn-bar{text-align:center;font-size:15px;font-weight:800;margin-bottom:12px;padding:8px 0;border-radius:20px;background:#eee9ff;color:#5a4aa0;}
+
+/* TRACK */
+.track-wrap{background:#e6f9f1;border:2.5px dashed #3dba7e;border-radius:20px;padding:14px 10px;margin-bottom:14px;}
+.track{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;}
+.cell{
+  width:56px;height:56px;border-radius:14px;border:2.5px solid #b8aef0;
+  background:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:800;color:#5a4aa0;position:relative;
+  cursor:default;transition:transform 0.15s,border-color 0.15s,background 0.15s;
+  flex-shrink:0;user-select:none;
+}
+.cell.start{background:#c5f0d8;border-color:#3dba7e;color:#1a7a50;}
+.cell.finish{background:#ffd6f0;border-color:#e060b0;color:#a0207a;}
+.cell.can-step{
+  background:#fff9c4;border-color:#f9a825;cursor:pointer;
+  animation:pulse 0.7s infinite alternate;
+}
+@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.08);box-shadow:0 0 0 4px #f5c84266;}}
+.cell.car1-on{background:#ffe0b2;border-color:#f57c00;}
+.cell.car2-on{background:#e1f5fe;border-color:#0288d1;}
+.cell.both-on{background:#fff9c4;border-color:#f9a825;}
+.car-tok{position:absolute;font-size:20px;line-height:1;}
+.car-tok.t1{top:1px;left:2px;}
+.car-tok.t2{bottom:1px;right:2px;}
+
+/* PLAYERS */
+.players{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.pcard{border-radius:16px;border:2.5px solid;padding:11px 12px;background:#fff;transition:box-shadow 0.2s;}
+.pcard.p1{border-color:#f57c00;}
+.pcard.p2{border-color:#0288d1;}
+.pcard.active{box-shadow:0 0 0 4px #f5c84299;}
+.pcard-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.pcar{font-size:26px;}
+.pname{font-size:14px;font-weight:800;color:#3a2a7a;}
+.ppos{font-size:12px;color:#888;font-weight:600;}
+.pdice{text-align:center;}
+.dice-face{display:inline-block;font-size:34px;line-height:1;background:#fff9c4;border:2.5px solid #f9a825;border-radius:10px;padding:3px 10px;min-width:50px;}
+.dlabel{font-size:11px;color:#aaa;margin-top:2px;font-weight:600;}
+
+/* STEPS COUNTER */
+.steps-info{text-align:center;font-size:14px;font-weight:700;color:#3a2a7a;margin-bottom:8px;min-height:24px;}
+.steps-dots{display:flex;justify-content:center;gap:6px;margin-bottom:10px;min-height:18px;}
+.sdot{width:16px;height:16px;border-radius:50%;border:2.5px solid #ccc;background:#fff;transition:background 0.2s,border-color 0.2s;}
+.sdot.done{background:#3dba7e;border-color:#1a7a50;}
+.sdot.todo{background:#fff;border-color:#bbb;}
+
+/* MSG */
+.msg{text-align:center;font-size:15px;font-weight:700;color:#3a2a7a;min-height:32px;margin:6px 0 8px;line-height:1.4;}
+
+/* CONTROLS */
+.controls{text-align:center;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+.btn{border:none;border-radius:30px;padding:11px 28px;font-size:15px;font-weight:800;cursor:pointer;transition:transform 0.1s;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.btn:active{transform:scale(0.96);}
+.btn:disabled{opacity:0.45;cursor:not-allowed;}
+.btn-dado{background:linear-gradient(135deg,#a87cf5,#f56fa0);color:#fff;font-size:20px;}
+.btn-reset{background:#f5c842;color:#3a2a7a;}
+
+/* WIN */
+.win-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:50;align-items:center;justify-content:center;}
+.win-overlay.show{display:flex;}
+.win-box{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;padding:32px 28px;text-align:center;max-width:340px;width:90%;}
+.win-trophy{font-size:68px;animation:tbounce 0.7s infinite alternate;}
+@keyframes tbounce{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+.win-title{font-size:26px;font-weight:900;color:#3a2a7a;margin:10px 0 4px;}
+.win-sub{font-size:14px;color:#5a4aa0;font-weight:600;margin-bottom:16px;}
+.btn-again{background:linear-gradient(135deg,#a87cf5,#3dba7e);color:#fff;border:none;border-radius:30px;padding:12px 32px;font-size:16px;font-weight:800;cursor:pointer;}
+</style>
+
+<div id="wrap">
+  <div class="header">
+    <h1>🎲 ¡La Gran Carrera!</h1>
+    <p>Lanza el dado y toca cada casilla para avanzar 🚗</p>
+  </div>
+  <div class="game-area">
+    <div class="turn-bar" id="turn-bar">🟠 Turno del Carro Naranja</div>
+
+    <div class="track-wrap">
+      <div class="track" id="track"></div>
+    </div>
+
+    <div class="players">
+      <div class="pcard p1 active" id="card1">
+        <div class="pcard-top">
+          <span class="pcar">🚗</span>
+          <div><div class="pname">Carro Naranja</div><div class="ppos" id="pos1">Casilla: 0</div></div>
+        </div>
+        <div class="pdice"><div class="dice-face" id="dice1">🎲</div><div class="dlabel">Mi dado</div></div>
+      </div>
+      <div class="pcard p2" id="card2">
+        <div class="pcard-top">
+          <span class="pcar">🚙</span>
+          <div><div class="pname">Carro Azul</div><div class="ppos" id="pos2">Casilla: 0</div></div>
+        </div>
+        <div class="pdice"><div class="dice-face" id="dice2">🎲</div><div class="dlabel">Mi dado</div></div>
+      </div>
+    </div>
+
+    <div class="steps-info" id="steps-info"></div>
+    <div class="steps-dots" id="steps-dots"></div>
+
+    <div class="msg" id="msg">¡Pulsa el dado para lanzarlo! 🎲</div>
+    <div class="controls">
+      <button class="btn btn-dado" id="btn-dado">🎲 ¡Lanzar dado!</button>
+      <button class="btn btn-reset" id="btn-reset">🔄 Reiniciar</button>
+    </div>
+  </div>
+</div>
+
+<div class="win-overlay" id="win-overlay">
+  <div class="win-box">
+    <div class="win-trophy" id="w-trophy">🏆</div>
+    <div class="win-title" id="w-title">¡Ganaste!</div>
+    <div class="win-sub" id="w-sub">¡Llegaste primero a la meta!</div>
+    <button class="btn-again" id="btn-again">🔄 Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+const TOTAL = 10;
+const FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+const PLAYERS = [
+  {name:'Carro Naranja', emoji:'🚗', col:'🟠', cls:'car1-on', tok:'t1'},
+  {name:'Carro Azul',    emoji:'🚙', col:'🔵', cls:'car2-on', tok:'t2'},
+];
+
+let pos = [0, 0];       // current position of each car
+let turn = 0;           // whose turn: 0 or 1
+let rolled = false;     // has the current player rolled?
+let diceVal = 0;        // result of the roll
+let stepsLeft = 0;      // how many cells still to tap
+let stepsDone = 0;      // how many cells already tapped
+let gameOver = false;
+
+/* ---- BUILD TRACK ---- */
+function buildTrack() {
+  const track = document.getElementById('track');
+  track.innerHTML = '';
+  for (let i = 0; i <= TOTAL; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell' + (i===0?' start':'') + (i===TOTAL?' finish':'');
+    cell.id = 'cell-'+i;
+    cell.innerHTML = `<span>${i===0?'🚦':i===TOTAL?'🏁':i}</span>`;
+    cell.addEventListener('click', () => onCellClick(i));
+    track.appendChild(cell);
+  }
+  renderTrack();
+}
+
+/* ---- RENDER TRACK HIGHLIGHTS ---- */
+function renderTrack() {
+  for (let i = 0; i <= TOTAL; i++) {
+    const cell = document.getElementById('cell-'+i);
+    if (!cell) continue;
+    cell.classList.remove('car1-on','car2-on','both-on','can-step');
+    // remove old tokens
+    cell.querySelectorAll('.car-tok').forEach(e=>e.remove());
+
+    const h0 = pos[0]===i, h1 = pos[1]===i;
+    if (h0&&h1) { cell.classList.add('both-on'); }
+    else if (h0) { cell.classList.add('car1-on'); }
+    else if (h1) { cell.classList.add('car2-on'); }
+
+    if (h0) cell.innerHTML += `<span class="car-tok t1">🚗</span>`;
+    if (h1) cell.innerHTML += `<span class="car-tok t2">🚙</span>`;
+
+    // highlight the NEXT cell to tap
+    if (rolled && stepsLeft > 0 && i === pos[turn]+1 && !gameOver) {
+      cell.classList.add('can-step');
+    }
+  }
+  document.getElementById('pos1').textContent = `Casilla: ${pos[0]}`;
+  document.getElementById('pos2').textContent = `Casilla: ${pos[1]}`;
+}
+
+/* ---- STEPS DOTS ---- */
+function renderDots() {
+  const info = document.getElementById('steps-info');
+  const dots = document.getElementById('steps-dots');
+  if (!rolled || diceVal===0) { info.textContent=''; dots.innerHTML=''; return; }
+  info.textContent = `Pasos dados: ${stepsDone} de ${diceVal}`;
+  dots.innerHTML = '';
+  for (let i=0;i<diceVal;i++){
+    const d=document.createElement('div');
+    d.className='sdot '+(i<stepsDone?'done':'todo');
+    dots.appendChild(d);
+  }
+}
+
+/* ---- CELL CLICK ---- */
+function onCellClick(i) {
+  if (!rolled || stepsLeft===0 || gameOver) return;
+  const expected = pos[turn]+1;
+  if (i !== expected) {
+    document.getElementById('msg').innerHTML = `👆 Toca la casilla <strong>${expected}</strong> — ¡una a la vez!`;
+    return;
+  }
+  // advance one step
+  pos[turn] = i;
+  stepsLeft--;
+  stepsDone++;
+  renderTrack();
+  renderDots();
+
+  if (pos[turn] >= TOTAL) {
+    gameOver = true;
+    renderTrack();
+    setTimeout(()=>showWin(turn), 400);
+    return;
+  }
+
+  if (stepsLeft===0) {
+    // finished moving
+    document.getElementById('msg').innerHTML = `✅ ¡Listo! ${PLAYERS[turn].emoji} llegó a la casilla <strong>${pos[turn]}</strong>`;
+    rolled = false; diceVal=0; stepsDone=0;
+    document.getElementById('btn-dado').disabled = false;
+    // switch turn
+    turn = 1-turn;
+    updateTurnUI();
+    setTimeout(()=>{
+      document.getElementById('msg').innerHTML = `${PLAYERS[turn].col} Turno de <strong>${PLAYERS[turn].name}</strong> — ¡lanza el dado!`;
+    }, 800);
+  } else {
+    document.getElementById('msg').innerHTML =
+      `👆 ¡Bien! Toca la casilla <strong>${pos[turn]+1}</strong> — te quedan <strong>${stepsLeft}</strong> pasos`;
+  }
+}
+
+/* ---- ROLL ---- */
+function doRoll() {
+  if (rolled || gameOver) return;
+  document.getElementById('btn-dado').disabled = true;
+  const diceEl = document.getElementById('dice'+(turn+1));
+  let count=0;
+  const final = Math.floor(Math.random()*6)+1;
+  const iv = setInterval(()=>{
+    diceEl.textContent = FACES[Math.floor(Math.random()*6)];
+    count++;
+    if(count>=12){
+      clearInterval(iv);
+      diceVal = final;
+      stepsLeft = final;
+      stepsDone = 0;
+      rolled = true;
+      diceEl.textContent = FACES[final-1];
+
+      // check if can actually move
+      const maxMove = Math.min(pos[turn]+final, TOTAL) - pos[turn];
+      if (maxMove===0) {
+        // already at end
+        return;
+      }
+      stepsLeft = maxMove;
+      renderTrack();
+      renderDots();
+      document.getElementById('msg').innerHTML =
+        `🎲 Sacaste un <strong>${final}</strong>! Ahora toca la casilla <strong>${pos[turn]+1}</strong> para avanzar`;
+    }
+  },75);
+}
+
+/* ---- TURN UI ---- */
+function updateTurnUI() {
+  const p = PLAYERS[turn];
+  document.getElementById('turn-bar').innerHTML = `${p.col} Turno del ${p.name}`;
+  document.getElementById('card1').classList.toggle('active', turn===0);
+  document.getElementById('card2').classList.toggle('active', turn===1);
+  document.getElementById('btn-dado').disabled = false;
+  renderDots();
+}
+
+/* ---- WIN ---- */
+function showWin(t) {
+  const p = PLAYERS[t];
+  document.getElementById('w-trophy').textContent = '🏆';
+  document.getElementById('w-title').textContent = `¡Ganó ${p.name}!`;
+  document.getElementById('w-sub').textContent = `¡Llegó primero a la meta! 🎉🎊`;
+  document.getElementById('win-overlay').classList.add('show');
+}
+
+/* ---- RESET ---- */
+function reset() {
+  pos=[0,0]; turn=0; rolled=false; diceVal=0; stepsLeft=0; stepsDone=0; gameOver=false;
+  document.getElementById('dice1').textContent='🎲';
+  document.getElementById('dice2').textContent='🎲';
+  document.getElementById('win-overlay').classList.remove('show');
+  document.getElementById('btn-dado').disabled=false;
+  document.getElementById('msg').textContent='¡Pulsa el dado para lanzarlo! 🎲';
+  document.getElementById('steps-info').textContent='';
+  document.getElementById('steps-dots').innerHTML='';
+  updateTurnUI();
+  buildTrack();
+}
+
+document.getElementById('btn-dado').addEventListener('click', doRoll);
+document.getElementById('btn-reset').addEventListener('click', reset);
+document.getElementById('btn-again').addEventListener('click', reset);
+
+buildTrack();
+updateTurnUI();
+</script>

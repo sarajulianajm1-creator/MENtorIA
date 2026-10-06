@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seleccionemos el mejor método</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',sans-serif;background:#f0ecff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px;}
+#wrap{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;overflow:hidden;max-width:720px;width:100%;padding-bottom:26px;box-shadow:0 8px 32px rgba(160,130,240,0.2);}
+
+.header{background:#c5b8f8;padding:18px 20px 14px;text-align:center;}
+.header h1{font-size:21px;font-weight:800;color:#3a2a7a;}
+.header p{font-size:13px;color:#5a4aa0;margin-top:4px;}
+
+.progress-row{display:flex;justify-content:center;gap:10px;padding:12px 0 4px;}
+.dp{width:14px;height:14px;border-radius:50%;background:#e0d9f9;border:2px solid #c5b8f8;}
+.dp.done{background:#f5c842;border-color:#d4a000;}
+.dp.current{background:#ff8fd8;border-color:#e060b0;}
+
+.score-row{text-align:center;margin:6px 0 12px;}
+.score-pill{display:inline-block;background:#fff;border:2px solid #c5b8f8;border-radius:30px;padding:5px 22px;font-size:15px;font-weight:700;color:#3a2a7a;}
+
+/* ── BOATS / PROBLEM ── */
+.problem-box{margin:0 18px 14px;background:#e8f4ff;border:2.5px solid #4a9ef5;border-radius:20px;padding:16px 18px;}
+.problem-top{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:12px;}
+.boat-card{background:#fff;border:2.5px solid #b8aef0;border-radius:14px;padding:12px 16px;text-align:center;min-width:120px;}
+.boat-icon{font-size:36px;}
+.boat-label{font-size:15px;font-weight:800;color:#3a2a7a;margin-top:4px;}
+.boat-count{font-size:22px;font-weight:900;color:#e05050;}
+.plus-big{font-size:32px;font-weight:900;color:#a87cf5;}
+.question{text-align:center;font-size:15px;font-weight:800;color:#1a7a50;}
+
+/* ── METHOD CARDS ── */
+.methods-row{display:flex;gap:12px;padding:0 18px;margin-bottom:14px;flex-wrap:wrap;}
+.method-card{
+  flex:1;min-width:240px;background:#fff;border:3px solid #b8aef0;
+  border-radius:18px;padding:14px;cursor:pointer;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.method-card:hover{border-color:#a87cf5;box-shadow:0 4px 16px rgba(168,124,245,0.2);}
+.method-card.selected{border-color:#a87cf5;background:#f3eeff;}
+.method-card.correct-pick{border-color:#3dba7e!important;background:#e6f9f1!important;}
+.method-card.wrong-pick{border-color:#e05050!important;background:#fde8e8!important;animation:wob 0.4s;}
+@keyframes wob{0%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}100%{transform:rotate(0)}}
+
+.method-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.method-char{font-size:30px;}
+.method-bubble{background:#eee9ff;border-radius:10px;padding:5px 10px;font-size:12px;font-weight:700;color:#5a4aa0;}
+.dots-area{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;min-height:40px;}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block;}
+.dot.g1{background:#4a9ef5;}
+.dot.g2{background:#f5a623;}
+.method-groups{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.grp-badge{background:#eee9ff;border:1.5px solid #b8aef0;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:800;color:#5a4aa0;display:flex;align-items:center;gap:3px;}
+.method-answer{font-size:13px;font-weight:800;color:#e05050;background:#fde8e8;border-radius:8px;padding:5px 10px;text-align:center;margin-top:4px;}
+
+/* ── SUMA DIRECTA ── */
+.suma-section{margin:0 18px 14px;background:#fff9e0;border:2.5px solid #f5c842;border-radius:20px;padding:14px 16px;}
+.suma-title{font-size:14px;font-weight:800;color:#7a5c00;margin-bottom:10px;text-align:center;}
+.suma-row{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;font-size:15px;font-weight:700;color:#3a2a7a;}
+.suma-pill{background:#eee9ff;border:1.5px solid #b8aef0;border-radius:8px;padding:4px 12px;font-size:16px;font-weight:900;color:#5a4aa0;}
+.suma-input{width:64px;height:48px;text-align:center;font-size:20px;font-weight:900;border:3px solid #b8aef0;border-radius:12px;color:#3a2a7a;background:#fff;}
+.suma-input:focus{outline:none;border-color:#f5c842;}
+.suma-input.correct{border-color:#3dba7e!important;background:#e6f9f1;}
+.suma-input.wrong{border-color:#e05050!important;background:#fde8e8;}
+.btn-check{border:none;border-radius:30px;padding:10px 24px;font-size:14px;font-weight:800;cursor:pointer;background:#3dba7e;color:#fff;margin-top:10px;}
+
+/* ── TIENDA SECTION ── */
+.shop-section{margin:0 18px 14px;background:#e6f9f1;border:2.5px dashed #3dba7e;border-radius:20px;padding:14px 16px;}
+.shop-title{font-size:14px;font-weight:800;color:#1a7a50;margin-bottom:12px;text-align:center;}
+.shop-chars{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.shop-char-card{background:#fff;border:2.5px solid #b8aef0;border-radius:16px;padding:12px 14px;flex:1;min-width:200px;max-width:280px;}
+.shop-char-top{display:flex;align-items:flex-end;gap:8px;margin-bottom:10px;}
+.shop-emoji{font-size:40px;line-height:1;}
+.shop-bubble{background:#eee9ff;border:1.5px solid #b8aef0;border-radius:12px 12px 12px 4px;padding:8px 12px;font-size:13px;font-weight:700;color:#3a2a7a;line-height:1.5;}
+.shop-bubble .item-tag{display:inline-flex;align-items:center;gap:3px;background:#fff;border:1.5px solid #b8aef0;border-radius:6px;padding:1px 6px;font-size:14px;}
+.shop-answer-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.shop-label{font-size:13px;font-weight:700;color:#3a2a7a;}
+.shop-input{width:56px;height:44px;text-align:center;font-size:19px;font-weight:900;border:3px solid #b8aef0;border-radius:10px;color:#3a2a7a;background:#fff;}
+.shop-input:focus{outline:none;border-color:#f5c842;}
+.shop-input.correct{border-color:#3dba7e!important;background:#e6f9f1;}
+.shop-input.wrong{border-color:#e05050!important;background:#fde8e8;}
+
+.fb{text-align:center;min-height:28px;font-size:15px;font-weight:700;color:#3a2a7a;margin:8px 18px 4px;}
+.btn-row{text-align:center;margin-top:8px;display:flex;justify-content:center;gap:12px;}
+.btn{border:none;border-radius:30px;padding:11px 28px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.btn:active{transform:scale(0.96);}
+.btn-reset{background:#f5c842;color:#3a2a7a;}
+.btn-next{background:#a87cf5;color:#fff;display:none;}
+
+.win-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:50;align-items:center;justify-content:center;}
+.win-overlay.show{display:flex;}
+.win-box{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;padding:32px 28px;text-align:center;max-width:340px;width:90%;}
+.win-trophy{font-size:68px;animation:tb 0.7s infinite alternate;}
+@keyframes tb{from{transform:translateY(0)}to{transform:translateY(-14px)}}
+.win-title{font-size:26px;font-weight:900;color:#3a2a7a;margin:10px 0 4px;}
+.win-sub{font-size:14px;color:#5a4aa0;font-weight:600;margin-bottom:16px;}
+.btn-again{background:linear-gradient(135deg,#a87cf5,#3dba7e);color:#fff;border:none;border-radius:30px;padding:12px 32px;font-size:16px;font-weight:800;cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="header">
+    <h1>🐟 Seleccionemos el mejor método</h1>
+    <p>Suma, elige el método y resuelve los problemas</p>
+  </div>
+  <div class="progress-row" id="prog"></div>
+  <div class="score-row"><div class="score-pill">⭐ Puntos: <span id="sc">0</span></div></div>
+  <div id="main-content"></div>
+  <div class="fb" id="fb"></div>
+  <div class="btn-row">
+    <button class="btn btn-reset" id="btn-reset">🔄 Reiniciar</button>
+    <button class="btn btn-next" id="btn-next">Siguiente ▶</button>
+  </div>
+</div>
+
+<div class="win-overlay" id="win-overlay">
+  <div class="win-box">
+    <div class="win-trophy">🏆</div>
+    <div class="win-title">¡Felicitaciones!</div>
+    <div class="win-sub" id="win-sub">¡Eres muy bueno sumando!</div>
+    <button class="btn-again" id="btn-again">🔄 Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+// Store prices (from Don Pinocho)
+const PRICES = {
+  '🍬':3, '🍦':5, '🍪':2, '🧃':4,
+  '🪣':35,'🔪':13,'🍳':42,'🍲':47
+};
+
+const LEVELS = [
+  // type: 'metodo' — boats + two methods, pick the one that gives right answer
+  {
+    type:'metodo',
+    icon:'🐟', a:36, b:25,
+    q:'¿Cuántos 🐟 hay en total?',
+    // Method A: Mariana groups by 10 → 5 groups of 10 + 11 sueltos → 61
+    methodA:{
+      char:'👧', say:'¡Yo hago así!',
+      groups:6, sueltos:1, answer:61,
+    },
+    // Method B: Alejo → 6 groups of 10 + 1 suelto → 61
+    methodB:{
+      char:'👦', say:'Lo que yo hago es un poco diferente.',
+      groups:6, sueltos:1, answer:61,
+    },
+    correct: 61,
+  },
+  // type: 'suma' — two groups, write total
+  {
+    type:'suma',
+    pairs:[
+      {a:23, iconA:'🥕', b:36, iconB:'🥕'},
+      {a:54, iconA:'🐄', b:38, iconB:'🐄'},
+      {a:25, iconA:'🌿', b:48, iconB:'🌿'},
+    ]
+  },
+  // type: 'tienda' — two characters, what did they pay?
+  {
+    type:'tienda',
+    chars:[
+      {
+        emoji:'👦', say:'Compré 1 🍲 y 1 🧃. ¿Cuánto pagué?',
+        items:['🍲','🧃'], correct: 47+4
+      },
+      {
+        emoji:'👧', say:'Yo compré 1 🍪, 1 🍬 y 1 🍦. ¿Cuánto pagué?',
+        items:['🍪','🍬','🍦'], correct: 2+3+5
+      },
+    ]
+  },
+  // another suma round
+  {
+    type:'suma',
+    pairs:[
+      {a:41, iconA:'🐠', b:29, iconB:'🐠'},
+      {a:33, iconA:'🌻', b:47, iconB:'🌻'},
+    ]
+  },
+  // another tienda round
+  {
+    type:'tienda',
+    chars:[
+      {
+        emoji:'👦', say:'Compré 1 🍳 y 1 🔪. ¿Cuánto pagué?',
+        items:['🍳','🔪'], correct: 42+13
+      },
+      {
+        emoji:'👧', say:'Compré 1 🪣 y 1 🍬. ¿Cuánto pagué?',
+        items:['🪣','🍬'], correct: 35+3
+      },
+    ]
+  },
+];
+
+let lvl=0, score=0, answered=false;
+const isLast=()=>lvl===LEVELS.length-1;
+const L=()=>LEVELS[lvl];
+
+function buildProg(){
+  const r=document.getElementById('prog');r.innerHTML='';
+  LEVELS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dp'+(i<lvl?' done':i===lvl?' current':'');
+    r.appendChild(d);
+  });
+}
+
+function makeDots(count, cls){
+  let h='';
+  for(let i=0;i<count;i++) h+=`<span class="dot ${cls}"></span>`;
+  return h;
+}
+
+function buildMetodo(lv){
+  const total=lv.a+lv.b;
+  return `
+  <div class="problem-box">
+    <div class="problem-top">
+      <div class="boat-card">
+        <div class="boat-icon">🛶</div>
+        <div class="boat-label">Hay <span class="boat-count">${lv.a}</span> ${lv.icon}</div>
+      </div>
+      <div class="plus-big">+</div>
+      <div class="boat-card">
+        <div class="boat-icon">🛶</div>
+        <div class="boat-label">Hay <span class="boat-count">${lv.b}</span> ${lv.icon}</div>
+      </div>
+    </div>
+    <div class="question">${lv.q}</div>
+  </div>
+  <div style="text-align:center;font-size:13px;font-weight:800;color:#5a4aa0;margin:0 18px 10px">👆 Toca el método que da la respuesta correcta</div>
+  <div class="methods-row">
+    <div class="method-card" id="mc-A" onclick="onMethod('A',${total})">
+      <div class="method-header">
+        <span class="method-char">${lv.methodA.char}</span>
+        <span class="method-bubble">${lv.methodA.say}</span>
+      </div>
+      <div class="dots-area">${makeDots(lv.a,'g1')}${makeDots(lv.b,'g2')}</div>
+      <div class="method-groups">
+        <span class="grp-badge">🔵 ${lv.methodA.groups} grupos de 10</span>
+        <span class="grp-badge">+ ${lv.methodA.sueltos} suelto</span>
+      </div>
+      <div class="method-answer">Respuesta: ${lv.methodA.groups} grupos de 10 y ${lv.methodA.sueltos} suelto = ${lv.methodA.answer}</div>
+    </div>
+    <div class="method-card" id="mc-B" onclick="onMethod('B',${total})">
+      <div class="method-header">
+        <span class="method-char">${lv.methodB.char}</span>
+        <span class="method-bubble">${lv.methodB.say}</span>
+      </div>
+      <div class="dots-area">${makeDots(lv.b,'g2')}${makeDots(lv.a,'g1')}</div>
+      <div class="method-groups">
+        <span class="grp-badge">🟠 ${lv.methodB.groups} grupos de 10</span>
+        <span class="grp-badge">+ ${lv.methodB.sueltos} suelto</span>
+      </div>
+      <div class="method-answer">Respuesta: ${lv.methodB.groups} grupos de 10 y ${lv.methodB.sueltos} suelto = ${lv.methodB.answer}</div>
+    </div>
+  </div>`;
+}
+
+function buildSuma(lv){
+  let html=`<div class="suma-section"><div class="suma-title">➕ ¿Cuántos en total?</div>`;
+  lv.pairs.forEach((p,i)=>{
+    html+=`<div class="suma-row" style="margin-bottom:12px">
+      <span class="suma-pill">${p.a} ${p.iconA}</span>
+      <span>y</span>
+      <span class="suma-pill">${p.b} ${p.iconB}</span>
+      <span>=</span>
+      <input type="number" class="suma-input" id="si-${i}" min="0" max="200" placeholder="?">
+      <span>${p.iconA}</span>
+    </div>`;
+  });
+  html+=`<div style="text-align:center"><button class="btn-check" id="btn-check">✅ Comprobar</button></div></div>`;
+  return html;
+}
+
+function buildTienda(lv){
+  let html=`<div class="shop-section"><div class="shop-title">🏪 ¿Cuánto pagaron en la tienda de Don Pinocho?</div><div class="shop-chars">`;
+  lv.chars.forEach((c,i)=>{
+    const itemTags=c.items.map(it=>`<span class="item-tag">${it} (${PRICES[it]}$)</span>`).join(' + ');
+    html+=`<div class="shop-char-card">
+      <div class="shop-char-top">
+        <span class="shop-emoji">${c.emoji}</span>
+        <div class="shop-bubble">${c.say}<br>${itemTags}</div>
+      </div>
+      <div class="shop-answer-row">
+        <span class="shop-label">Pagué:</span>
+        <input type="number" class="shop-input" id="shi-${i}" min="0" max="200" placeholder="?">
+        <span style="font-size:13px;font-weight:700;color:#5a4aa0">pesos</span>
+      </div>
+    </div>`;
+  });
+  html+=`</div><div style="text-align:center;margin-top:12px"><button class="btn-check" id="btn-check">✅ Comprobar</button></div></div>`;
+  return html;
+}
+
+function buildQuestion(){
+  const lv=L();
+  answered=false;
+  document.getElementById('btn-next').style.display='none';
+  document.getElementById('fb').textContent='';
+
+  let html='';
+  if(lv.type==='metodo') html=buildMetodo(lv);
+  else if(lv.type==='suma') html=buildSuma(lv);
+  else if(lv.type==='tienda') html=buildTienda(lv);
+  document.getElementById('main-content').innerHTML=html;
+
+  const btn=document.getElementById('btn-check');
+  if(btn) btn.addEventListener('click', checkAnswer);
+}
+
+function onMethod(which, total){
+  if(answered)return;
+  const lv=L();
+  const mA=lv.methodA, mB=lv.methodB;
+  // Both give same total in example — we mark both correct visually
+  // but the "correct" pick is whichever matches total
+  const cardA=document.getElementById('mc-A');
+  const cardB=document.getElementById('mc-B');
+  answered=true;
+  score+=15; document.getElementById('sc').textContent=score;
+  cardA.classList.add('correct-pick');
+  cardB.classList.add('correct-pick');
+  document.getElementById('fb').innerHTML=`🎉 ¡Bien! Los dos métodos dan <strong>${total}</strong> — ¡los dos son correctos!`;
+  document.getElementById('btn-next').style.display='inline-block';
+  document.getElementById('btn-next').textContent=isLast()?'🏆 Ver resultados':'Siguiente ▶';
+}
+
+function checkAnswer(){
+  if(answered)return;
+  const lv=L();
+  let allOk=true, allFilled=true;
+
+  if(lv.type==='suma'){
+    lv.pairs.forEach((p,i)=>{
+      const inp=document.getElementById('si-'+i);
+      if(!inp)return;
+      const val=parseInt(inp.value,10);
+      if(isNaN(val)){allFilled=false;return;}
+      if(val===p.a+p.b){inp.classList.add('correct');inp.classList.remove('wrong');}
+      else{inp.classList.add('wrong');inp.classList.remove('correct');allOk=false;}
+    });
+  } else if(lv.type==='tienda'){
+    lv.chars.forEach((c,i)=>{
+      const inp=document.getElementById('shi-'+i);
+      if(!inp)return;
+      const val=parseInt(inp.value,10);
+      if(isNaN(val)){allFilled=false;return;}
+      if(val===c.correct){inp.classList.add('correct');inp.classList.remove('wrong');}
+      else{inp.classList.add('wrong');inp.classList.remove('correct');allOk=false;}
+    });
+  }
+
+  if(!allFilled){document.getElementById('fb').textContent='✏️ Completa todas las respuestas';return;}
+  if(allOk){
+    answered=true; score+=15; document.getElementById('sc').textContent=score;
+    document.getElementById('fb').innerHTML='🎉 ¡Excelente! Todas las respuestas son correctas';
+    document.getElementById('btn-next').style.display='inline-block';
+    document.getElementById('btn-next').textContent=isLast()?'🏆 Ver resultados':'Siguiente ▶';
+  } else {
+    document.getElementById('fb').textContent='😅 Revisa las que están en rojo — ¡vuelve a sumar!';
+    setTimeout(()=>{
+      document.querySelectorAll('.suma-input.wrong,.shop-input.wrong').forEach(i=>i.classList.remove('wrong'));
+    },1000);
+  }
+}
+
+function nextLevel(){
+  if(isLast()&&answered){
+    document.getElementById('win-sub').textContent=`Completaste ${LEVELS.length} actividades con ${score} puntos 🎊`;
+    document.getElementById('win-overlay').classList.add('show');return;
+  }
+  lvl++;buildProg();buildQuestion();
+}
+
+function reset(){
+  lvl=0;score=0;answered=false;
+  document.getElementById('sc').textContent=0;
+  document.getElementById('win-overlay').classList.remove('show');
+  buildProg();buildQuestion();
+}
+
+document.getElementById('btn-next').addEventListener('click',nextLevel);
+document.getElementById('btn-reset').addEventListener('click',reset);
+document.getElementById('btn-again').addEventListener('click',reset);
+
+reset();
+</script>
+</body>
+</html>

@@ -1,0 +1,2223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aventuras Matemáticas | Portal de Juegos Educativos 1° Grado</title>
+  <meta name="description" content="Colección interactiva de 20 juegos didácticos de matemáticas para primer grado de primaria. Aprende conteo, sumas, restas, decenas, gráficas y resolución de problemas.">
+  <meta name="theme-color" content="#7F77DD">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Aventuras Matemáticas - 20 Juegos Didácticos">
+  <meta property="og:description" content="Colección de 20 juegos interactivos de matemáticas para niños de primer grado.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --font-body: 'Fredoka', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-heading: 'Outfit', sans-serif;
+
+      --bg-main: #F4F6FC;
+      --bg-card: #FFFFFF;
+      --bg-glass: rgba(255, 255, 255, 0.9);
+
+      --color-primary: #6366F1;
+      --color-primary-dark: #4F46E5;
+      --color-primary-light: #EEF2FF;
+
+      --color-accent-amber: #F59E0B;
+      --color-accent-pink: #EC4899;
+      --color-accent-emerald: #10B981;
+      --color-accent-sky: #0284C7;
+
+      --text-dark: #1E1B4B;
+      --text-muted: #64748B;
+      --text-light: #94A3B8;
+
+      --border-soft: #E2E8F0;
+      --border-accent: #CBD5E1;
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 2px 6px rgba(30, 27, 75, 0.05);
+      --shadow-md: 0 8px 24px rgba(30, 27, 75, 0.08);
+      --shadow-lg: 0 16px 40px rgba(30, 27, 75, 0.12);
+      --shadow-card-hover: 0 20px 32px -8px rgba(99, 102, 241, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-main);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      position: relative;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(199, 210, 254, 0.35) 0%, transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(254, 215, 170, 0.35) 0%, transparent 28%),
+        radial-gradient(circle at 85% 85%, rgba(251, 207, 232, 0.35) 0%, transparent 32%),
+        radial-gradient(circle at 15% 90%, rgba(167, 243, 208, 0.35) 0%, transparent 30%);
+      background-attachment: fixed;
+    }
+
+    /* Pattern overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* --- TOP NAVBAR --- */
+    .navbar {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 2px solid rgba(226, 232, 240, 0.8);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(30, 27, 75, 0.04);
+    }
+
+    .nav-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-dark);
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #7F77DD, #4F46E5);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      transform: rotate(-3deg);
+      transition: transform 0.25s ease;
+    }
+
+    .brand:hover .brand-icon {
+      transform: rotate(5deg) scale(1.08);
+    }
+
+    .brand-text h1 {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+      color: #26215C;
+    }
+
+    .brand-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      padding: 9px 18px;
+      text-decoration: none;
+      user-select: none;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn-secondary {
+      background: #FFFFFF;
+      color: #3C3489;
+      border: 2px solid #E2E8F0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary:hover {
+      background: #F8FAFC;
+      border-color: #CBD5E1;
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7F77DD, #534AB7);
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(127, 119, 221, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #6C63CE, #443B9D);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(127, 119, 221, 0.45);
+    }
+
+    .btn-random {
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-random:hover {
+      transform: translateY(-2px) rotate(1deg);
+      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+    }
+
+    .btn-icon-only {
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      border-radius: 50%;
+      font-size: 18px;
+    }
+
+    /* --- HERO SECTION --- */
+    .hero {
+      padding: 36px 0 24px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #EEEDFE;
+      color: #534AB7;
+      border: 2px solid #CECBF6;
+      border-radius: var(--radius-full);
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      animation: bounceGentle 2.5s infinite;
+    }
+
+    @keyframes bounceGentle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: clamp(28px, 4.5vw, 44px);
+      font-weight: 800;
+      color: #1E1B4B;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #6366F1, #EC4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 640px;
+      margin: 0 auto 24px;
+      font-weight: 500;
+    }
+
+    /* --- PROGRESS & STATS BAR --- */
+    .stats-card {
+      background: #FFFFFF;
+      border: 2.5px solid #E2E8F0;
+      border-radius: var(--radius-lg);
+      padding: 14px 22px;
+      max-width: 760px;
+      margin: 0 auto 30px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .stats-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stats-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: #FEF3C7;
+      color: #D97706;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .stats-info {
+      text-align: left;
+    }
+
+    .stats-number {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 800;
+      color: #1E1B4B;
+      line-height: 1.1;
+    }
+
+    .stats-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .progress-bar-wrap {
+      flex: 1;
+      min-width: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      color: #534AB7;
+    }
+
+    .progress-track {
+      height: 12px;
+      background: #EEEDFE;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      border: 1px solid #CECBF6;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10B981, #059669);
+      border-radius: var(--radius-full);
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* --- FILTERS & SEARCH --- */
+    .controls-wrapper {
+      background: rgba(255, 255, 255, 0.88);
+      border: 2px solid #E2E8F0;
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(10px);
+    }
+
+    .search-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 260px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 48px;
+      padding: 10px 44px 10px 46px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      border: 2.5px solid #CBD5E1;
+      border-radius: var(--radius-full);
+      background: #FFFFFF;
+      color: var(--text-dark);
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: #6366F1;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: #94A3B8;
+      pointer-events: none;
+    }
+
+    .clear-search-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #E2E8F0;
+      border: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: #64748B;
+    }
+
+    .clear-search-btn:hover {
+      background: #CBD5E1;
+    }
+
+    .sort-select {
+      height: 48px;
+      padding: 0 36px 0 18px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      color: #3C3489;
+      background: #FFFFFF;
+      border: 2.5px solid #CBD5E1;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 15px;
+      transition: border-color 0.2s;
+    }
+
+    .sort-select:focus {
+      border-color: #6366F1;
+    }
+
+    /* Category Filter Pills */
+    .categories-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .category-btn {
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      border: 2px solid #E2E8F0;
+      background: #FFFFFF;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .category-btn:hover {
+      background: #F8FAFC;
+      border-color: #CBD5E1;
+      transform: translateY(-2px);
+    }
+
+    .category-btn.active {
+      background: #6366F1;
+      border-color: #4F46E5;
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .category-count {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      background: rgba(0, 0, 0, 0.08);
+      font-weight: 800;
+    }
+
+    .category-btn.active .category-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+    }
+
+    /* --- GAMES GRID --- */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+      gap: 22px;
+      margin-bottom: 50px;
+    }
+
+    .game-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 2.5px solid var(--border-soft);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .game-card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: var(--card-color, #7F77DD);
+      opacity: 0.85;
+    }
+
+    .game-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: var(--shadow-card-hover);
+      border-color: var(--card-color, #7F77DD);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .game-num-badge {
+      font-family: var(--font-heading);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background: #F1F5F9;
+      color: #475569;
+      border: 1.5px solid #CBD5E1;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .category-pill {
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 11px;
+      border-radius: var(--radius-full);
+      background: var(--card-tint, #EEEDFE);
+      color: var(--card-color, #534AB7);
+      border: 1.5px solid transparent;
+    }
+
+    .card-played-mark {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #E2E8F0;
+      color: #94A3B8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      title: "Marcar como completado";
+    }
+
+    .card-played-mark.completed {
+      background: #10B981;
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+    }
+
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      margin-bottom: 18px;
+    }
+
+    .card-icon-wrap {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      background: var(--card-tint, #EEEDFE);
+      border: 2px solid var(--card-color, #CECBF6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 14px;
+      transition: transform 0.25s ease;
+    }
+
+    .game-card:hover .card-icon-wrap {
+      transform: scale(1.1) rotate(4deg);
+    }
+
+    .card-title {
+      font-family: var(--font-heading);
+      font-size: 19px;
+      font-weight: 700;
+      color: #1E1B4B;
+      line-height: 1.25;
+      margin-bottom: 6px;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: #6366F1;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-top: auto;
+    }
+
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .btn-play {
+      background: linear-gradient(135deg, var(--card-color, #6366F1), var(--card-dark, #4F46E5));
+      color: #FFFFFF;
+      border-radius: var(--radius-full);
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-play:hover {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-tab {
+      background: #FFFFFF;
+      border: 2px solid #E2E8F0;
+      color: #475569;
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    .btn-tab:hover {
+      background: #F1F5F9;
+      border-color: #CBD5E1;
+      color: #1E1B4B;
+      transform: translateY(-2px);
+    }
+
+    /* --- EMPTY STATE --- */
+    .empty-state {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      border: 2.5px dashed #CBD5E1;
+      margin-bottom: 40px;
+    }
+
+    .empty-icon {
+      font-size: 56px;
+      margin-bottom: 12px;
+    }
+
+    .empty-title {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 700;
+      color: #1E1B4B;
+      margin-bottom: 6px;
+    }
+
+    .empty-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    /* --- CURRICULUM OVERVIEW SECTION --- */
+    .curriculum-section {
+      background: #FFFFFF;
+      border: 2.5px solid #E2E8F0;
+      border-radius: var(--radius-xl);
+      padding: 32px 28px;
+      margin-bottom: 40px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .curriculum-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .curriculum-header h2 {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      font-weight: 800;
+      color: #1E1B4B;
+      margin-bottom: 6px;
+    }
+
+    .curriculum-header p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .curriculum-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .curriculum-card {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+
+    .curriculum-card h3 {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 700;
+      color: #1E1B4B;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .curriculum-card p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 10px;
+    }
+
+    .curriculum-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .curriculum-tag {
+      font-size: 11px;
+      font-weight: 700;
+      background: #EEEDFE;
+      color: #534AB7;
+      border-radius: 6px;
+      padding: 2px 8px;
+    }
+
+    /* --- FOOTER --- */
+    .footer {
+      margin-top: auto;
+      background: #FFFFFF;
+      border-top: 2px solid #E2E8F0;
+      padding: 30px 0;
+      text-align: center;
+    }
+
+    .footer-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-link {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #534AB7;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .footer-link:hover {
+      text-decoration: underline;
+    }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* --- MODAL PLAYER (EMBEDDED IFRAME) --- */
+    .player-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .player-modal.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-container {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      border: 3px solid #6366F1;
+      width: 100%;
+      max-width: 960px;
+      height: 92vh;
+      max-height: 900px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    @keyframes modalSlideUp {
+      from { transform: translateY(30px) scale(0.96); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      background: #F8FAFC;
+      border-bottom: 2px solid #E2E8F0;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .modal-game-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 200px;
+    }
+
+    .modal-game-icon {
+      font-size: 28px;
+    }
+
+    .modal-game-titles h3 {
+      font-family: var(--font-heading);
+      font-size: 17px;
+      font-weight: 800;
+      color: #1E1B4B;
+      line-height: 1.1;
+    }
+
+    .modal-game-titles p {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .modal-nav-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .modal-btn {
+      background: #FFFFFF;
+      border: 2px solid #CBD5E1;
+      border-radius: var(--radius-full);
+      padding: 7px 14px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .modal-btn:hover {
+      background: #F1F5F9;
+      border-color: #94A3B8;
+      color: #0F172A;
+      transform: translateY(-1px);
+    }
+
+    .modal-btn.primary {
+      background: #6366F1;
+      border-color: #4F46E5;
+      color: #FFFFFF;
+    }
+
+    .modal-btn.primary:hover {
+      background: #4F46E5;
+    }
+
+    .modal-btn-close {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 50%;
+      background: #FEE2E2;
+      border: 2px solid #FCA5A5;
+      color: #DC2626;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .modal-btn-close:hover {
+      background: #EF4444;
+      color: #FFFFFF;
+      transform: scale(1.08);
+    }
+
+    .modal-iframe-wrap {
+      flex: 1;
+      width: 100%;
+      background: #FFF9F0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .iframe-loader {
+      position: absolute;
+      inset: 0;
+      background: #FFF9F0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      z-index: 5;
+      transition: opacity 0.3s ease;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid #CECBF6;
+      border-top-color: #6366F1;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Fullscreen modal style */
+    .modal-container.fullscreen {
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw;
+      max-height: 100vh;
+      border-radius: 0;
+      border: none;
+    }
+
+    /* --- GITHUB PAGES GUIDE MODAL --- */
+    .guide-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 1010;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .guide-modal.active {
+      display: flex;
+    }
+
+    .guide-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      border: 3px solid #10B981;
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 30px;
+      position: relative;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+      animation: modalSlideUp 0.3s ease;
+    }
+
+    .guide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .guide-header h2 {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      font-weight: 800;
+      color: #065F46;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .guide-step {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      align-items: flex-start;
+    }
+
+    .guide-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #10B981;
+      color: #FFFFFF;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .guide-body h4 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1E1B4B;
+      margin-bottom: 4px;
+    }
+
+    .guide-body p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .guide-code-box {
+      background: #0F172A;
+      color: #38BDF8;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-family: monospace;
+      font-size: 13px;
+      margin-top: 8px;
+      user-select: all;
+    }
+
+    .guide-tip {
+      background: #ECFDF5;
+      border: 2px solid #A7F3D0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #065F46;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* --- FLOATING TOAST --- */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1E1B4B;
+      color: #FFFFFF;
+      padding: 12px 22px;
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      z-index: 2000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .nav-content {
+        height: auto;
+        padding: 12px 0;
+        flex-wrap: wrap;
+      }
+      .brand-text h1 {
+        font-size: 19px;
+      }
+      .hero-title {
+        font-size: 28px;
+      }
+      .stats-card {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .modal-container {
+        height: 98vh;
+        max-height: 98vh;
+        padding: 0;
+      }
+      .modal-header {
+        padding: 10px 14px;
+      }
+      .modal-nav-tools {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAVBAR -->
+  <header class="navbar">
+    <div class="container nav-content">
+      <a href="#" class="brand" onclick="scrollToTop(event)">
+        <div class="brand-icon">🧮</div>
+        <div class="brand-text">
+          <h1>Aventuras Matemáticas</h1>
+          <p>Portal de Juegos Interactivos · 1° Grado</p>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary btn-icon-only" id="soundBtn" onclick="toggleSound()" title="Activar/Desactivar Sonido">
+          🔊
+        </button>
+        <button class="btn btn-random" onclick="playRandomGame()" title="Jugar un juego al azar">
+          🎲 Juego al Azar
+        </button>
+        <button class="btn btn-primary" onclick="openGuideModal()" title="Instrucciones para desplegar en GitHub Pages">
+          🚀 GitHub Pages
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container">
+    
+    <!-- HERO SECTION -->
+    <section class="hero">
+      <div class="hero-badge">
+        ✨ 20 Juegos Didácticos Listos para Jugar y Desplegar
+      </div>
+      <h2 class="hero-title">
+        ¡Aprende y Juega con las <span>Matemáticas</span>!
+      </h2>
+      <p class="hero-desc">
+        Explora actividades interactivas diseñadas para primer grado: conteo visual, descomposición numérica, sumas, restas, resolución de problemas y más.
+      </p>
+
+      <!-- STATS & PROGRESS TRACKER -->
+      <div class="stats-card">
+        <div class="stats-item">
+          <div class="stats-icon">🏆</div>
+          <div class="stats-info">
+            <div class="stats-number"><span id="playedCount">0</span> / 20</div>
+            <div class="stats-label">Juegos Completados</div>
+          </div>
+        </div>
+
+        <div class="progress-bar-wrap">
+          <div class="progress-labels">
+            <span>Tu progreso de aprendizaje</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary" onclick="resetProgress()" style="font-size:12px; padding:6px 12px;" title="Reiniciar marcas de completado">
+          🔄 Reiniciar
+        </button>
+      </div>
+    </section>
+
+    <!-- SEARCH & CATEGORY FILTERS -->
+    <section class="controls-wrapper">
+      <div class="search-row">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="Buscar por título, número (ej. 7) o tema (dados, contar, monedas, restas)..."
+            oninput="handleSearch(this.value)"
+            autocomplete="off"
+          >
+          <button class="clear-search-btn" id="clearSearchBtn" onclick="clearSearch()" title="Borrar búsqueda">✕</button>
+        </div>
+
+        <select class="sort-select" id="sortSelect" onchange="handleSort(this.value)">
+          <option value="id-asc">🔢 Orden numérico (#1 al #20)</option>
+          <option value="id-desc">🔢 Orden inverso (#20 al #1)</option>
+          <option value="alpha">🔤 Alfabético (A - Z)</option>
+          <option value="unplayed">⭐ Primero los pendientes</option>
+        </select>
+      </div>
+
+      <div class="categories-row" id="categoryPills">
+        <button class="category-btn active" data-category="todos" onclick="setCategory('todos')">
+          🌟 Todos <span class="category-count">20</span>
+        </button>
+        <button class="category-btn" data-category="conteo" onclick="setCategory('conteo')">
+          🔢 Conteo y Cantidades <span class="category-count">7</span>
+        </button>
+        <button class="category-btn" data-category="operaciones" onclick="setCategory('operaciones')">
+          ➕ Suma y Resta <span class="category-count">5</span>
+        </button>
+        <button class="category-btn" data-category="decenas" onclick="setCategory('decenas')">
+          🔟 Decenas y Secuencias <span class="category-count">4</span>
+        </button>
+        <button class="category-btn" data-category="aplicaciones" onclick="setCategory('aplicaciones')">
+          🛒 Tienda y Problemas <span class="category-count">4</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- GAMES GRID -->
+    <section class="games-grid" id="gamesGrid">
+      <!-- Injected via JavaScript -->
+    </section>
+
+    <!-- EMPTY SEARCH STATE -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🔍🧩</div>
+      <h3 class="empty-title">No encontramos ningún juego</h3>
+      <p class="empty-desc">Intenta escribir otra palabra clave o haz clic en "Todos los juegos".</p>
+      <button class="btn btn-secondary" onclick="resetFilters()">Mostrar todos los juegos</button>
+    </div>
+
+    <!-- CURRICULUM OUTCOMES SUMMARY -->
+    <section class="curriculum-section">
+      <div class="curriculum-header">
+        <h2>📚 Mapa Curricular de Primer Grado</h2>
+        <p>Habilidades matemáticas fundamentales desarrolladas en estos 20 juegos</p>
+      </div>
+
+      <div class="curriculum-grid">
+        <div class="curriculum-card">
+          <h3>🔢 Conteo y Cardinalidad</h3>
+          <p>Correspondencia uno a uno, conteo ordenado de colecciones, representación gráfica y simbólica hasta 20 y 50.</p>
+          <div class="curriculum-tags">
+            <span class="curriculum-tag">Juegos #1, #2, #3, #4, #5, #17, #18</span>
+          </div>
+        </div>
+
+        <div class="curriculum-card">
+          <h3>➕ Operaciones Básicas</h3>
+          <p>Significado de la suma y la resta como juntar, agregar, quitar y retroceder usando dados, tableros y tachado.</p>
+          <div class="curriculum-tags">
+            <span class="curriculum-tag">Juegos #6, #7, #8, #11, #19</span>
+          </div>
+        </div>
+
+        <div class="curriculum-card">
+          <h3>🔟 Sistema Decimal y Decenas</h3>
+          <p>Agrupamientos en decenas y unidades, regularidades en la serie numérica y orden en escaleras numéricas.</p>
+          <div class="curriculum-tags">
+            <span class="curriculum-tag">Juegos #12, #13, #14, #15</span>
+          </div>
+        </div>
+
+        <div class="curriculum-card">
+          <h3>🛒 Situaciones Cotidianas</h3>
+          <p>Uso del dinero con monedas de $1, recolección de datos en tablas/gráficas y resolución de problemas del entorno.</p>
+          <div class="curriculum-tags">
+            <span class="curriculum-tag">Juegos #9, #10, #16, #20</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-links">
+        <a class="footer-link" onclick="openGuideModal()">📖 Guía de Despliegue en GitHub Pages</a>
+        <a class="footer-link" onclick="playRandomGame()">🎲 Probar un Juego Aleatorio</a>
+        <a class="footer-link" onclick="scrollToTop(event)">⬆ Subir al Inicio</a>
+      </div>
+      <p class="footer-copy">
+        Creado con ❤️ para acompañar la mentoría y enseñanza de matemáticas en 1° grado de primaria.
+      </p>
+    </div>
+  </footer>
+
+  <!-- PLAYER MODAL (IFRAME) -->
+  <div class="player-modal" id="playerModal" onclick="handleModalBackdropClick(event)">
+    <div class="modal-container" id="modalContainer" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-game-info">
+          <div class="modal-game-icon" id="modalGameIcon">🎮</div>
+          <div class="modal-game-titles">
+            <h3 id="modalGameTitle">Cargando juego...</h3>
+            <p id="modalGameSubtitle">Juego #1 de 20</p>
+          </div>
+        </div>
+
+        <div class="modal-nav-tools">
+          <button class="modal-btn" onclick="prevGame()" title="Juego anterior">
+            ⬅ Anterior
+          </button>
+          <button class="modal-btn" onclick="nextGame()" title="Siguiente juego">
+            Siguiente ➡
+          </button>
+          <button class="modal-btn" onclick="reloadIframe()" title="Reiniciar este juego">
+            🔄
+          </button>
+          <button class="modal-btn" id="fsBtn" onclick="toggleFullscreen()" title="Pantalla completa">
+            ⛶
+          </button>
+          <a class="modal-btn primary" id="modalNewTabBtn" href="#" target="_blank" title="Abrir en pestaña nueva">
+            ↗ Nueva Pestaña
+          </a>
+          <button class="modal-btn-close" onclick="closePlayerModal()" title="Cerrar reproductor (Esc)">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-iframe-wrap">
+        <div class="iframe-loader" id="iframeLoader">
+          <div class="spinner"></div>
+          <p style="font-weight:600; color:#534AB7;">Cargando juego interactivo...</p>
+        </div>
+        <iframe 
+          id="gameIframe" 
+          class="modal-iframe" 
+          title="Visor de Juego"
+          onload="hideIframeLoader()"
+        ></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- GITHUB PAGES GUIDE MODAL -->
+  <div class="guide-modal" id="guideModal" onclick="handleGuideBackdrop(event)">
+    <div class="guide-box" onclick="event.stopPropagation()">
+      <div class="guide-header">
+        <h2>🚀 ¿Cómo desplegar en GitHub Pages?</h2>
+        <button class="modal-btn-close" onclick="closeGuideModal()">✕</button>
+      </div>
+
+      <p style="margin-bottom:18px; color:#475569; font-size:14px;">
+        Esta carpeta ya está 100% preparada con <code>index.html</code> y el archivo <code>.nojekyll</code> para que cualquier persona en el mundo pueda jugar desde su navegador o tablet.
+      </p>
+
+      <div class="guide-step">
+        <div class="guide-num">1</div>
+        <div class="guide-body">
+          <h4>Sube tu repositorio a GitHub</h4>
+          <p>Crea un nuevo repositorio en GitHub (público) y sube todos los archivos de esta carpeta (usando GitHub Desktop, VS Code o la consola):</p>
+          <div class="guide-code-box">
+            git init<br>
+            git add .<br>
+            git commit -m "Publicar juegos matemáticos"<br>
+            git branch -M main<br>
+            git remote add origin https://github.com/TU-USUARIO/TU-REPOSITORIO.git<br>
+            git push -u origin main
+          </div>
+        </div>
+      </div>
+
+      <div class="guide-step">
+        <div class="guide-num">2</div>
+        <div class="guide-body">
+          <h4>Activa GitHub Pages en la Configuración</h4>
+          <p>En la página de tu repositorio en GitHub:</p>
+          <ol style="margin-left: 20px; font-size: 13.5px; color: #475569; margin-top: 6px;">
+            <li>Haz clic en la pestaña <strong>Settings</strong> (Configuración).</li>
+            <li>En el menú lateral izquierdo, haz clic en <strong>Pages</strong>.</li>
+            <li>Bajo <strong>Build and deployment</strong>, en <em>Source</em> deja <strong>Deploy from a branch</strong>.</li>
+            <li>En <em>Branch</em> selecciona <strong>main</strong> y carpeta <strong>/ (root)</strong>.</li>
+            <li>Haz clic en el botón <strong>Save</strong>.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="guide-step">
+        <div class="guide-num">3</div>
+        <div class="guide-body">
+          <h4>¡Listo! Comparte el enlace</h4>
+          <p>En 1 o 2 minutos, GitHub generará tu sitio web público gratuito en la dirección:</p>
+          <div class="guide-code-box">
+            https://TU-USUARIO.github.io/TU-REPOSITORIO/
+          </div>
+        </div>
+      </div>
+
+      <div class="guide-tip">
+        <span style="font-size:24px;">💡</span>
+        <div>
+          <strong>Compatibilidad total:</strong> Todos los juegos usan código HTML/CSS/JS nativo sin dependencias de servidor. Funcionan en computadoras, Chromebooks, iPads y celulares.
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:22px;">
+        <button class="btn btn-primary" onclick="closeGuideModal()">¡Entendido, volver a los juegos!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING TOAST NOTIFICATION -->
+  <div class="toast" id="toast">
+    <span id="toastIcon">⭐</span>
+    <span id="toastText">¡Completado!</span>
+  </div>
+
+  <script>
+    // --- 20 GAMES DATABASE ---
+    const GAMES_DATA = [
+      {
+        id: 1,
+        title: "¿Cuántos hay?",
+        subtitle: "Encuentra el grupo con la misma cantidad",
+        filename: "juego_contar_colorido 1.html",
+        category: "conteo",
+        categoryLabel: "Conteo y Cantidades",
+        icon: "🔢",
+        badge: "Básico",
+        color: "#7F77DD",
+        tint: "#EEEDFE",
+        desc: "Observa y encuentra los grupos de objetos que tienen exactamente la misma cantidad."
+      },
+      {
+        id: 2,
+        title: "¡Arrastra el helado al niño!",
+        subtitle: "Correspondencia uno a uno arrastrando elementos",
+        filename: "juego_drag_helados 2.html",
+        category: "conteo",
+        categoryLabel: "Conteo y Cantidades",
+        icon: "🍦",
+        badge: "Interactivo",
+        color: "#D4537E",
+        tint: "#FFF0F3",
+        desc: "Reparte los helados a cada niño para verificar si alcanzan, sobran o faltan."
+      },
+      {
+        id: 3,
+        title: "Representemos con los dedos",
+        subtitle: "Identifica la cantidad y su nombre escrito",
+        filename: "juego_dedos_ejercicios 3.html",
+        category: "conteo",
+        categoryLabel: "Conteo y Cantidades",
+        icon: "🖐️",
+        badge: "Lecto-números",
+        color: "#7C3AED",
+        tint: "#EDE9FE",
+        desc: "Mira la mano, cuenta los dedos levantados y selecciona el número y su palabra escrita."
+      },
+      {
+        id: 4,
+        title: "¿Cuántos animales hay?",
+        subtitle: "Cuenta animales, dibuja puntos y elige el número",
+        filename: "juego_cuantos_animales 4.html",
+        category: "conteo",
+        categoryLabel: "Conteo y Cantidades",
+        icon: "🐾",
+        badge: "Visual",
+        color: "#D97706",
+        tint: "#FEF3C7",
+        desc: "Cuenta la cantidad de animalitos divertidos, represéntalos con puntos y encuentra la cifra."
+      },
+      {
+        id: 5,
+        title: "Une los Puntos",
+        subtitle: "Sigue el orden de los números para dibujar",
+        filename: "une_puntos 5.html",
+        category: "conteo",
+        categoryLabel: "Conteo y Cantidades",
+        icon: "✏️",
+        badge: "Trazo y Dibujo",
+        color: "#0284C7",
+        tint: "#E0F2FE",
+        desc: "Conecta los números en orden ascendente sobre el lienzo interactivo y descubre la figura oculta."
+      },
+      {
+        id: 6,
+        title: "¡Paga con los dados!",
+        subtitle: "Elige las tarjetas que suman el total",
+        filename: "juego_dados_niveles 6.html",
+        category: "operaciones",
+        categoryLabel: "Suma y Resta",
+        icon: "🎲",
+        badge: "Niveles 1-5",
+        color: "#C026D3",
+        tint: "#FCE7F3",
+        desc: "Resuelve diferentes retos de dados combinando puntos y valores numéricos para pagar el total."
+      },
+      {
+        id: 7,
+        title: "¡La Gran Carrera!",
+        subtitle: "Avanza por casillas según el tiro del dado",
+        filename: "carrera_conteo 7.html",
+        category: "operaciones",
+        categoryLabel: "Suma y Resta",
+        icon: "🚗",
+        badge: "Juego de Tablero",
+        color: "#EA580C",
+        tint: "#FED7AA",
+        desc: "Lanza el dado y avanza casilla por casilla con tu coche. ¡Aprende sumas sobre el tablero!"
+      },
+      {
+        id: 8,
+        title: "Tacha y Resuelve",
+        subtitle: "Toca los objetos que se van y calcula la resta",
+        filename: "resta_tachado_juego 8.html",
+        category: "operaciones",
+        categoryLabel: "Suma y Resta",
+        icon: "❌",
+        badge: "Resta Gráfica",
+        color: "#DC2626",
+        tint: "#FEE2E2",
+        desc: "Practica el concepto intuitivo de quitar y restar tachando objetos en pantalla."
+      },
+      {
+        id: 9,
+        title: "Cuenta y Pinta la Gráfica",
+        subtitle: "Recolecta datos y crea gráficas de barras",
+        filename: "cuenta_grafica 9.html",
+        category: "aplicaciones",
+        categoryLabel: "Tienda y Aplicaciones",
+        icon: "📊",
+        badge: "Estadística",
+        color: "#0D9488",
+        tint: "#CCFBF1",
+        desc: "Cuenta manzanas en distintas cajas, llena la tabla y colorea la gráfica de barras correspondiente."
+      },
+      {
+        id: 10,
+        title: "Juguemos a la Tienda",
+        subtitle: "Compra productos con monedas de $1",
+        filename: "tienda 10.html",
+        category: "aplicaciones",
+        categoryLabel: "Tienda y Aplicaciones",
+        icon: "🛒",
+        badge: "Monedas $1",
+        color: "#CA8A04",
+        tint: "#FEF9C3",
+        desc: "Consulta los precios de la tiendita y paga usando la cantidad exacta de moneditas."
+      },
+      {
+        id: 11,
+        title: "¿Cuántos puntos tienen los dados?",
+        subtitle: "Suma los puntos de ambos dados",
+        filename: "dados 11.html",
+        category: "operaciones",
+        categoryLabel: "Suma y Resta",
+        icon: "🎲",
+        badge: "Cálculo Rápido",
+        color: "#4F46E5",
+        tint: "#E0E7FF",
+        desc: "Reconoce de un vistazo los puntos de los dados y calcula la suma total rápidamente."
+      },
+      {
+        id: 12,
+        title: "Hagamos Grupos de 10",
+        subtitle: "Agrupa en decenas y suma las unidades sueltas",
+        filename: "grupos_de_10 12.html",
+        category: "decenas",
+        categoryLabel: "Decenas y Secuencias",
+        icon: "🔟",
+        badge: "Decenas",
+        color: "#16A34A",
+        tint: "#DCFCE7",
+        desc: "Encierra grupos de 10 elementos para entender cómo se construyen los números de dos dígitos."
+      },
+      {
+        id: 13,
+        title: "Usemos escrituras como 2⁸",
+        subtitle: "Representaciones y descomposiciones",
+        filename: "juego_escrituras 13.html",
+        category: "decenas",
+        categoryLabel: "Decenas y Secuencias",
+        icon: "💡",
+        badge: "Estructura",
+        color: "#9333EA",
+        tint: "#F3E8FF",
+        desc: "Descubre cómo expresar cantidades mediante paquetes y unidades para agilizar el conteo."
+      },
+      {
+        id: 14,
+        title: "¿Faltan o sobran?",
+        subtitle: "Compara si alcanza, sobra o falta",
+        filename: "juego_faltan_sobran 14.html",
+        category: "decenas",
+        categoryLabel: "Decenas y Secuencias",
+        icon: "🪑",
+        badge: "Comparación",
+        color: "#C2410C",
+        tint: "#FFEDD5",
+        desc: "Compara sillas y personas, platos y comida: determina cuántos faltan o sobran exactamente."
+      },
+      {
+        id: 15,
+        title: "Escaleras de números",
+        subtitle: "Completa la serie y ordena números",
+        filename: "juego_escaleras_numeros 15.html",
+        category: "decenas",
+        categoryLabel: "Decenas y Secuencias",
+        icon: "🪜",
+        badge: "Series 20-50",
+        color: "#0369A1",
+        tint: "#E0F2FE",
+        desc: "Sube por las escaleras numéricas completando los escalones faltantes y ordenando tarjetas."
+      },
+      {
+        id: 16,
+        title: "La Tienda de Don Pinocho",
+        subtitle: "¿Me alcanza? ¿Qué vale más o menos?",
+        filename: "tienda_pinocho 16.html",
+        category: "aplicaciones",
+        categoryLabel: "Tienda y Aplicaciones",
+        icon: "🪵",
+        badge: "Precios y Ahorro",
+        color: "#B91C1C",
+        tint: "#FEE2E2",
+        desc: "Ayuda a los personajes a saber si sus monedas alcanzan para comprar juguetes en la tienda."
+      },
+      {
+        id: 17,
+        title: "¿Cuántas hay? (Colecciones)",
+        subtitle: "Cuenta grupos, dibuja y suma",
+        filename: "cuantos_hay 17.html",
+        category: "conteo",
+        categoryLabel: "Conteo y Cantidades",
+        icon: "🎈",
+        badge: "Estrategias",
+        color: "#A16207",
+        tint: "#FEF08A",
+        desc: "Cuenta objetos coloridos distribuidos, dibuja elementos para completar y calcula sumas."
+      },
+      {
+        id: 18,
+        title: "Palotes para hacer cuentas",
+        subtitle: "Registra en bloques de 5 con marcas de palotes",
+        filename: "palotes 18.html",
+        category: "conteo",
+        categoryLabel: "Conteo y Cantidades",
+        icon: "🥢",
+        badge: "Marcas de Conteo",
+        color: "#0891B2",
+        tint: "#CFFAFE",
+        desc: "Usa el método tradicional de palotes (4 verticales y 1 diagonal cruzado) para resolver conteos."
+      },
+      {
+        id: 19,
+        title: "Seleccionemos el mejor método",
+        subtitle: "Compara estrategias de resolución",
+        filename: "mejor_metodo 19.html",
+        category: "operaciones",
+        categoryLabel: "Suma y Resta",
+        icon: "🧠",
+        badge: "Estrategias",
+        color: "#6D28D9",
+        tint: "#EDE9FE",
+        desc: "Analiza qué método es más rápido para sumar: contar uno por uno, agrupar o sumar directo."
+      },
+      {
+        id: 20,
+        title: "Problemas de la comunidad",
+        subtitle: "Historias reales con sumas y restas",
+        filename: "juego_problemas_comunidad 20.html",
+        category: "aplicaciones",
+        categoryLabel: "Tienda y Aplicaciones",
+        icon: "🧮",
+        badge: "Problemas Reales",
+        color: "#EA580C",
+        tint: "#FFEDD5",
+        desc: "Lee situaciones de la vida diaria en la comunidad y elige la operación que da la respuesta."
+      }
+    ];
+
+    // --- STATE MANAGEMENT ---
+    let currentCategory = 'todos';
+    let searchQuery = '';
+    let sortOrder = 'id-asc';
+    let currentGameIndex = 0;
+    let soundEnabled = true;
+
+    // Load played games from LocalStorage
+    let playedGames = new Set();
+    try {
+      const stored = localStorage.getItem('aventuras_matematicas_played');
+      if (stored) {
+        playedGames = new Set(JSON.parse(stored));
+      }
+      const soundPref = localStorage.getItem('aventuras_matematicas_sound');
+      if (soundPref !== null) {
+        soundEnabled = soundPref === 'true';
+      }
+    } catch (e) {
+      console.warn('LocalStorage error:', e);
+    }
+
+    // --- AUDIO SYNTHESIS (Web Audio API) ---
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playTone(freq, type = 'sine', duration = 0.15, gainVal = 0.08) {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (err) {
+        // audio context not allowed yet
+      }
+    }
+
+    function playClickSound() {
+      playTone(523.25, 'sine', 0.1, 0.07); // C5
+      setTimeout(() => playTone(659.25, 'sine', 0.12, 0.05), 50); // E5
+    }
+
+    function playWinSound() {
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        setTimeout(() => playTone(freq, 'triangle', 0.2, 0.1), idx * 70);
+      });
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('soundBtn');
+      btn.textContent = soundEnabled ? '🔊' : '🔇';
+      try {
+        localStorage.setItem('aventuras_matematicas_sound', soundEnabled);
+      } catch (e) {}
+      if (soundEnabled) playClickSound();
+      showToast(soundEnabled ? 'Sonido activado' : 'Sonido silenciado', soundEnabled ? '🔊' : '🔇');
+    }
+
+    // --- RENDER GAMES ---
+    function renderGames() {
+      const grid = document.getElementById('gamesGrid');
+      const emptyState = document.getElementById('emptyState');
+      
+      let filtered = GAMES_DATA.filter(game => {
+        // Category check
+        const matchCategory = currentCategory === 'todos' || game.category === currentCategory;
+        // Search check
+        const q = searchQuery.toLowerCase().trim();
+        const matchSearch = !q || 
+          game.title.toLowerCase().includes(q) || 
+          game.subtitle.toLowerCase().includes(q) || 
+          game.desc.toLowerCase().includes(q) || 
+          game.id.toString() === q ||
+          ('juego ' + game.id).includes(q);
+        
+        return matchCategory && matchSearch;
+      });
+
+      // Sort
+      filtered.sort((a, b) => {
+        if (sortOrder === 'id-asc') return a.id - b.id;
+        if (sortOrder === 'id-desc') return b.id - a.id;
+        if (sortOrder === 'alpha') return a.title.localeCompare(b.title);
+        if (sortOrder === 'unplayed') {
+          const aPlayed = playedGames.has(a.id) ? 1 : 0;
+          const bPlayed = playedGames.has(b.id) ? 1 : 0;
+          return aPlayed - bPlayed || a.id - b.id;
+        }
+        return 0;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+
+      grid.innerHTML = filtered.map(game => {
+        const isPlayed = playedGames.has(game.id);
+        const encodedUrl = encodeURI(game.filename);
+
+        return `
+          <article 
+            class="game-card" 
+            style="--card-color:${game.color}; --card-tint:${game.tint};"
+            data-id="${game.id}"
+          >
+            <div class="card-top">
+              <span class="game-num-badge">#${game.id}</span>
+              <span class="category-pill">${game.badge}</span>
+              <button 
+                class="card-played-mark ${isPlayed ? 'completed' : ''}" 
+                onclick="togglePlayed(${game.id}, event)"
+                title="${isPlayed ? 'Completado (clic para desmarcar)' : 'Marcar como completado'}"
+              >
+                ${isPlayed ? '✓' : '☆'}
+              </button>
+            </div>
+
+            <div class="card-body">
+              <div class="card-icon-wrap">${game.icon}</div>
+              <h3 class="card-title">${game.title}</h3>
+              <p class="card-subtitle">${game.subtitle}</p>
+              <p class="card-desc">${game.desc}</p>
+            </div>
+
+            <div class="card-actions">
+              <button class="btn-play" onclick="openPlayerModal(${game.id})">
+                <span>🎮</span> Jugar Ahora
+              </button>
+              <a 
+                class="btn-tab" 
+                href="${encodedUrl}" 
+                target="_blank" 
+                title="Abrir en pestaña nueva"
+                onclick="markAsPlayed(${game.id})"
+              >
+                ↗
+              </a>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      updateStats();
+    }
+
+    // --- SEARCH & FILTER LOGIC ---
+    function handleSearch(val) {
+      searchQuery = val;
+      const clearBtn = document.getElementById('clearSearchBtn');
+      clearBtn.style.display = val.length > 0 ? 'flex' : 'none';
+      renderGames();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      input.value = '';
+      searchQuery = '';
+      document.getElementById('clearSearchBtn').style.display = 'none';
+      renderGames();
+      input.focus();
+    }
+
+    function handleSort(order) {
+      sortOrder = order;
+      renderGames();
+    }
+
+    function setCategory(cat) {
+      playClickSound();
+      currentCategory = cat;
+      const buttons = document.querySelectorAll('.category-btn');
+      buttons.forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-category') === cat);
+      });
+      renderGames();
+    }
+
+    function resetFilters() {
+      clearSearch();
+      setCategory('todos');
+    }
+
+    // --- PROGRESS & LOCAL STORAGE ---
+    function markAsPlayed(id) {
+      if (!playedGames.has(id)) {
+        playedGames.add(id);
+        saveProgress();
+        updateStats();
+        // Update check in card if present
+        const mark = document.querySelector(`.game-card[data-id="${id}"] .card-played-mark`);
+        if (mark) {
+          mark.classList.add('completed');
+          mark.textContent = '✓';
+        }
+      }
+    }
+
+    function togglePlayed(id, ev) {
+      if (ev) ev.stopPropagation();
+      playClickSound();
+      if (playedGames.has(id)) {
+        playedGames.delete(id);
+        showToast('Desmarcado de completados', '↩️');
+      } else {
+        playedGames.add(id);
+        playWinSound();
+        showToast('¡Juego marcado como completado!', '🌟');
+      }
+      saveProgress();
+      renderGames();
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem('aventuras_matematicas_played', JSON.stringify(Array.from(playedGames)));
+      } catch (e) {}
+    }
+
+    function updateStats() {
+      const count = playedGames.size;
+      const total = GAMES_DATA.length;
+      const pct = Math.round((count / total) * 100);
+
+      document.getElementById('playedCount').textContent = count;
+      document.getElementById('progressPercent').textContent = pct + '%';
+      document.getElementById('progressFill').style.width = pct + '%';
+    }
+
+    function resetProgress() {
+      if (confirm('¿Deseas reiniciar tu progreso de juegos completados?')) {
+        playedGames.clear();
+        saveProgress();
+        renderGames();
+        showToast('Progreso reiniciado', '🔄');
+      }
+    }
+
+    // --- PLAYER MODAL (EMBEDDED IFRAME) ---
+    function openPlayerModal(gameId) {
+      playClickSound();
+      const idx = GAMES_DATA.findIndex(g => g.id === gameId);
+      if (idx === -1) return;
+
+      currentGameIndex = idx;
+      loadGameInModal(currentGameIndex);
+
+      const modal = document.getElementById('playerModal');
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      // Mark as played
+      markAsPlayed(gameId);
+    }
+
+    function loadGameInModal(index) {
+      const game = GAMES_DATA[index];
+      if (!game) return;
+
+      document.getElementById('modalGameIcon').textContent = game.icon;
+      document.getElementById('modalGameTitle').textContent = game.title;
+      document.getElementById('modalGameSubtitle').textContent = `Juego #${game.id} de 20 · ${game.categoryLabel}`;
+
+      const encodedUrl = encodeURI(game.filename);
+      document.getElementById('modalNewTabBtn').href = encodedUrl;
+
+      // Show loader
+      const loader = document.getElementById('iframeLoader');
+      loader.style.display = 'flex';
+      loader.style.opacity = '1';
+
+      const iframe = document.getElementById('gameIframe');
+      iframe.src = encodedUrl;
+    }
+
+    function hideIframeLoader() {
+      const loader = document.getElementById('iframeLoader');
+      loader.style.opacity = '0';
+      setTimeout(() => {
+        loader.style.display = 'none';
+      }, 300);
+    }
+
+    function closePlayerModal() {
+      playClickSound();
+      const modal = document.getElementById('playerModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+
+      const iframe = document.getElementById('gameIframe');
+      iframe.src = 'about:blank'; // unload
+
+      // If in fullscreen, exit
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+      document.getElementById('modalContainer').classList.remove('fullscreen');
+      document.getElementById('fsBtn').textContent = '⛶';
+    }
+
+    function nextGame() {
+      playClickSound();
+      currentGameIndex = (currentGameIndex + 1) % GAMES_DATA.length;
+      loadGameInModal(currentGameIndex);
+      markAsPlayed(GAMES_DATA[currentGameIndex].id);
+    }
+
+    function prevGame() {
+      playClickSound();
+      currentGameIndex = (currentGameIndex - 1 + GAMES_DATA.length) % GAMES_DATA.length;
+      loadGameInModal(currentGameIndex);
+      markAsPlayed(GAMES_DATA[currentGameIndex].id);
+    }
+
+    function reloadIframe() {
+      playClickSound();
+      loadGameInModal(currentGameIndex);
+    }
+
+    function toggleFullscreen() {
+      playClickSound();
+      const container = document.getElementById('modalContainer');
+      const fsBtn = document.getElementById('fsBtn');
+
+      if (!document.fullscreenElement) {
+        if (container.requestFullscreen) {
+          container.requestFullscreen().then(() => {
+            container.classList.add('fullscreen');
+            fsBtn.textContent = '🗗';
+          }).catch(() => {
+            container.classList.toggle('fullscreen');
+          });
+        } else {
+          container.classList.toggle('fullscreen');
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().then(() => {
+            container.classList.remove('fullscreen');
+            fsBtn.textContent = '⛶';
+          }).catch(() => {});
+        }
+      }
+    }
+
+    function playRandomGame() {
+      playClickSound();
+      const randomIdx = Math.floor(Math.random() * GAMES_DATA.length);
+      openPlayerModal(GAMES_DATA[randomIdx].id);
+      showToast('¡Cargando juego aleatorio!', '🎲');
+    }
+
+    function handleModalBackdropClick(ev) {
+      if (ev.target.id === 'playerModal') {
+        closePlayerModal();
+      }
+    }
+
+    // Keyboard support (Escape to close, arrows to navigate)
+    document.addEventListener('keydown', (e) => {
+      const modal = document.getElementById('playerModal');
+      const guideModal = document.getElementById('guideModal');
+
+      if (e.key === 'Escape') {
+        if (modal.classList.contains('active')) closePlayerModal();
+        if (guideModal.classList.contains('active')) closeGuideModal();
+      } else if (modal.classList.contains('active')) {
+        if (e.key === 'ArrowRight') nextGame();
+        if (e.key === 'ArrowLeft') prevGame();
+      }
+    });
+
+    // --- GITHUB PAGES GUIDE MODAL ---
+    function openGuideModal() {
+      playClickSound();
+      document.getElementById('guideModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeGuideModal() {
+      playClickSound();
+      document.getElementById('guideModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function handleGuideBackdrop(ev) {
+      if (ev.target.id === 'guideModal') {
+        closeGuideModal();
+      }
+    }
+
+    // --- TOAST NOTIFICATIONS ---
+    let toastTimeout = null;
+    function showToast(text, icon = '⭐') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastIcon').textContent = icon;
+      document.getElementById('toastText').textContent = text;
+
+      toast.classList.add('show');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    function scrollToTop(e) {
+      if (e) e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+      // Sync sound button
+      document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+      renderGames();
+    });
+  </script>
+</body>
+</html>

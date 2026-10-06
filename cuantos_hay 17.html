@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Cuántas hay?</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',sans-serif;background:#f0ecff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px;}
+#wrap{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;overflow:hidden;max-width:700px;width:100%;padding-bottom:26px;box-shadow:0 8px 32px rgba(160,130,240,0.2);}
+
+.header{background:#c5b8f8;padding:18px 20px 14px;text-align:center;}
+.header h1{font-size:22px;font-weight:800;color:#3a2a7a;}
+.header p{font-size:14px;color:#5a4aa0;margin-top:4px;}
+
+.progress-row{display:flex;justify-content:center;gap:10px;padding:12px 0 4px;}
+.dp{width:14px;height:14px;border-radius:50%;background:#e0d9f9;border:2px solid #c5b8f8;}
+.dp.done{background:#f5c842;border-color:#d4a000;}
+.dp.current{background:#ff8fd8;border-color:#e060b0;}
+
+.score-row{text-align:center;margin:6px 0 12px;}
+.score-pill{display:inline-block;background:#fff;border:2px solid #c5b8f8;border-radius:30px;padding:5px 22px;font-size:15px;font-weight:700;color:#3a2a7a;}
+
+/* ── QUESTION BOX ── */
+.qbox{margin:0 18px 14px;background:#e6f9f1;border:2.5px dashed #3dba7e;border-radius:20px;padding:18px 16px;}
+.qtype-badge{display:inline-block;font-size:11px;font-weight:800;border-radius:20px;padding:3px 12px;margin-bottom:10px;color:#fff;}
+.qlabel{font-size:15px;font-weight:800;color:#1a7a50;margin-bottom:12px;text-align:center;}
+
+/* items grid */
+.items-area{background:#fff;border:2px solid #b8aef0;border-radius:14px;padding:12px;display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:14px;}
+.it{font-size:24px;line-height:1;user-select:none;}
+
+/* count input */
+.count-row{display:flex;align-items:center;justify-content:center;gap:10px;}
+.count-label{font-size:14px;font-weight:700;color:#3a2a7a;}
+.count-input{width:64px;height:52px;text-align:center;font-size:22px;font-weight:900;border:3px solid #b8aef0;border-radius:12px;color:#3a2a7a;background:#fff;}
+.count-input:focus{outline:none;border-color:#f5c842;}
+.count-input.correct{border-color:#3dba7e!important;background:#e6f9f1;}
+.count-input.wrong{border-color:#e05050!important;background:#fde8e8;}
+
+/* ── DIBUJA ── */
+.draw-area{background:#fff;border:2px solid #b8aef0;border-radius:14px;padding:14px;margin-bottom:14px;text-align:center;}
+.draw-label{font-size:14px;font-weight:800;color:#5a4aa0;margin-bottom:8px;}
+.draw-hint{font-size:28px;font-weight:900;color:#a87cf5;margin-bottom:10px;}
+.draw-slots{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:6px;}
+.slot{
+  width:42px;height:42px;border-radius:10px;border:2.5px dashed #b8aef0;
+  background:#f8f6ff;display:flex;align-items:center;justify-content:center;
+  font-size:22px;cursor:pointer;transition:background 0.15s,border-color 0.15s,transform 0.1s;
+  user-select:none;
+}
+.slot:hover{transform:scale(1.1);}
+.slot.filled{border-style:solid;border-color:#a87cf5;background:#f3eeff;}
+.slot.over{border-color:#e05050;background:#fde8e8;}
+.draw-instr{font-size:12px;color:#999;font-weight:600;}
+
+/* ── SUMA ── */
+.suma-box{background:#fff;border:2px solid #b8aef0;border-radius:14px;padding:14px;margin-bottom:14px;}
+.suma-label{font-size:13px;font-weight:700;color:#5a4aa0;margin-bottom:10px;text-align:center;}
+.suma-row{display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:700;color:#3a2a7a;flex-wrap:wrap;}
+.suma-row .pill{background:#eee9ff;border:1.5px solid #b8aef0;border-radius:8px;padding:4px 10px;}
+.suma-input{width:60px;height:46px;text-align:center;font-size:20px;font-weight:900;border:3px solid #b8aef0;border-radius:10px;color:#3a2a7a;background:#fff;}
+.suma-input:focus{outline:none;border-color:#f5c842;}
+.suma-input.correct{border-color:#3dba7e!important;background:#e6f9f1;}
+.suma-input.wrong{border-color:#e05050!important;background:#fde8e8;}
+
+.btn-check{border:none;border-radius:30px;padding:10px 26px;font-size:14px;font-weight:800;cursor:pointer;background:#3dba7e;color:#fff;display:block;margin:10px auto 0;}
+.btn-check:active{transform:scale(0.96);}
+
+.fb{text-align:center;min-height:28px;font-size:15px;font-weight:700;color:#3a2a7a;margin:8px 18px 4px;}
+.btn-row{text-align:center;margin-top:8px;display:flex;justify-content:center;gap:12px;}
+.btn{border:none;border-radius:30px;padding:11px 28px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.btn:active{transform:scale(0.96);}
+.btn-reset{background:#f5c842;color:#3a2a7a;}
+.btn-next{background:#a87cf5;color:#fff;display:none;}
+
+.win-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:50;align-items:center;justify-content:center;}
+.win-overlay.show{display:flex;}
+.win-box{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;padding:32px 28px;text-align:center;max-width:340px;width:90%;}
+.win-trophy{font-size:68px;animation:tb 0.7s infinite alternate;}
+@keyframes tb{from{transform:translateY(0)}to{transform:translateY(-14px)}}
+.win-title{font-size:26px;font-weight:900;color:#3a2a7a;margin:10px 0 4px;}
+.win-sub{font-size:14px;color:#5a4aa0;font-weight:600;margin-bottom:16px;}
+.btn-again{background:linear-gradient(135deg,#a87cf5,#3dba7e);color:#fff;border:none;border-radius:30px;padding:12px 32px;font-size:16px;font-weight:800;cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="header">
+    <h1>🌻 ¿Cuántas hay?</h1>
+    <p>Cuenta, dibuja y suma — ¡tú puedes!</p>
+  </div>
+  <div class="progress-row" id="prog"></div>
+  <div class="score-row"><div class="score-pill">⭐ Puntos: <span id="sc">0</span></div></div>
+
+  <div class="qbox" id="qbox">
+    <div id="q-content"></div>
+  </div>
+
+  <div class="fb" id="fb"></div>
+  <div class="btn-row">
+    <button class="btn btn-reset" id="btn-reset">🔄 Reiniciar</button>
+    <button class="btn btn-next" id="btn-next">Siguiente ▶</button>
+  </div>
+</div>
+
+<div class="win-overlay" id="win-overlay">
+  <div class="win-box">
+    <div class="win-trophy">🏆</div>
+    <div class="win-title">¡Felicitaciones!</div>
+    <div class="win-sub" id="win-sub">¡Eres un gran contador!</div>
+    <button class="btn-again" id="btn-again">🔄 Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+// 3 activity types:
+// 'contar'  — count items shown, write number
+// 'dibujar' — given a number, tap empty slots to draw that many items
+// 'suma'    — A cuesta X, B cuesta Y más. ¿Cuánto cuesta B?
+const LEVELS = [
+  { type:'contar',  icon:'🌻', total:32,
+    label:'¿Cuántas 🌻 hay?' },
+
+  { type:'contar',  icon:'🤸', total:28,
+    label:'¿Cuántos 🤸 hay?' },
+
+  { type:'dibujar', icon:'🐦', target:35,
+    label:'Dibuja 35 🐦 — toca los cuadros para llenarlos' },
+
+  { type:'dibujar', icon:'🌸', target:50,
+    label:'Dibuja 50 🌸 — toca los cuadros para llenarlos' },
+
+  { type:'suma', iconA:'✏️', iconB:'📦',
+    priceA:15, extra:5,
+    labelA:'Un ✏️ cuesta',  labelB:'Una 📦 cuesta 5 monedas más.',
+    question:'¿Cuánto cuesta una 📦?' },
+
+  { type:'suma', iconA:'🖍️', iconB:'📐',
+    priceA:22, extra:8,
+    labelA:'Una 🖍️ cuesta', labelB:'Una 📐 cuesta 8 monedas más.',
+    question:'¿Cuánto cuesta una 📐?' },
+
+  { type:'contar', icon:'⭐', total:45,
+    label:'¿Cuántas ⭐ hay?' },
+
+  { type:'dibujar', icon:'🐞', target:23,
+    label:'Dibuja 23 🐞 — toca los cuadros para llenarlos' },
+];
+
+const BADGE_COLORS = {
+  contar:'#4a9ef5', dibujar:'#a87cf5', suma:'#e060b0'
+};
+const BADGE_LABELS = {
+  contar:'🔢 Cuenta y escribe', dibujar:'✏️ Dibuja la cantidad', suma:'➕ Suma y descubre'
+};
+
+let lvl=0, score=0, answered=false;
+let drawFilled=0; // for dibujar type
+const isLast=()=>lvl===LEVELS.length-1;
+const L=()=>LEVELS[lvl];
+
+function buildProg(){
+  const r=document.getElementById('prog');r.innerHTML='';
+  LEVELS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dp'+(i<lvl?' done':i===lvl?' current':'');
+    r.appendChild(d);
+  });
+}
+
+function buildQuestion(){
+  const lv=L();
+  answered=false; drawFilled=0;
+  document.getElementById('btn-next').style.display='none';
+  document.getElementById('fb').textContent='';
+
+  const color=BADGE_COLORS[lv.type];
+  let html=`<span class="qtype-badge" style="background:${color}">${BADGE_LABELS[lv.type]}</span>`;
+
+  if(lv.type==='contar'){
+    html+=`<div class="qlabel">${lv.label}</div>`;
+    html+=`<div class="items-area" id="items-area">`;
+    for(let i=0;i<lv.total;i++) html+=`<span class="it">${lv.icon}</span>`;
+    html+=`</div>`;
+    html+=`<div class="count-row">
+      <span class="count-label">¿Cuántos hay?</span>
+      <input type="number" class="count-input" id="main-input" min="0" max="100" placeholder="?">
+      <button class="btn-check" id="btn-check" style="margin:0">✅ Comprobar</button>
+    </div>`;
+
+  } else if(lv.type==='dibujar'){
+    html+=`<div class="qlabel">${lv.label}</div>`;
+    html+=`<div class="draw-area">
+      <div class="draw-hint">${lv.target} ${lv.icon}</div>
+      <div class="draw-slots" id="draw-slots">`;
+    for(let i=0;i<lv.target+5;i++){
+      html+=`<div class="slot" id="slot-${i}" onclick="onSlot(${i})"></div>`;
+    }
+    html+=`</div>
+      <div class="draw-instr" id="draw-instr">Toca cada cuadrito para dibujar un ${lv.icon} — necesitas exactamente ${lv.target}</div>
+    </div>`;
+    html+=`<button class="btn-check" id="btn-check">✅ Comprobar</button>`;
+
+  } else if(lv.type==='suma'){
+    html+=`<div class="suma-box">
+      <div class="suma-label">📖 Lee y calcula</div>
+      <div class="suma-row" style="margin-bottom:10px">
+        <span>${lv.labelA}</span>
+        <span class="pill">${lv.priceA} monedas</span>
+      </div>
+      <div class="suma-row" style="margin-bottom:14px">
+        <span>${lv.labelB}</span>
+      </div>
+      <div class="suma-row">
+        <span>${lv.question}</span>
+        <input type="number" class="suma-input" id="main-input" min="0" max="200" placeholder="?">
+        <span>monedas</span>
+      </div>
+    </div>`;
+    html+=`<button class="btn-check" id="btn-check">✅ Comprobar</button>`;
+  }
+
+  document.getElementById('q-content').innerHTML=html;
+
+  // attach check button
+  const btn=document.getElementById('btn-check');
+  if(btn) btn.addEventListener('click', checkAnswer);
+  // enter key
+  const inp=document.getElementById('main-input');
+  if(inp) inp.addEventListener('keypress',e=>{if(e.key==='Enter')checkAnswer();});
+}
+
+function onSlot(idx){
+  if(answered)return;
+  const lv=L();
+  const slot=document.getElementById('slot-'+idx);
+  if(slot.classList.contains('filled')){
+    // unfill this and all above
+    for(let i=idx;i<lv.target+5;i++){
+      const s=document.getElementById('slot-'+i);
+      if(s){s.classList.remove('filled','over');s.textContent='';}
+    }
+    drawFilled=idx;
+  } else {
+    // fill up to idx
+    for(let i=0;i<=idx;i++){
+      const s=document.getElementById('slot-'+i);
+      if(!s)continue;
+      if(i<lv.target){
+        s.classList.add('filled');s.classList.remove('over');s.textContent=lv.icon;
+      } else {
+        s.classList.add('over');s.classList.remove('filled');s.textContent='✖';
+      }
+    }
+    drawFilled=idx+1;
+  }
+  const over=drawFilled>lv.target;
+  document.getElementById('draw-instr').textContent=
+    over ? `⚠️ ¡Son demasiados! Tienes ${drawFilled} pero necesitas ${lv.target}`
+         : `Llevas ${drawFilled} de ${lv.target} ${lv.icon}`;
+}
+
+function checkAnswer(){
+  if(answered)return;
+  const lv=L();
+
+  if(lv.type==='contar'||lv.type==='suma'){
+    const inp=document.getElementById('main-input');
+    const val=parseInt(inp.value,10);
+    const correct=lv.type==='contar' ? lv.total : lv.priceA+lv.extra;
+    if(isNaN(val)){document.getElementById('fb').textContent='🔢 Escribe un número';return;}
+    if(val===correct){
+      inp.classList.add('correct');
+      answered=true;score+=15;document.getElementById('sc').textContent=score;
+      document.getElementById('fb').innerHTML=`🎉 ¡Correcto! La respuesta es <strong>${correct}</strong>`;
+      showNext();
+    } else {
+      inp.classList.add('wrong');
+      document.getElementById('fb').textContent=lv.type==='contar'
+        ?`😅 Vuelve a contar — fíjate bien en cada uno`
+        :`😅 Pista: ${lv.priceA} + ${lv.extra} = ?`;
+      setTimeout(()=>{inp.classList.remove('wrong');},900);
+    }
+
+  } else if(lv.type==='dibujar'){
+    const over=document.querySelectorAll('.slot.over').length>0;
+    if(drawFilled===lv.target && !over){
+      answered=true;score+=15;document.getElementById('sc').textContent=score;
+      document.getElementById('fb').innerHTML=`🎉 ¡Perfecto! Dibujaste exactamente <strong>${lv.target}</strong> ${lv.icon}`;
+      showNext();
+    } else if(drawFilled<lv.target){
+      document.getElementById('fb').textContent=`✏️ Faltan ${lv.target-drawFilled} más — ¡sigue!`;
+    } else {
+      document.getElementById('fb').textContent=`⚠️ Hay ${drawFilled-lv.target} de más — borra los que sobran`;
+    }
+  }
+}
+
+function showNext(){
+  document.getElementById('btn-next').style.display='inline-block';
+  document.getElementById('btn-next').textContent=isLast()?'🏆 Ver resultados':'Siguiente ▶';
+}
+
+function nextLevel(){
+  if(isLast()&&answered){
+    document.getElementById('win-sub').textContent=`Completaste ${LEVELS.length} actividades con ${score} puntos 🎊`;
+    document.getElementById('win-overlay').classList.add('show');return;
+  }
+  lvl++;buildProg();buildQuestion();
+}
+
+function reset(){
+  lvl=0;score=0;answered=false;drawFilled=0;
+  document.getElementById('sc').textContent=0;
+  document.getElementById('win-overlay').classList.remove('show');
+  buildProg();buildQuestion();
+}
+
+document.getElementById('btn-next').addEventListener('click',nextLevel);
+document.getElementById('btn-reset').addEventListener('click',reset);
+document.getElementById('btn-again').addEventListener('click',reset);
+
+reset();
+</script>
+</body>
+</html>

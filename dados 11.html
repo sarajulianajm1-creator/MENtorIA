@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Cuántos puntos tienen los dados?</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',sans-serif;background:#f0ecff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px;}
+#wrap{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;overflow:hidden;max-width:680px;width:100%;padding-bottom:26px;box-shadow:0 8px 32px rgba(160,130,240,0.2);}
+
+.header{background:#c5b8f8;padding:18px 20px 14px;text-align:center;}
+.header h1{font-size:22px;font-weight:800;color:#3a2a7a;}
+.header p{font-size:14px;color:#5a4aa0;margin-top:4px;}
+
+.progress-row{display:flex;justify-content:center;gap:10px;padding:12px 0 4px;}
+.dp{width:14px;height:14px;border-radius:50%;background:#e0d9f9;border:2px solid #c5b8f8;}
+.dp.done{background:#f5c842;border-color:#d4a000;}
+.dp.current{background:#ff8fd8;border-color:#e060b0;}
+
+.score-row{text-align:center;margin:6px 0 14px;}
+.score-pill{display:inline-block;background:#fff;border:2px solid #c5b8f8;border-radius:30px;padding:5px 22px;font-size:15px;font-weight:700;color:#3a2a7a;}
+
+/* QUESTION BOX */
+.qbox{margin:0 20px 16px;background:#e6f9f1;border:2.5px dashed #3dba7e;border-radius:20px;padding:20px;}
+.qlabel{text-align:center;font-size:15px;font-weight:800;color:#1a7a50;margin-bottom:18px;}
+
+.dice-row{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:22px;flex-wrap:wrap;}
+.plus-sign{font-size:28px;font-weight:900;color:#a87cf5;}
+
+/* SVG DIE */
+.die-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.die-svg{filter:drop-shadow(2px 4px 6px rgba(0,0,0,0.18));}
+
+/* OPTIONS */
+.options-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.opt-card{
+  width:80px;height:80px;border-radius:16px;border:3px solid;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;font-weight:900;cursor:pointer;
+  transition:transform 0.13s,box-shadow 0.13s;
+  background:#fff;color:#3a2a7a;
+}
+.opt-card:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(0,0,0,0.12);}
+.opt-card.correct{background:#e6f9f1;border-color:#3dba7e;color:#1a7a50;}
+.opt-card.wrong{animation:wobble 0.4s;background:#fde8e8;border-color:#e05050;color:#e05050;}
+@keyframes wobble{0%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}100%{transform:rotate(0)}}
+
+.fb{text-align:center;min-height:30px;font-size:15px;font-weight:700;color:#3a2a7a;margin:12px 20px 4px;}
+.btn-row{text-align:center;margin-top:8px;display:flex;justify-content:center;gap:12px;}
+.btn{border:none;border-radius:30px;padding:11px 28px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.btn:active{transform:scale(0.96);}
+.btn-reset{background:#f5c842;color:#3a2a7a;}
+.btn-next{background:#a87cf5;color:#fff;display:none;}
+
+.win-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:50;align-items:center;justify-content:center;}
+.win-overlay.show{display:flex;}
+.win-box{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;padding:32px 28px;text-align:center;max-width:340px;width:90%;}
+.win-trophy{font-size:68px;animation:tbounce 0.7s infinite alternate;}
+@keyframes tbounce{from{transform:translateY(0)}to{transform:translateY(-14px)}}
+.win-title{font-size:26px;font-weight:900;color:#3a2a7a;margin:10px 0 4px;}
+.win-sub{font-size:14px;color:#5a4aa0;font-weight:600;margin-bottom:16px;}
+.btn-again{background:linear-gradient(135deg,#a87cf5,#3dba7e);color:#fff;border:none;border-radius:30px;padding:12px 32px;font-size:16px;font-weight:800;cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="header">
+    <h1>🎲 ¿Cuántos puntos se reúnen?</h1>
+    <p>Cuenta los puntos de los dados y elige la respuesta</p>
+  </div>
+  <div class="progress-row" id="prog"></div>
+  <div class="score-row"><div class="score-pill">⭐ Puntos: <span id="sc">0</span></div></div>
+
+  <div class="qbox">
+    <div class="qlabel">👀 Cuenta los puntos de los dos dados y elige el total</div>
+    <div class="dice-row" id="dice-row"></div>
+    <div class="options-row" id="options-row"></div>
+  </div>
+
+  <div class="fb" id="fb">👆 ¿Cuántos puntos hay en total?</div>
+  <div class="btn-row">
+    <button class="btn btn-reset" id="btn-reset">🔄 Reiniciar</button>
+    <button class="btn btn-next" id="btn-next">Siguiente ▶</button>
+  </div>
+</div>
+
+<div class="win-overlay" id="win-overlay">
+  <div class="win-box">
+    <div class="win-trophy">🏆</div>
+    <div class="win-title">¡Felicitaciones!</div>
+    <div class="win-sub" id="win-sub">¡Eres un experto en dados!</div>
+    <button class="btn-again" id="btn-again">🔄 Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+// Dot positions on a die face (row, col) on a 3x3 grid — 0-indexed
+const DOT_POSITIONS = {
+  1: [[1,1]],
+  2: [[0,0],[2,2]],
+  3: [[0,0],[1,1],[2,2]],
+  4: [[0,0],[0,2],[2,0],[2,2]],
+  5: [[0,0],[0,2],[1,1],[2,0],[2,2]],
+  6: [[0,0],[0,2],[1,0],[1,2],[2,0],[2,2]],
+};
+
+const OPT_COLORS = ['#4a9ef5','#f56fa0','#a87cf5'];
+
+// Levels: just the two dice — wrong options are generated automatically
+const LEVELS = [
+  {d:[4,4]},
+  {d:[3,3]},
+  {d:[5,4]},
+  {d:[5,5]},
+  {d:[3,6]},
+  {d:[4,6]},
+  {d:[6,3]},
+  {d:[5,3]},
+  {d:[6,4]},
+  {d:[6,6]},
+];
+
+function generateOptions(correct){
+  const opts=new Set([correct]);
+  const deltas=[1,-1,2,-2,3,-3];
+  let i=0;
+  while(opts.size<3){
+    const candidate=correct+deltas[i%deltas.length];
+    if(candidate>0 && candidate<=12) opts.add(candidate);
+    i++;
+  }
+  return [...opts].sort(()=>Math.random()-0.5);
+}
+
+let lvl=0, score=0, answered=false;
+const isLast=()=>lvl===LEVELS.length-1;
+const L=()=>LEVELS[lvl];
+
+function makeDieSVG(value, color='#4a9ef5'){
+  const size=90, r=14, pad=10;
+  const cellSize=(size-2*pad)/3;
+  const dots=DOT_POSITIONS[value];
+
+  let dotsSVG='';
+  dots.forEach(([row,col])=>{
+    const cx=pad+col*cellSize+cellSize/2;
+    const cy=pad+row*cellSize+cellSize/2;
+    dotsSVG+=`<circle cx="${cx}" cy="${cy}" r="7" fill="${color}" opacity="0.9"/>`;
+  });
+
+  // isometric-style die (flat face with slight 3D)
+  return `<svg class="die-svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+    <rect x="4" y="4" width="${size-8}" height="${size-8}" rx="${r}" fill="#e8f4ff" stroke="${color}" stroke-width="3"/>
+    <rect x="4" y="4" width="${size-8}" height="${size-8}" rx="${r}" fill="white" opacity="0.7"/>
+    ${dotsSVG}
+  </svg>`;
+}
+
+function buildProg(){
+  const r=document.getElementById('prog');r.innerHTML='';
+  LEVELS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dp'+(i<lvl?' done':i===lvl?' current':'');
+    r.appendChild(d);
+  });
+}
+
+function buildQuestion(){
+  const lv=L();
+  const correct=lv.d[0]+lv.d[1];
+
+  // Dice
+  const drow=document.getElementById('dice-row');
+  drow.innerHTML='';
+  lv.d.forEach((val,i)=>{
+    const wrap=document.createElement('div');
+    wrap.className='die-wrap';
+    wrap.innerHTML=makeDieSVG(val,'#4a9ef5');
+    drow.appendChild(wrap);
+    if(i<lv.d.length-1){
+      const plus=document.createElement('span');
+      plus.className='plus-sign';plus.textContent='+';
+      drow.appendChild(plus);
+    }
+  });
+
+  // Generate 3 unique options
+  const opts=generateOptions(correct);
+  const orow=document.getElementById('options-row');
+  orow.innerHTML='';
+  opts.forEach((val,i)=>{
+    const card=document.createElement('div');
+    card.className='opt-card';
+    card.style.borderColor=OPT_COLORS[i%3];
+    card.textContent=val;
+    card.addEventListener('click',()=>onAnswer(val,correct,card));
+    orow.appendChild(card);
+  });
+
+  document.getElementById('fb').textContent='👆 ¿Cuántos puntos hay en total?';
+  document.getElementById('btn-next').style.display='none';
+  answered=false;
+}
+
+function onAnswer(val,correct,card){
+  if(answered)return;
+  answered=true;
+  if(val===correct){
+    card.classList.add('correct');
+    score+=10;document.getElementById('sc').textContent=score;
+    document.getElementById('fb').innerHTML=`🎉 ¡Correcto! ${L().d[0]} + ${L().d[1]} = <strong>${correct}</strong>`;
+    document.getElementById('btn-next').style.display='inline-block';
+    document.getElementById('btn-next').textContent=isLast()?'🏆 Ver resultados':'Siguiente ▶';
+  } else {
+    card.classList.add('wrong');
+    document.getElementById('fb').textContent=`😅 ¡Casi! Cuenta los puntitos de nuevo`;
+    setTimeout(()=>{card.classList.remove('wrong');answered=false;},900);
+  }
+}
+
+function nextLevel(){
+  if(isLast()&&answered){
+    document.getElementById('win-sub').textContent=`Completaste ${LEVELS.length} rondas con ${score} puntos 🎊`;
+    document.getElementById('win-overlay').classList.add('show');return;
+  }
+  lvl++;buildProg();buildQuestion();
+}
+
+function reset(){
+  lvl=0;score=0;answered=false;
+  document.getElementById('sc').textContent=0;
+  document.getElementById('win-overlay').classList.remove('show');
+  buildProg();buildQuestion();
+}
+
+document.getElementById('btn-next').addEventListener('click',nextLevel);
+document.getElementById('btn-reset').addEventListener('click',reset);
+document.getElementById('btn-again').addEventListener('click',reset);
+
+reset();
+</script>
+</body>
+</html>

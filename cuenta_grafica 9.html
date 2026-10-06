@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuenta y Pinta la Gráfica</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',sans-serif;background:#f0ecff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px;}
+#wrap{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;overflow:hidden;max-width:760px;width:100%;padding-bottom:26px;box-shadow:0 8px 32px rgba(160,130,240,0.2);}
+
+.header{background:#c5b8f8;padding:18px 20px 14px;text-align:center;}
+.header h1{font-size:24px;font-weight:800;color:#3a2a7a;}
+.header p{font-size:14px;color:#5a4aa0;margin-top:4px;}
+
+.progress-row{display:flex;justify-content:center;gap:10px;padding:14px 0 4px;}
+.dp{width:14px;height:14px;border-radius:50%;background:#e0d9f9;border:2px solid #c5b8f8;}
+.dp.done{background:#f5c842;border-color:#d4a000;}
+.dp.current{background:#ff8fd8;border-color:#e060b0;}
+
+.score-row{text-align:center;margin:6px 0 14px;}
+.score-pill{display:inline-block;background:#fff;border:2px solid #c5b8f8;border-radius:30px;padding:6px 24px;font-size:15px;font-weight:700;color:#3a2a7a;}
+
+/* apple drawn with CSS */
+.apple-icon{display:inline-block;width:26px;height:26px;position:relative;flex-shrink:0;}
+.apple-icon .body{position:absolute;left:2px;top:6px;width:22px;height:19px;background:#e0463f;border-radius:50% 50% 48% 48%/60% 60% 40% 40%;box-shadow:inset -3px -3px 0 rgba(0,0,0,0.08);}
+.apple-icon .leaf{position:absolute;left:13px;top:1px;width:9px;height:6px;background:#5cb85c;border-radius:0 100% 0 100%;transform:rotate(-10deg);}
+.apple-icon .stem{position:absolute;left:12px;top:0;width:2.5px;height:6px;background:#7a5230;border-radius:1px;transform:rotate(8deg);}
+.apple-icon.sm{width:20px;height:20px;}
+.apple-icon.sm .body{left:1px;top:5px;width:17px;height:14px;}
+.apple-icon.sm .leaf{left:10px;top:0;width:7px;height:5px;}
+.apple-icon.sm .stem{left:9px;top:-1px;height:5px;}
+
+.main-area{display:flex;gap:18px;padding:0 20px;flex-wrap:wrap;}
+
+/* BOXES */
+.boxes-panel{flex:1;min-width:280px;background:#e6f9f1;border:2.5px dashed #3dba7e;border-radius:20px;padding:18px;}
+.panel-title{font-size:14px;font-weight:800;color:#1a7a50;text-align:center;margin-bottom:14px;}
+.boxes-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.box-card{background:#fff;border:3px solid;border-radius:16px;padding:16px 8px 12px;display:flex;flex-wrap:wrap;gap:7px;justify-content:center;align-items:center;min-height:78px;position:relative;}
+.box-label{position:absolute;top:-12px;left:50%;transform:translateX(-50%);color:#fff;font-size:11px;font-weight:800;padding:2px 10px;border-radius:10px;white-space:nowrap;}
+
+/* TABLE */
+.table-panel{flex:0 0 190px;background:#fff;border:2.5px solid #b8aef0;border-radius:20px;padding:14px;}
+.tbl{width:100%;border-collapse:separate;border-spacing:0 10px;font-size:14px;}
+.tbl th{color:#5a4aa0;font-weight:800;padding:4px;font-size:13px;}
+.tbl td{padding:2px 4px;text-align:center;}
+.tbl .box-icon{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;color:#fff;font-size:13px;font-weight:800;}
+.tbl input{width:50px;height:44px;text-align:center;font-size:19px;font-weight:800;border:3px solid;border-radius:10px;color:#3a2a7a;background:#fff;}
+.tbl input:focus{outline:none;}
+.tbl input.correct{background:#e6f9f1 !important;}
+.tbl input.wrong{border-color:#e05050 !important;background:#fde8e8 !important;}
+
+/* CHART */
+.chart-panel{margin:18px 20px 0;background:#fff;border:2.5px solid #b8aef0;border-radius:20px;padding:18px;}
+.chart-title{text-align:center;font-size:14px;font-weight:800;color:#5a4aa0;margin-bottom:3px;}
+.chart-instr{text-align:center;font-size:12.5px;font-weight:600;color:#999;margin-bottom:14px;}
+
+.chart-wrap{display:flex;gap:10px;}
+.y-axis{display:flex;flex-direction:column;justify-content:space-between;font-size:12px;color:#999;font-weight:700;padding-top:2px;min-width:18px;}
+.y-axis span{height:30px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;}
+
+.chart-cols{flex:1;display:flex;gap:12px;justify-content:space-around;}
+.col-wrap{display:flex;flex-direction:column;align-items:center;flex:1;max-width:64px;gap:6px;}
+.col-label{display:flex;justify-content:center;}
+
+/* THE GRID: each column is a stack of squares from top (row 0=MAX_Y) to bottom (row MAX_Y-1=1) */
+.col-grid{display:flex;flex-direction:column;gap:3px;width:100%;}
+.gsq{
+  height:28px;width:100%;border:2px solid #ddd;border-radius:6px;
+  background:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:900;
+  transition:background 0.12s,border-color 0.12s,transform 0.1s;
+  user-select:none;
+}
+.gsq:hover{transform:scale(1.06);}
+.gsq.painted{border-style:solid;}
+.gsq.over{background:#fde8e8 !important;border-color:#e05050 !important;color:#e05050;}
+
+.fb{text-align:center;min-height:32px;font-size:15px;font-weight:700;color:#3a2a7a;margin:14px 20px 4px;}
+.btn-row{text-align:center;margin-top:8px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+.btn{border:none;border-radius:30px;padding:11px 28px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.btn:active{transform:scale(0.96);}
+.btn-check{background:#3dba7e;color:#fff;}
+.btn-reset{background:#f5c842;color:#3a2a7a;}
+.btn-next{background:#a87cf5;color:#fff;display:none;}
+
+.win-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:50;align-items:center;justify-content:center;}
+.win-overlay.show{display:flex;}
+.win-box{background:#fdf6ec;border:3px solid #f5c842;border-radius:28px;padding:32px 28px;text-align:center;max-width:340px;width:90%;}
+.win-trophy{font-size:64px;animation:tbounce 0.7s infinite alternate;}
+@keyframes tbounce{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+.win-title{font-size:26px;font-weight:900;color:#3a2a7a;margin:10px 0 4px;}
+.win-sub{font-size:14px;color:#5a4aa0;font-weight:600;margin-bottom:16px;}
+.btn-again{background:linear-gradient(135deg,#a87cf5,#3dba7e);color:#fff;border:none;border-radius:30px;padding:12px 32px;font-size:16px;font-weight:800;cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="header">
+    <h1>📊 Cuenta y Pinta la Gráfica</h1>
+    <p>Cuenta las manzanas, completa la tabla y pinta los cuadritos</p>
+  </div>
+  <div class="progress-row" id="prog"></div>
+  <div class="score-row"><div class="score-pill">⭐ Puntos: <span id="sc">0</span></div></div>
+
+  <div class="main-area">
+    <div class="boxes-panel">
+      <div class="panel-title">Cuenta cada caja</div>
+      <div class="boxes-grid" id="boxes-grid"></div>
+    </div>
+    <div class="table-panel">
+      <table class="tbl">
+        <thead><tr><th>Caja</th><th>Cant.</th></tr></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="chart-panel">
+    <div class="chart-title">Pinta los cuadritos según la cantidad</div>
+    <div class="chart-instr">Haz clic en cada cuadrito para pintarlo. Si pones de más, aparece una ✖</div>
+    <div class="chart-wrap">
+      <div class="y-axis" id="y-axis"></div>
+      <div class="chart-cols" id="chart-cols"></div>
+    </div>
+  </div>
+
+  <div class="fb" id="fb">👆 Cuenta las manzanas de cada caja y escribe el número en la tabla</div>
+  <div class="btn-row">
+    <button class="btn btn-check" id="btn-check">✅ Comprobar todo</button>
+    <button class="btn btn-reset" id="btn-reset">🔄 Reiniciar</button>
+    <button class="btn btn-next" id="btn-next">Siguiente ▶</button>
+  </div>
+</div>
+
+<div class="win-overlay" id="win-overlay">
+  <div class="win-box">
+    <div class="win-trophy">🏆</div>
+    <div class="win-title">¡Felicitaciones!</div>
+    <div class="win-sub" id="win-sub">Completaste los 2 ejemplos</div>
+    <button class="btn-again" id="btn-again">🔄 Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+const LEVELS = [
+  {
+    boxes: [
+      {count:3, color:'#e05050', light:'#fde8e8'},
+      {count:5, color:'#4a9ef5', light:'#ddeeff'},
+      {count:2, color:'#f5a623', light:'#fff4e0'},
+      {count:6, color:'#a87cf5', light:'#f3eeff'},
+    ]
+  },
+  {
+    boxes: [
+      {count:4, color:'#3dba7e', light:'#e0f7ef'},
+      {count:7, color:'#e060b0', light:'#ffe0f5'},
+      {count:1, color:'#4ac9c9', light:'#dff7f7'},
+      {count:5, color:'#f56b2a', light:'#ffe8df'},
+    ]
+  }
+];
+
+const MAX_Y = 8;
+let lvl=0, score=0, checked=false;
+// painted[i] = number of squares the student has painted in column i
+let painted=[];
+
+const L=()=>LEVELS[lvl%LEVELS.length];
+const isLast=()=>lvl===LEVELS.length-1;
+
+function appleHTML(sm){
+  const c=sm?'apple-icon sm':'apple-icon';
+  return `<span class="${c}"><span class="body"></span><span class="leaf"></span><span class="stem"></span></span>`;
+}
+
+function buildProg(){
+  const r=document.getElementById('prog');r.innerHTML='';
+  LEVELS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dp'+(i<lvl?' done':i===lvl?' current':'');
+    r.appendChild(d);
+  });
+}
+
+function renderBoxes(){
+  const g=document.getElementById('boxes-grid');g.innerHTML='';
+  L().boxes.forEach((box,i)=>{
+    const card=document.createElement('div');
+    card.className='box-card';card.style.borderColor=box.color;
+    let ap='';for(let k=0;k<box.count;k++)ap+=appleHTML(false);
+    card.innerHTML=`<span class="box-label" style="background:${box.color}">Caja ${i+1}</span>`+ap;
+    g.appendChild(card);
+  });
+}
+
+function renderTable(){
+  const tb=document.getElementById('table-body');tb.innerHTML='';
+  L().boxes.forEach((box,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><span class="box-icon" style="background:${box.color}">${i+1}</span></td>
+    <td><input type="number" min="0" max="${MAX_Y}" id="input-${i}" style="border-color:${box.color}"></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function renderYAxis(){
+  const y=document.getElementById('y-axis');y.innerHTML='';
+  // top = MAX_Y, bottom = 1
+  for(let i=MAX_Y;i>=1;i--){
+    const s=document.createElement('span');s.textContent=i;y.appendChild(s);
+  }
+}
+
+function renderChart(){
+  painted=L().boxes.map(()=>0);
+  const cols=document.getElementById('chart-cols');cols.innerHTML='';
+  L().boxes.forEach((box,i)=>{
+    const wrap=document.createElement('div');wrap.className='col-wrap';
+    // column of squares: square[0] = top (value MAX_Y), square[MAX_Y-1] = bottom (value 1)
+    const grid=document.createElement('div');grid.className='col-grid';grid.id='col-'+i;
+    for(let row=0;row<MAX_Y;row++){
+      const sq=document.createElement('div');
+      sq.className='gsq';
+      sq.id=`sq-${i}-${row}`;
+      sq.dataset.col=i;sq.dataset.row=row;
+      // value of this square = MAX_Y - row  (row0=MAX_Y, row MAX_Y-1=1)
+      sq.dataset.val=MAX_Y-row;
+      sq.addEventListener('click',()=>onSquareClick(i,row,box));
+      grid.appendChild(sq);
+    }
+    // x label (apple)
+    const lbl=document.createElement('div');
+    lbl.className='col-label';lbl.innerHTML=appleHTML(true);
+    wrap.appendChild(grid);wrap.appendChild(lbl);
+    cols.appendChild(wrap);
+  });
+}
+
+function onSquareClick(colIdx,rowIdx,box){
+  const sq=document.getElementById(`sq-${colIdx}-${rowIdx}`);
+  const sqVal=MAX_Y-rowIdx; // 1-based value of this square
+
+  // Toggle: if this square is already painted, unpaint it (and everything above it visually = lower row index)
+  if(sq.classList.contains('painted')||sq.classList.contains('over')){
+    // Remove this square and all squares above it (lower rowIdx) in the same column
+    for(let r=0;r<=rowIdx;r++){
+      const s=document.getElementById(`sq-${colIdx}-${r}`);
+      s.classList.remove('painted','over');
+      s.style.background='#fff';
+      s.style.borderColor='#ddd';
+      s.textContent='';
+    }
+    painted[colIdx]=Math.min(painted[colIdx], MAX_Y-rowIdx-1);
+  } else {
+    // Paint all squares from bottom up to this one
+    painted[colIdx]=sqVal;
+    for(let r=0;r<MAX_Y;r++){
+      const s=document.getElementById(`sq-${colIdx}-${r}`);
+      const sVal=MAX_Y-r;
+      if(sVal<=sqVal){
+        // This square should be filled
+        if(sVal<=box.count){
+          s.classList.add('painted');s.classList.remove('over');
+          s.style.background=box.light;s.style.borderColor=box.color;
+          s.textContent='';
+        } else {
+          // Over the correct amount — show X
+          s.classList.add('over');s.classList.remove('painted');
+          s.style.background='#fde8e8';s.style.borderColor='#e05050';
+          s.textContent='✖';
+        }
+      } else {
+        s.classList.remove('painted','over');
+        s.style.background='#fff';s.style.borderColor='#ddd';
+        s.textContent='';
+      }
+    }
+  }
+  document.getElementById('fb').textContent='';
+}
+
+function checkAll(){
+  let allFilled=true,allCorrect=true;
+  L().boxes.forEach((box,i)=>{
+    const inp=document.getElementById('input-'+i);
+    const val=parseInt(inp.value,10);
+    if(isNaN(val)){allFilled=false;return;}
+    if(val===box.count){inp.classList.add('correct');inp.classList.remove('wrong');}
+    else{inp.classList.add('wrong');inp.classList.remove('correct');allCorrect=false;}
+  });
+  if(!allFilled){document.getElementById('fb').textContent='✏️ Completa todas las casillas de la tabla primero';return;}
+
+  // Check chart: painted must equal count and no over squares
+  const chartOK=L().boxes.every((box,i)=>{
+    if(painted[i]!==box.count)return false;
+    // no 'over' squares
+    for(let r=0;r<MAX_Y;r++){
+      if(document.getElementById(`sq-${i}-${r}`).classList.contains('over'))return false;
+    }
+    return true;
+  });
+  if(!chartOK){document.getElementById('fb').textContent='🎨 Revisa la gráfica: pinta exactamente los cuadritos correctos';return;}
+
+  if(allCorrect){
+    if(!checked){score+=40;document.getElementById('sc').textContent=score;checked=true;}
+    document.getElementById('fb').innerHTML='🎉 ¡Perfecto! Contaste, anotaste y graficaste correctamente';
+    document.getElementById('btn-next').style.display='inline-block';
+    document.getElementById('btn-next').textContent=isLast()?'🏆 Ver resultados':'Siguiente ejemplo ▶';
+  } else {
+    document.getElementById('fb').textContent='😅 Algunos números no son correctos, ¡vuelve a contar!';
+  }
+}
+
+function nextLevel(){
+  if(isLast()&&checked){
+    document.getElementById('win-sub').textContent=`Completaste los ${LEVELS.length} ejemplos con ${score} puntos`;
+    document.getElementById('win-overlay').classList.add('show');return;
+  }
+  lvl++;checked=false;buildProg();buildLevel();
+}
+
+function buildLevel(){
+  document.getElementById('btn-next').style.display='none';
+  document.getElementById('fb').textContent='👆 Cuenta las manzanas de cada caja y escribe el número en la tabla';
+  renderBoxes();renderTable();renderYAxis();renderChart();
+}
+
+function reset(){
+  lvl=0;score=0;checked=false;
+  document.getElementById('sc').textContent=0;
+  document.getElementById('win-overlay').classList.remove('show');
+  buildProg();buildLevel();
+}
+
+document.getElementById('btn-check').addEventListener('click',checkAll);
+document.getElementById('btn-reset').addEventListener('click',reset);
+document.getElementById('btn-next').addEventListener('click',nextLevel);
+document.getElementById('btn-again').addEventListener('click',reset);
+
+reset();
+</script>
+</body>
+</html>

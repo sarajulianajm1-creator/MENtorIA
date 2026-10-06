@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Une los Puntos</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', Nunito, sans-serif;
+  background: #f0ecff;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 16px;
+}
+#wrap {
+  background: #fdf6ec;
+  border: 3px solid #f5c842;
+  border-radius: 28px;
+  overflow: hidden;
+  max-width: 680px; width: 100%;
+  padding-bottom: 22px;
+  box-shadow: 0 8px 32px rgba(160,130,240,0.2);
+  position: relative;
+}
+
+/* HEADER */
+.header { background: #c5b8f8; padding: 16px 20px 14px; text-align: center; }
+.header h1 { font-size: 24px; font-weight: 800; color: #3a2a7a; }
+.header p  { font-size: 13px; color: #5a4aa0; margin-top: 3px; }
+
+/* PROGRESS */
+.progress-row { display: flex; justify-content: center; gap: 12px; padding: 14px 0 6px; }
+.dp { width: 15px; height: 15px; border-radius: 50%; background: #e0d9f9; border: 2.5px solid #c5b8f8; transition: all 0.3s; }
+.dp.done    { background: #f5c842; border-color: #d4a000; transform: scale(1.1); }
+.dp.current { background: #ff8fd8; border-color: #e060b0; transform: scale(1.2); }
+
+/* SCORE */
+.score-row { text-align: center; margin: 4px 0 12px; }
+.score-pill { display: inline-block; background: #fff; border: 2.5px solid #c5b8f8; border-radius: 30px; padding: 5px 22px; font-size: 15px; font-weight: 700; color: #3a2a7a; }
+
+/* CANVAS BOX */
+.qbox { margin: 0 18px 12px; background: #e6f9f1; border: 2.5px dashed #3dba7e; border-radius: 20px; padding: 12px 14px 14px; }
+.qlabel { font-size: 14px; font-weight: 700; color: #1a7a50; margin-bottom: 10px; text-align: center; }
+canvas { display: block; margin: 0 auto; cursor: crosshair; touch-action: none; border-radius: 12px; background: #fffdf7; max-width: 100%; }
+
+/* SUB LABEL */
+.sub-label { text-align: center; font-size: 15px; font-weight: 700; color: #5a4aa0; margin: 6px 0 10px; }
+
+/* OPTIONS */
+.opts { display: flex; gap: 12px; padding: 0 16px; }
+.opt-card {
+  flex: 1; border-radius: 18px; border: 2.5px solid;
+  padding: 14px 8px 12px; text-align: center; cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s; background: #fff;
+}
+.opt-card:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+.opt-card .oico  { font-size: 30px; line-height: 1.3; }
+.opt-card .oname { font-size: 17px; font-weight: 800; color: #3a2a7a; margin: 4px 0 2px; }
+.opt-card .osub  { font-size: 12px; color: #aaa; font-weight: 600; }
+.opt-card.correct { background: #e6f9f1 !important; border-color: #3dba7e !important; }
+.opt-card.wrong   { animation: wobble 0.4s; }
+@keyframes wobble {
+  0%{transform:rotate(0) scale(1)} 25%{transform:rotate(-5deg) scale(1.04)}
+  75%{transform:rotate(5deg) scale(1.04)} 100%{transform:rotate(0) scale(1)}
+}
+
+/* FEEDBACK */
+.fb { text-align: center; min-height: 32px; font-size: 16px; font-weight: 700; color: #3a2a7a; margin: 8px 0 4px; }
+
+/* BUTTONS */
+.btn-row { text-align: center; margin-top: 10px; display: flex; justify-content: center; gap: 12px; }
+.btn { border: none; border-radius: 30px; padding: 11px 30px; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.12); transition: transform 0.1s; }
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: scale(0.96); }
+.btn-reset { background: #f5c842; color: #3a2a7a; }
+.btn-next  { background: #3dba7e; color: #fff; display: none; }
+
+/* ============ FINAL SCREEN ============ */
+#final-screen {
+  display: none;
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, #c5b8f8 0%, #fdf6ec 60%, #ffd6f0 100%);
+  border-radius: 28px;
+  flex-direction: column; align-items: center; justify-content: center;
+  z-index: 20; gap: 0; padding: 30px 20px;
+  text-align: center;
+}
+#final-screen.show { display: flex; }
+
+.final-trophy { font-size: 80px; line-height: 1; animation: trophyBounce 0.8s ease infinite alternate; }
+@keyframes trophyBounce { from{transform:translateY(0) rotate(-5deg)} to{transform:translateY(-14px) rotate(5deg)} }
+
+.final-title { font-size: 34px; font-weight: 900; color: #3a2a7a; margin: 14px 0 6px; letter-spacing: 0.5px; }
+.final-sub   { font-size: 17px; color: #5a4aa0; font-weight: 600; margin-bottom: 4px; }
+.final-score { font-size: 22px; font-weight: 800; color: #e0507a; margin: 10px 0 22px; }
+
+.stars-row { display: flex; gap: 8px; margin: 6px 0 16px; }
+.star-big { font-size: 40px; animation: starPop 0.4s ease both; }
+.star-big:nth-child(1) { animation-delay: 0.1s; }
+.star-big:nth-child(2) { animation-delay: 0.3s; }
+.star-big:nth-child(3) { animation-delay: 0.5s; }
+@keyframes starPop { 0%{transform:scale(0) rotate(-30deg);opacity:0} 80%{transform:scale(1.3) rotate(10deg)} 100%{transform:scale(1) rotate(0);opacity:1} }
+
+.confetti-row { font-size: 28px; letter-spacing: 6px; margin-bottom: 10px; }
+.btn-replay { border: none; border-radius: 30px; padding: 14px 38px; font-size: 17px; font-weight: 900; cursor: pointer; background: linear-gradient(90deg, #a87cf5, #f56fa0); color: #fff; box-shadow: 0 6px 20px rgba(168,124,245,0.35); transition: transform 0.1s; }
+.btn-replay:hover { transform: scale(1.05); }
+.btn-replay:active { transform: scale(0.97); }
+</style>
+</head>
+<body>
+<div id="wrap">
+
+  <!-- FINAL SCREEN -->
+  <div id="final-screen">
+    <div class="confetti-row">🎊 🎉 🎊 🎉 🎊</div>
+    <div class="final-trophy">🏆</div>
+    <div class="final-title">¡Felicitaciones!</div>
+    <div class="final-sub">Completaste todas las figuras</div>
+    <div class="stars-row">
+      <span class="star-big">⭐</span>
+      <span class="star-big">⭐</span>
+      <span class="star-big">⭐</span>
+    </div>
+    <div class="final-score">Puntos totales: <span id="final-pts">0</span> 🎯</div>
+    <div class="confetti-row">🌈 ✨ 🌈 ✨ 🌈</div>
+    <button class="btn-replay" id="btn-replay">🔄 Jugar de nuevo</button>
+  </div>
+
+  <!-- GAME -->
+  <div class="header">
+    <h1>✏️ Une los Puntos</h1>
+    <p>Traza las líneas en orden y descubre la figura</p>
+  </div>
+  <div class="progress-row" id="prog"></div>
+  <div class="score-row">
+    <div class="score-pill">⭐ Puntos: <span id="sc">0</span></div>
+  </div>
+
+  <div class="qbox">
+    <div class="qlabel">👀 Une los puntos del <strong>1</strong> al <strong><span id="tot">?</span></strong> en orden:</div>
+    <canvas id="c" width="620" height="290"></canvas>
+  </div>
+
+  <div class="sub-label" id="sublbl">Une los puntos y descubre la figura 👇</div>
+  <div class="opts" id="opts"></div>
+  <div class="fb" id="fb">Toca el punto <strong>1</strong> para comenzar ✏️</div>
+  <div class="btn-row">
+    <button class="btn btn-reset" id="breset">🔄 Reiniciar</button>
+    <button class="btn btn-next"  id="bnext">Siguiente figura ▶</button>
+  </div>
+</div>
+
+<script>
+const LEVELS = [
+  {
+    name: "Casa", emoji: "🏠", answer: 0,
+    color: "#a87cf5", shadow: "#d4b8ff",
+    pts: [
+      // Roof triangle
+      {x:310, y:28},   // 1 — punta del techo (arriba centro)
+      {x:530, y:150},  // 2 — esquina derecha del techo
+      // Right wall down
+      {x:530, y:272},  // 3 — esquina inferior derecha
+      // Bottom, with door notch
+      {x:390, y:272},  // 4 — pie derecho de la puerta
+      {x:390, y:195},  // 5 — tope derecho de la puerta
+      {x:230, y:195},  // 6 — tope izquierdo de la puerta
+      {x:230, y:272},  // 7 — pie izquierdo de la puerta
+      // Continue bottom-left
+      {x:90,  y:272},  // 8 — esquina inferior izquierda
+      {x:90,  y:150},  // 9 — esquina izquierda del techo
+      {x:310, y:28},   // 10 — cierra (regresa al pico)
+    ],
+    options: [{e:"🏠",n:"Casa"}, {e:"⭐",n:"Estrella"}, {e:"🔷",n:"Rombo"}]
+  },
+  {
+    name: "Estrella", emoji: "⭐", answer: 1,
+    color: "#f5a623", shadow: "#ffd98a",
+    // Mathematically perfect: outer r=118, inner r=48, center (310,150)
+    pts: [
+      {x:310, y:32},   // 1
+      {x:338, y:111},  // 2
+      {x:422, y:114},  // 3
+      {x:356, y:165},  // 4
+      {x:379, y:245},  // 5
+      {x:310, y:198},  // 6
+      {x:241, y:245},  // 7
+      {x:264, y:165},  // 8
+      {x:198, y:114},  // 9
+      {x:282, y:111},  // 10
+      {x:310, y:32},   // 11 — cierra
+    ],
+    options: [{e:"🏠",n:"Casa"}, {e:"⭐",n:"Estrella"}, {e:"🏔️",n:"Montaña"}]
+  },
+  {
+    name: "Flecha", emoji: "➡️", answer: 2,
+    color: "#3dba7e", shadow: "#9aefc8",
+    pts: [
+      {x:62,  y:108},  // 1
+      {x:358, y:108},  // 2
+      {x:358, y:40},   // 3
+      {x:550, y:154},  // 4 — punta
+      {x:358, y:268},  // 5
+      {x:358, y:200},  // 6
+      {x:62,  y:200},  // 7
+      {x:62,  y:108},  // 8 — cierra
+    ],
+    options: [{e:"🏠",n:"Casa"}, {e:"⬛",n:"Cuadrado"}, {e:"➡️",n:"Flecha"}]
+  },
+  {
+    name: "Diamante", emoji: "💎", answer: 0,
+    color: "#4a9ef5", shadow: "#a8d4ff",
+    // Tall & narrow diamond — classic gem proportions
+    pts: [
+      {x:310, y:18},   // 1 — punta arriba
+      {x:490, y:140},  // 2 — derecha (más arriba que abajo)
+      {x:310, y:278},  // 3 — punta abajo
+      {x:130, y:140},  // 4 — izquierda
+      {x:310, y:18},   // 5 — cierra
+    ],
+    options: [{e:"💎",n:"Diamante"}, {e:"⭕",n:"Círculo"}, {e:"🔺",n:"Triángulo"}]
+  }
+];
+
+const CARD_COLORS = ["#4a9ef5", "#f56fa0", "#a87cf5"];
+const W = 620, H = 290;
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+const fbEl   = document.getElementById('fb');
+const scEl   = document.getElementById('sc');
+const bnext  = document.getElementById('bnext');
+const breset = document.getElementById('breset');
+const finalScreen = document.getElementById('final-screen');
+const btnReplay   = document.getElementById('btn-replay');
+
+let lvl=0, step=0, score=0, drawn=[], dragging=false, dragFrom=null;
+let mouse={x:0,y:0}, lineDone=false, answered=false;
+
+const L = () => LEVELS[lvl % LEVELS.length];
+const isLastLevel = () => lvl === LEVELS.length - 1;
+
+function uPts() {
+  const seen = new Set(), out = [];
+  L().pts.forEach(p => { const k=p.x+','+p.y; if(!seen.has(k)){seen.add(k);out.push(p);} });
+  return out;
+}
+
+function buildProg() {
+  const r = document.getElementById('prog');
+  r.innerHTML = '';
+  LEVELS.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dp' + (i < lvl ? ' done' : i === lvl ? ' current' : '');
+    r.appendChild(d);
+  });
+  document.getElementById('tot').textContent = uPts().length;
+}
+
+function buildOpts() {
+  const row = document.getElementById('opts');
+  row.innerHTML = '';
+  L().options.forEach((o, i) => {
+    const c = document.createElement('div');
+    c.className = 'opt-card';
+    c.style.borderColor = CARD_COLORS[i];
+    c.innerHTML = `<div class="oico">${o.e}</div><div class="oname">${o.n}</div><div class="osub">Opción ${i+1}</div>`;
+    c.addEventListener('click', () => doAnswer(i, c));
+    row.appendChild(c);
+  });
+}
+
+function doAnswer(i, card) {
+  if (answered) return;
+  answered = true;
+  if (i === L().answer) {
+    score += 20; scEl.textContent = score;
+    card.classList.add('correct');
+    const isLast = isLastLevel();
+    fbEl.innerHTML = isLast
+      ? '🎉 ¡Correcto! ¡Completaste todas las figuras!'
+      : '🎉 ¡Correcto! ¡Es <strong>' + L().name + '</strong>!';
+    bnext.style.display = 'inline-block';
+    bnext.textContent = isLast ? '🏆 Ver resultados' : 'Siguiente figura ▶';
+  } else {
+    card.classList.add('wrong');
+    fbEl.textContent = '😅 ¡Casi! Intenta otra opción';
+    setTimeout(() => { card.classList.remove('wrong'); answered = false; fbEl.textContent = ''; }, 850);
+  }
+}
+
+function showFinal() {
+  document.getElementById('final-pts').textContent = score;
+  finalScreen.classList.add('show');
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#fffdf7';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(180,165,230,0.14)'; ctx.lineWidth = 1;
+  for (let x=0; x<W; x+=26) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y=0; y<H; y+=26) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  const col = L().color, shd = L().shadow;
+
+  // Drawn lines
+  drawn.forEach(s => {
+    ctx.beginPath(); ctx.moveTo(s.x1+3, s.y1+3); ctx.lineTo(s.x2+3, s.y2+3);
+    ctx.strokeStyle = 'rgba(0,0,0,0.08)'; ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2, s.y2);
+    ctx.strokeStyle = col; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 2; ctx.stroke();
+  });
+
+  // Drag preview
+  if (dragging && dragFrom && !lineDone) {
+    ctx.beginPath(); ctx.moveTo(dragFrom.x, dragFrom.y); ctx.lineTo(mouse.x, mouse.y);
+    ctx.strokeStyle = col + 'aa'; ctx.lineWidth = 4; ctx.setLineDash([11,7]); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Dots
+  const up = uPts();
+  up.forEach((p, i) => {
+    const n = i+1, isDone = i < step, isNext = n === step+1, r = 19;
+    ctx.beginPath(); ctx.arc(p.x, p.y, r+8, 0, Math.PI*2);
+    ctx.fillStyle = isDone ? col+'22' : (isNext ? '#f5c84244' : 'rgba(0,0,0,0.04)');
+    ctx.fill();
+
+    const g = ctx.createRadialGradient(p.x-5, p.y-5, 2, p.x, p.y, r);
+    if (isDone)      { g.addColorStop(0, shd); g.addColorStop(1, col); }
+    else if (isNext) { g.addColorStop(0, '#fff9cc'); g.addColorStop(1, '#f5c842'); }
+    else             { g.addColorStop(0, '#f0eeff'); g.addColorStop(1, '#d0c8f0'); }
+    ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI*2);
+    ctx.fillStyle = g; ctx.fill();
+    ctx.strokeStyle = isDone ? col : (isNext ? '#d4a000' : '#b8b0e0');
+    ctx.lineWidth = 2.5; ctx.stroke();
+
+    if (isNext && !lineDone) {
+      ctx.beginPath(); ctx.arc(p.x, p.y, r+13, 0, Math.PI*2);
+      ctx.strokeStyle = '#f5c842cc'; ctx.lineWidth = 2.5;
+      ctx.setLineDash([6,5]); ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    ctx.fillStyle = isDone ? '#fff' : (isNext ? '#3a2a7a' : '#7a70b8');
+    ctx.font = 'bold 13px Segoe UI, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(n, p.x, p.y);
+  });
+}
+
+function hit(a, b) { return Math.hypot(a.x-b.x, a.y-b.y) < 34; }
+
+function tryStart(p) {
+  if (lineDone) return;
+  const up = uPts();
+  if (step === 0) {
+    if (hit(p, up[0])) { dragging = true; dragFrom = {x:up[0].x, y:up[0].y}; draw(); }
+    else fbEl.innerHTML = '👆 Toca el punto <strong>1</strong> para empezar';
+  } else if (hit(p, up[step])) {
+    joinLine(up[step]);
+  }
+}
+
+function tryEnd(p) {
+  if (!dragging || lineDone) return;
+  const up = uPts();
+  if (step === 0) {
+    if (hit(p, up[0])) { step = 1; dragFrom = {x:up[0].x, y:up[0].y}; fbEl.textContent = ''; }
+    dragging = false; draw(); return;
+  }
+  if (hit(p, up[step])) joinLine(up[step]);
+  else { dragging = false; draw(); }
+}
+
+function joinLine(npt) {
+  const up = uPts();
+  const prev = up[step-1] || up[0];
+  drawn.push({x1:prev.x, y1:prev.y, x2:npt.x, y2:npt.y});
+  dragging = false; dragFrom = {x:npt.x, y:npt.y};
+  step++;
+  if (step >= up.length) {
+    lineDone = true; draw();
+    fbEl.innerHTML = '🎨 ¡Figura lista! ¿Qué es?';
+    document.getElementById('sublbl').textContent = '¿Qué figura formaste? 👇';
+    return;
+  }
+  fbEl.textContent = ''; draw();
+}
+
+function getPos(e) {
+  const r = canvas.getBoundingClientRect();
+  const sx = W/r.width, sy = H/r.height;
+  const src = e.touches ? e.touches[0] : e;
+  return {x:(src.clientX-r.left)*sx, y:(src.clientY-r.top)*sy};
+}
+
+canvas.addEventListener('mousedown',  e => tryStart(getPos(e)));
+canvas.addEventListener('mousemove',  e => { if(!dragging||lineDone)return; mouse=getPos(e); draw(); });
+canvas.addEventListener('mouseup',    e => tryEnd(getPos(e)));
+canvas.addEventListener('mouseleave', e => { if(dragging) tryEnd(getPos(e)); });
+canvas.addEventListener('touchstart', e => { e.preventDefault(); tryStart(getPos(e)); }, {passive:false});
+canvas.addEventListener('touchmove',  e => { e.preventDefault(); if(!dragging||lineDone)return; mouse=getPos(e); draw(); }, {passive:false});
+canvas.addEventListener('touchend',   e => { e.preventDefault(); const t=e.changedTouches[0]; const r=canvas.getBoundingClientRect(); tryEnd({x:(t.clientX-r.left)*W/r.width,y:(t.clientY-r.top)*H/r.height}); }, {passive:false});
+
+function reset() {
+  step=0; drawn=[]; dragging=false; dragFrom=null; lineDone=false; answered=false;
+  bnext.style.display='none';
+  fbEl.innerHTML = 'Toca el punto <strong>1</strong> para comenzar ✏️';
+  document.getElementById('sublbl').textContent = 'Une los puntos y descubre la figura 👇';
+  buildProg(); buildOpts(); draw();
+}
+
+function next() {
+  if (isLastLevel()) { showFinal(); return; }
+  lvl++; reset();
+}
+
+function replay() {
+  lvl=0; score=0; scEl.textContent=0;
+  finalScreen.classList.remove('show');
+  reset();
+}
+
+breset.addEventListener('click', reset);
+bnext.addEventListener('click', next);
+btnReplay.addEventListener('click', replay);
+reset();
+</script>
+</body>
+</html>

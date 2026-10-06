@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+<html><head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;padding:14px;min-height:100vh;background:linear-gradient(135deg,#FFF9F0,#F0EEFF)}
+.banner{background:linear-gradient(135deg,#f472b6,#a855f7);border-radius:24px;padding:16px 20px 12px;text-align:center;margin-bottom:16px;box-shadow:0 4px 16px rgba(168,85,247,.35)}
+.banner h1{font-size:21px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.2)}
+.banner p{font-size:12px;color:rgba(255,255,255,.9);margin-top:4px}
+.score-pill{background:linear-gradient(90deg,#fde68a,#fbbf24);border-radius:40px;padding:6px 22px;font-size:15px;font-weight:bold;color:#78350f;text-align:center;width:fit-content;margin:0 auto 14px;display:block;box-shadow:0 3px 10px rgba(251,191,36,.4)}
+.progreso{display:flex;justify-content:center;gap:8px;margin-bottom:14px}
+.dot{width:14px;height:14px;border-radius:50%;background:#ddd6fe;border:2px solid #c4b5fd;transition:all .3s}
+.dot.ok{background:#86efac;border-color:#22c55e}
+.dot.fail{background:#fca5a5;border-color:#ef4444}
+.dot.act{background:#fbbf24;border-color:#f59e0b}
+
+.card{border-radius:28px;padding:22px 18px;margin-bottom:14px}
+.c1{background:linear-gradient(135deg,#fce7f3,#ede9fe);border:3px solid #f9a8d4}
+.c2{background:linear-gradient(135deg,#d1fae5,#dbeafe);border:3px solid #6ee7b7}
+.c3{background:linear-gradient(135deg,#fef3c7,#fee2e2);border:3px solid #fbbf24}
+.card-titulo{font-size:14px;font-weight:bold;margin-bottom:14px;padding:7px 16px;border-radius:40px;display:inline-block}
+.t1{background:#fdf4ff;color:#7e22ce}
+.t2{background:#ecfdf5;color:#065f46}
+.t3{background:#fffbeb;color:#92400e}
+
+/* Enunciado */
+.enunciado{font-size:16px;font-weight:bold;text-align:center;margin-bottom:16px;background:#fff;border-radius:16px;padding:12px 16px;line-height:1.7}
+.e1{border:2px solid #f9a8d4;color:#7e22ce}
+.e2{border:2px solid #6ee7b7;color:#065f46}
+.e3{border:2px solid #fbbf24;color:#92400e}
+
+/* Grupos visuales */
+.grupos{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+.grupo{background:#fff;border-radius:20px;padding:14px;flex:1;min-width:120px;max-width:180px;text-align:center}
+.grupo-label{font-size:12px;font-weight:bold;margin-bottom:8px}
+.gl1{color:#7e22ce}.gl2{color:#065f46}.gl3{color:#92400e}
+.grupo-items{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;min-height:50px;align-items:center}
+.item{font-size:26px;line-height:1}
+
+/* Pregunta doble */
+.preguntas{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.preg{font-size:15px;font-weight:bold;text-align:center;padding:10px 14px;border-radius:14px;background:#fff}
+.pr1{border:2px solid #f9a8d4;color:#7e22ce}
+.pr2{border:2px solid #6ee7b7;color:#065f46}
+.pr3{border:2px solid #fbbf24;color:#92400e}
+
+/* Opciones en dos filas */
+.opciones-wrap{margin-bottom:12px}
+.ops-label{font-size:13px;font-weight:bold;text-align:center;margin-bottom:8px;color:#6d28d9}
+.opciones{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.opcion{padding:12px 6px;border-radius:16px;font-size:16px;font-weight:bold;cursor:pointer;text-align:center;border:3px solid transparent;transition:all .18s}
+.o1{background:#fdf4ff;border-color:#d946ef;color:#7e22ce}
+.o1:hover{background:#fae8ff;transform:scale(1.06)}
+.o1.sel{background:#e879f9;color:#fff;border-color:#a21caf}
+.o2{background:#ecfdf5;border-color:#10b981;color:#065f46}
+.o2:hover{background:#d1fae5;transform:scale(1.06)}
+.o2.sel{background:#34d399;color:#fff;border-color:#059669}
+.o3{background:#fffbeb;border-color:#f59e0b;color:#92400e}
+.o3:hover{background:#fef3c7;transform:scale(1.06)}
+.o3.sel{background:#fbbf24;color:#fff;border-color:#d97706}
+.opcion.ok{background:linear-gradient(135deg,#d1fae5,#a7f3d0)!important;border-color:#059669!important;color:#064e3b!important;transform:scale(1.08)!important}
+.opcion.fail{background:linear-gradient(135deg,#fee2e2,#fecaca)!important;border-color:#dc2626!important;color:#7f1d1d!important}
+
+/* Botón sí/no (primera pregunta) */
+.ops-sino{display:flex;gap:10px;justify-content:center;margin-bottom:10px}
+.btn-sino{padding:12px 28px;border-radius:40px;font-size:17px;font-weight:bold;cursor:pointer;border:3px solid;transition:all .18s}
+.bs1{background:#fdf4ff;border-color:#d946ef;color:#7e22ce}
+.bs1:hover,.bs1.sel{background:#e879f9;color:#fff;border-color:#a21caf;transform:scale(1.06)}
+.bs2{background:#ecfdf5;border-color:#10b981;color:#065f46}
+.bs2:hover,.bs2.sel{background:#34d399;color:#fff;border-color:#059669;transform:scale(1.06)}
+.bs3{background:#fffbeb;border-color:#f59e0b;color:#92400e}
+.bs3:hover,.bs3.sel{background:#fbbf24;color:#fff;border-color:#d97706;transform:scale(1.06)}
+
+.btn-check{display:block;margin:0 auto 10px;padding:12px 30px;border:none;border-radius:40px;font-size:16px;font-weight:bold;cursor:pointer;color:#fff;transition:all .18s}
+.bc1{background:linear-gradient(135deg,#e879f9,#a855f7);box-shadow:0 4px 14px rgba(168,85,247,.4)}
+.bc2{background:linear-gradient(135deg,#34d399,#3b82f6);box-shadow:0 4px 14px rgba(59,130,246,.4)}
+.bc3{background:linear-gradient(135deg,#fbbf24,#ef4444);box-shadow:0 4px 14px rgba(239,68,68,.4)}
+.btn-check:hover{transform:scale(1.05)}
+.msg{text-align:center;font-size:17px;font-weight:bold;min-height:26px;margin-bottom:10px}
+.msg.bien{color:#059669}.msg.mal{color:#dc2626}
+.resp-final{border-radius:16px;padding:12px;text-align:center;font-size:15px;font-weight:bold;margin-bottom:12px;display:none;background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:2.5px solid #34d399;color:#065f46}
+.btn-sig{display:none;margin:0 auto;padding:12px 32px;border:none;border-radius:40px;font-size:16px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 4px 14px rgba(99,102,241,.4)}
+.btn-sig:hover{transform:scale(1.05)}
+.final-box{background:linear-gradient(135deg,#ede9fe,#fce7f3);border:3px solid #a78bfa;border-radius:24px;padding:22px;text-align:center;margin-top:12px}
+.final-box h2{font-size:22px;color:#4c1d95}.final-box p{font-size:15px;color:#6d28d9;margin-top:8px}
+</style>
+</head><body>
+
+<div class="banner">
+  <h1>🪑 ¿Faltan o sobran?</h1>
+  <p>Compara grupos y descubre si faltan o sobran elementos</p>
+</div>
+<div class="score-pill" id="score">⭐ Puntos: 0 / 0</div>
+<div class="progreso" id="dots"></div>
+<div id="contenido"></div>
+<button class="btn-sig" id="btn-sig" onclick="sigRonda()">Siguiente ➡️</button>
+<div id="final-panel"></div>
+
+<script>
+const RONDAS=[
+  {
+    cl:'1',
+    titulo:'¿Todos se pueden sentar?',
+    enunciado:'Hay 6 🪑 y 8 🧍',
+    grupoA:{label:'Sillas 🪑', items:'🪑', cant:6},
+    grupoB:{label:'Personas 🧍', items:'🧍', cant:8},
+    pregSiNo:'¿Todos se pueden sentar?',
+    respSiNo:'no',   // 'si' o 'no'
+    pregCuantos:'¿Cuántas 🪑 faltan o sobran?',
+    diferencia:2,
+    tipo:'faltan',  // 'faltan' o 'sobran'
+    elemento:'🪑',
+    respuesta:'Faltan 2 🪑 — no todos se pueden sentar.',
+    opsCuantos:[1,2,3,4]
+  },
+  {
+    cl:'2',
+    titulo:'¿Cuántas faltan o sobran?',
+    enunciado:'Hay 3 🌸 y 6 🏺\nVa una 🌸 en un 🏺',
+    grupoA:{label:'Flores 🌸', items:'🌸', cant:3},
+    grupoB:{label:'Jarrones 🏺', items:'🏺', cant:6},
+    pregSiNo:'¿Faltan o sobran 🏺?',
+    respSiNo:'faltan',
+    pregCuantos:'¿Cuántas 🏺 faltan o sobran?',
+    diferencia:3,
+    tipo:'sobran',
+    elemento:'🏺',
+    respuesta:'Sobran 3 🏺 — hay más jarrones que flores.',
+    opsCuantos:[2,3,4,5]
+  },
+  {
+    cl:'3',
+    titulo:'¿Cuántas ruedas faltan o sobran?',
+    enunciado:'Hay 7 👦 y 2 🛞\nCada niño 👦 juega con una 🛞',
+    grupoA:{label:'Niños 👦', items:'👦', cant:7},
+    grupoB:{label:'Ruedas 🛞', items:'🛞', cant:2},
+    pregSiNo:'¿Faltan o sobran 🛞?',
+    respSiNo:'faltan',
+    pregCuantos:'¿Cuántas 🛞 faltan o sobran?',
+    diferencia:5,
+    tipo:'faltan',
+    elemento:'🛞',
+    respuesta:'Faltan 5 🛞 — no hay suficientes ruedas.',
+    opsCuantos:[3,4,5,6]
+  },
+  {
+    cl:'1',
+    titulo:'¿Todos tienen sombrero?',
+    enunciado:'Hay 5 🎩 y 8 🧒',
+    grupoA:{label:'Sombreros 🎩', items:'🎩', cant:5},
+    grupoB:{label:'Niños 🧒', items:'🧒', cant:8},
+    pregSiNo:'¿Todos tienen sombrero?',
+    respSiNo:'no',
+    pregCuantos:'¿Cuántos 🎩 faltan?',
+    diferencia:3,
+    tipo:'faltan',
+    elemento:'🎩',
+    respuesta:'Faltan 3 🎩 — no hay suficientes sombreros.',
+    opsCuantos:[2,3,4,5]
+  },
+  {
+    cl:'2',
+    titulo:'¿Cuántos globos sobran?',
+    enunciado:'Hay 9 🎈 y 5 🧒\nCada niño 🧒 recibe un 🎈',
+    grupoA:{label:'Globos 🎈', items:'🎈', cant:9},
+    grupoB:{label:'Niños 🧒', items:'🧒', cant:5},
+    pregSiNo:'¿Sobran globos?',
+    respSiNo:'si',
+    pregCuantos:'¿Cuántos 🎈 sobran?',
+    diferencia:4,
+    tipo:'sobran',
+    elemento:'🎈',
+    respuesta:'Sobran 4 🎈 — hay más globos que niños.',
+    opsCuantos:[2,4,5,6]
+  },
+  {
+    cl:'3',
+    titulo:'¿Cuántas tazas faltan o sobran?',
+    enunciado:'Hay 10 ☕ y 6 🧑\nCada persona 🧑 toma una ☕',
+    grupoA:{label:'Tazas ☕', items:'☕', cant:10},
+    grupoB:{label:'Personas 🧑', items:'🧑', cant:6},
+    pregSiNo:'¿Sobran tazas?',
+    respSiNo:'si',
+    pregCuantos:'¿Cuántas ☕ sobran?',
+    diferencia:4,
+    tipo:'sobran',
+    elemento:'☕',
+    respuesta:'Sobran 4 ☕ — hay más tazas que personas.',
+    opsCuantos:[3,4,5,6]
+  },
+];
+
+let rondaIdx=0,pts=0,respondido=false,resp1=null,resp2=null;
+
+function renderDots(){
+  const d=document.getElementById('dots');d.innerHTML='';
+  RONDAS.forEach((_,i)=>{
+    const el=document.createElement('div');
+    el.className='dot'+(i<rondaIdx?' ok':i===rondaIdx?' act':'');
+    d.appendChild(el);
+  });
+}
+
+function renderRonda(){
+  respondido=false;resp1=null;resp2=null;
+  const r=RONDAS[rondaIdx];
+  const cl=r.cl;
+  document.getElementById('btn-sig').style.display='none';
+  document.getElementById('final-panel').innerHTML='';
+  document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${rondaIdx}`;
+  renderDots();
+
+  // Grupos visuales
+  let itemsA='',itemsB='';
+  for(let i=0;i<r.grupoA.cant;i++) itemsA+=`<span class="item">${r.grupoA.items}</span>`;
+  for(let i=0;i<r.grupoB.cant;i++) itemsB+=`<span class="item">${r.grupoB.items}</span>`;
+
+  // Opciones sí/no / faltan/sobran
+  let sinoHtml='';
+  if(r.respSiNo==='si'||r.respSiNo==='no'){
+    sinoHtml=`
+      <div class="ops-sino">
+        <button class="btn-sino bs${cl}" data-val="si" onclick="selSino(this,'${cl}')">✅ Sí</button>
+        <button class="btn-sino bs${cl}" data-val="no" onclick="selSino(this,'${cl}')">❌ No</button>
+      </div>`;
+  } else {
+    sinoHtml=`
+      <div class="ops-sino">
+        <button class="btn-sino bs${cl}" data-val="faltan" onclick="selSino(this,'${cl}')">Faltan</button>
+        <button class="btn-sino bs${cl}" data-val="sobran" onclick="selSino(this,'${cl}')">Sobran</button>
+      </div>`;
+  }
+
+  // Opciones cuántos
+  let opsHtml='';
+  r.opsCuantos.forEach(op=>{
+    opsHtml+=`<button class="opcion o${cl}" data-val="${op}" onclick="selOp(this)">${op} ${r.elemento}</button>`;
+  });
+
+  document.getElementById('contenido').innerHTML=`
+  <div class="card c${cl}">
+    <div class="card-titulo t${cl}">🔢 Ejercicio ${rondaIdx+1} — ${r.titulo}</div>
+    <div class="enunciado e${cl}">${r.enunciado.replace(/\n/g,'<br>')}</div>
+
+    <div class="grupos">
+      <div class="grupo">
+        <div class="grupo-label gl${cl}">${r.grupoA.label} (${r.grupoA.cant})</div>
+        <div class="grupo-items">${itemsA}</div>
+      </div>
+      <div class="grupo">
+        <div class="grupo-label gl${cl}">${r.grupoB.label} (${r.grupoB.cant})</div>
+        <div class="grupo-items">${itemsB}</div>
+      </div>
+    </div>
+
+    <div class="preguntas">
+      <div class="preg pr${cl}" id="preg1">${r.pregSiNo}</div>
+      <div id="sino-wrap">${sinoHtml}</div>
+      <div class="preg pr${cl}" id="preg2" style="margin-top:4px">${r.pregCuantos}</div>
+    </div>
+
+    <div class="opciones-wrap">
+      <div class="opciones" id="ops-cuantos">${opsHtml}</div>
+    </div>
+
+    <button class="btn-check bc${cl}" onclick="comprobar()">✅ Comprobar</button>
+    <div class="msg" id="msg"></div>
+    <div class="resp-final" id="resp-final">✅ ${r.respuesta}</div>
+  </div>`;
+}
+
+function selSino(btn,cl){
+  if(respondido)return;
+  document.querySelectorAll('.btn-sino').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  resp1=btn.dataset.val;
+}
+
+function selOp(btn){
+  if(respondido)return;
+  document.querySelectorAll('#ops-cuantos .opcion').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  resp2=parseInt(btn.dataset.val);
+}
+
+function comprobar(){
+  if(!resp1||resp2===null){document.getElementById('msg').textContent='👆 Responde las dos preguntas';return;}
+  if(respondido)return;
+  respondido=true;
+  const r=RONDAS[rondaIdx];
+  const ok1=(resp1===r.respSiNo)||(resp1===r.tipo);
+  const ok2=resp2===r.diferencia;
+  const ok=ok1&&ok2;
+
+  // Feedback sí/no
+  document.querySelectorAll('.btn-sino').forEach(b=>{
+    b.style.pointerEvents='none';
+    if(b.dataset.val===r.respSiNo||b.dataset.val===r.tipo) b.style.outline='3px solid #059669';
+    else if(b.classList.contains('sel')) b.style.outline='3px solid #dc2626';
+  });
+
+  // Feedback cuántos
+  document.querySelectorAll('#ops-cuantos .opcion').forEach(b=>{
+    if(parseInt(b.dataset.val)===r.diferencia) b.classList.add('ok');
+    else if(b.classList.contains('sel')) b.classList.add('fail');
+    b.style.pointerEvents='none';
+  });
+
+  const msg=document.getElementById('msg');
+  if(ok){
+    msg.textContent='🎉 ¡Perfecto! ¡Correcto!';msg.className='msg bien';
+    pts++;document.getElementById('score').textContent=`⭐ Puntos: ${pts} / ${rondaIdx+1}`;
+  }else{
+    msg.textContent='😊 ¡Casi! Mira las respuestas correctas';msg.className='msg mal';
+  }
+  document.getElementById('resp-final').style.display='block';
+  renderDots();
+  if(rondaIdx<RONDAS.length-1){
+    document.getElementById('btn-sig').style.display='block';
+  }else{
+    const stars=pts>=5?'🏆🌟🌟🌟':pts>=4?'🎊🌟🌟':pts>=3?'😊🌟':'💪';
+    document.getElementById('final-panel').innerHTML=`<div class="final-box">
+      <div style="font-size:42px;margin:8px 0">${stars}</div>
+      <h2>¡Terminaste!</h2>
+      <p>Obtuviste <strong>${pts}</strong> de <strong>${RONDAS.length}</strong> puntos</p>
+      <p style="margin-top:8px;font-size:13px">${pts===RONDAS.length?'¡Perfecto campeón! 🏆':pts>=4?'¡Muy bien!':'¡Sigue practicando!'}</p>
+      <button onclick="rondaIdx=0;pts=0;renderRonda()" style="margin-top:14px;padding:12px 28px;border:none;border-radius:40px;font-size:15px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff">🔄 Jugar de nuevo</button>
+    </div>`;
+  }
+}
+
+function sigRonda(){rondaIdx++;renderRonda();}
+renderRonda();
+</script>
+</body></html>
